@@ -22,15 +22,31 @@ struct LoginView: View {
                 
                 Spacer()
                 
-                TextField("Email", text: $email)
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8.0)
+                VStack(spacing: 18) {
+                    CustomTextField(text: $email, placeholder: "Email", systemName: "envelope")
+                        .padding()
+                        .background {
+                            RoundedRectangle(cornerRadius: 10.0)
+                                .fill(.white)
+                                .stroke(Color(hex: "#D7EAE7"), lineWidth: 1.5)
+                        }
+                    
+                    CustomSecureField(text: $password, placeholder: "Password", systemName: "lock")
+                        .padding()
+                        .background {
+                            RoundedRectangle(cornerRadius: 10.0)
+                                .fill(.white)
+                                .stroke(Color(hex: "#D7EAE7"), lineWidth: 1.5)
+                        }
+                    
+                    Button {
+                        
+                    } label: {
+                        Text("Forgot your password?")
+                    }
 
-                SecureField("Password", text: $password)
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8.0)
+
+                }
 
                 Spacer()
                 
@@ -48,12 +64,27 @@ struct LoginView: View {
                     login()
                 }
                 .frame(maxWidth: .infinity)
+                .fontWeight(.semibold)
                 .padding()
-                .background(Color.blue)
                 .foregroundColor(.white)
-                .cornerRadius(8.0)
+                .background {
+                    RoundedRectangle(cornerRadius: 25.0)
+                        .fill(Color.accentColor)
+                        .padding(.horizontal)
+                }
             }
             .padding()
+            .background {
+                VStack {
+                    Spacer()
+                    Circle()
+                        .fill(Color.accentColor2)
+                        .frame(width: 1100, height: 1100)
+                        .offset(y: 700)
+                }
+                .background(Color(hex: "#F2F2F2"))
+                .ignoresSafeArea()
+            }
         }
     }
     

@@ -49,6 +49,8 @@
 		3DD88D662AE87D9F0018291D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DD88D652AE87D9F0018291D /* Assets.xcassets */; };
 		3DD88D692AE87D9F0018291D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DD88D682AE87D9F0018291D /* Preview Assets.xcassets */; };
 		3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD88D6F2AE87E6E0018291D /* SignUpView.swift */; };
+		3DF600752AEADAA6008F6971 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF600742AEADAA6008F6971 /* InfoView.swift */; };
+		3DF600772AEADAB6008F6971 /* EmailConfirmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +70,8 @@
 		3DD88D652AE87D9F0018291D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3DD88D682AE87D9F0018291D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3DD88D6F2AE87E6E0018291D /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
+		3DF600742AEADAA6008F6971 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
+		3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailConfirmView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,7 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				3DD88D632AE87D9E0018291D /* LoginView.swift */,
-				3DD88D6F2AE87E6E0018291D /* SignUpView.swift */,
+				3DF600782AEADAC0008F6971 /* SignUp */,
 				3D92F3932AE8B2250032DE1F /* LoginManager.swift */,
 			);
 			path = Login;
@@ -160,6 +164,16 @@
 				3DD88D682AE87D9F0018291D /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		3DF600782AEADAC0008F6971 /* SignUp */ = {
+			isa = PBXGroup;
+			children = (
+				3DD88D6F2AE87E6E0018291D /* SignUpView.swift */,
+				3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */,
+				3DF600742AEADAA6008F6971 /* InfoView.swift */,
+			);
+			path = SignUp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -270,8 +284,10 @@
 				3D92F3992AE8B4370032DE1F /* PickupShiftView.swift in Sources */,
 				3DD88D642AE87D9E0018291D /* LoginView.swift in Sources */,
 				3D92F39D2AE8B5350032DE1F /* RequestShiftView.swift in Sources */,
+				3DF600752AEADAA6008F6971 /* InfoView.swift in Sources */,
 				3D92F3A12AE8B7650032DE1F /* Extensions.swift in Sources */,
 				3D92F3942AE8B2250032DE1F /* LoginManager.swift in Sources */,
+				3DF600772AEADAB6008F6971 /* EmailConfirmView.swift in Sources */,
 				3D92F39B2AE8B4770032DE1F /* OfferShiftView.swift in Sources */,
 				3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */,
 				3D92F3A32AE8C09B0032DE1F /* SimpleIconSelection.swift in Sources */,
@@ -416,8 +432,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -445,8 +461,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

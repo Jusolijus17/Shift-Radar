@@ -24,26 +24,30 @@ struct TabViewManager: View {
                             Image(systemName: "hand.raised")
                             Text("Pickup")
                         }
+                        .tag(0)
                     
                     OfferShiftView()
                         .tabItem {
                             Image(systemName: "gift")
                             Text("Offer")
                         }
+                        .tag(1)
                     
                     RequestShiftView()
                         .tabItem {
                             Image(systemName: "bell.fill")
                             Text("Request")
                         }
+                        .tag(2)
                     
                     StaffView()
                         .tabItem {
                             Image(systemName: "person.fill")
                             Text("Staff")
                         }
+                        .tag(3)
                 }
-                .toolbarBackground(Color(hex: "#000920"), for: .tabBar)
+                .toolbarBackground(Color.accentColor2, for: .tabBar)
                 .toolbarBackground(.visible, for: .tabBar)
                 .toolbarColorScheme(.dark, for: .tabBar)
             }

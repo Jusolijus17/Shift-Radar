@@ -103,16 +103,35 @@ struct SearchView: View {
                     
                 }
                 
-                Button(action: {}) {
+                ZStack {
+                    DatePicker("label", selection: $selectedDate, displayedComponents: [.date])
+                        .datePickerStyle(CompactDatePickerStyle())
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .labelsHidden()
                     Label("Select dates", systemImage: "calendar")
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
-                        .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
+                        .foregroundStyle(Color.accentColor)
                         .overlay(
                             RoundedRectangle(cornerRadius: 5)
                                 .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                                .frame(height: 40)
                         )
+                        .userInteractionDisabled()
                 }
+                .frame(height: 40)
                 .padding(.horizontal)
+                
+                //                Button(action: {}) {
+                //                    Label("Select dates", systemImage: "calendar")
+                //                        .padding(.horizontal)
+//                        .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: 5)
+//                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+//                        )
+//                }
+//                .padding(.horizontal)
                 
                 HStack {
                     let icons = [
@@ -222,7 +241,6 @@ struct DatePickerButtonView: View {
     }
 }
 
-
 #Preview {
-    TabViewManager()
+    TabViewManager_Previews.previews
 }
