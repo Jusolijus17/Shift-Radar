@@ -29,21 +29,45 @@ struct SignUpView: View {
     
     @State private var accountCreationState = AccountCreationState.basicInfo
     
+    @State private var backgroundHeightMultiplier: CGFloat = 0.32
+    
+    @EnvironmentObject var loginManagerData: LoginManagerData
+    
+    @State var labelText: String = "One last step..."
+    
+    var buttonText: String {
+        switch accountCreationState {
+        case .basicInfo:
+            return "Create Account"
+        case .emailConfirmation:
+            return "Waiting verification..."
+        case .success:
+            return "Enter Shift-Radar"
+        }
+    }
+    
     var body: some View {
         
         VStack {
-            if accountCreationState == .emailConfirmation {
-                Spacer()
-            }
-            if accountCreationState == .basicInfo || accountCreationState == .emailConfirmation {
-                PictureView(showSheet: $showSheet)
-                    .padding(.top)
+            accountCreationState == .success ? Spacer() : nil
+            PictureView(showSheet: $showSheet)
+                .padding(.top, accountCreationState == .emailConfirmation ? 100 : 20)
+            
+            if accountCreationState == .emailConfirmation || accountCreationState == .success {
+                Text(labelText)
+                    .foregroundStyle(accountCreationState == .success ? Color.white : Color.black)
+                    .font(.headline)
+                    .padding(.vertical, 22)
+                    .transition(.opacity)
             }
             if accountCreationState == .basicInfo {
                 Spacer()
-                InfoView(password: $password, confirmPassword: $confirmPassword).transition(.move(edge: .leading))
+                InfoView(password: $password, confirmPassword: $confirmPassword)
+                    .transition(.move(edge: .leading).combined(with: .opacity))
                 Spacer()
-            } else if accountCreationState != .emailConfirmation {
+            }
+            
+            if accountCreationState == .emailConfirmation {
                 EmailConfirmView()
             }
             
@@ -54,41 +78,43 @@ struct SignUpView: View {
             
             Spacer()
             
-            Button("Already have an account? Login.") {
-                presentationMode.wrappedValue.dismiss()
+            if accountCreationState == .basicInfo && !isLoading {
+                Button("Already have an account? Login.") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                .disabled(isLoading)
             }
-            .disabled(isLoading)
             
             Button(action: {
-                createAccount()
+                buttonTap()
             }, label: {
                 if isLoading {
                     ProgressView()
                         .frame(width: 25, height: 25)
                 } else {
-                    Text("Create Account")
+                    Text(buttonText)
+                        .transition(.identity)
+                        .frame(maxWidth: .infinity)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .padding()
+                        .background {
+                            RoundedRectangle(cornerRadius: 25.0)
+                                .fill(Color.accentColor)
+                        }
+                        .opacity(isLoading ? 0.6 : 1)
+                        .padding(.horizontal)
                 }
             })
-            .frame(maxWidth: .infinity)
-            .fontWeight(.semibold)
-            .foregroundStyle(.white)
-            .padding()
-            .background {
-                RoundedRectangle(cornerRadius: 25.0)
-                    .fill(Color.accentColor)
-            }
-            .opacity(isLoading ? 0.6 : 1)
-            .padding(.horizontal)
-            .disabled(isLoading)
+            //.disabled(isLoading || accountCreationState == .emailConfirmation)
             
         }
         .background {
-            VStack {
-                Spacer()
-                Circle()
+            GeometryReader { geo in
+                SemiRoundedRectangle(curveHeight: accountCreationState == .success ? 0 : 30)
                     .fill(Color.accentColor2)
-                    .frame(width: 1100, height: 1100)
-                    .offset(y: accountCreationState == .basicInfo ? 700: 600)
+                    .frame(height: geo.size.height * backgroundHeightMultiplier)
+                    .frame(maxHeight: .infinity, alignment: .bottom)
             }
             .background(Color(hex: "#F2F2F2"))
             .ignoresSafeArea()
@@ -102,9 +128,22 @@ struct SignUpView: View {
         .environmentObject(userData)
     }
     
+    func buttonTap() {
+        switch accountCreationState {
+        case .basicInfo:
+            loginManagerData.isCreatingAccount = true
+            createAccount()
+        case .emailConfirmation:
+            verifyEmail()
+        case .success:
+            return
+        }
+    }
+    
     func createAccount() {
         withAnimation(.spring(duration: 0.5)) {
             accountCreationState = .emailConfirmation
+            backgroundHeightMultiplier = 0.38
         }
 //        if verifyInfo() {
 //            isLoading = true // commence le chargement
@@ -175,6 +214,14 @@ struct SignUpView: View {
 //                }
 //            }
 //        }
+    }
+    
+    func verifyEmail() {
+        labelText = "Account created!"
+        withAnimation(.spring(duration: 0.5)) {
+            accountCreationState = .success
+            backgroundHeightMultiplier = 1
+        }
     }
     
     func verifyInfo() -> Bool {
@@ -267,6 +314,31 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
+struct SemiRoundedRectangle: Shape {
+    var curveHeight: CGFloat
+    
+    var animatableData: CGFloat {
+        get { curveHeight }
+        set { curveHeight = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        let width = rect.size.width
+        let height = rect.size.height
+        let controlPoint = CGPoint(x: width / 2, y: -curveHeight)
+        
+        return Path { path in
+            path.move(to: CGPoint(x: 0, y: curveHeight))
+            path.addQuadCurve(to: CGPoint(x: width, y: curveHeight), control: controlPoint)
+            path.addLine(to: CGPoint(x: width, y: height))
+            path.addLine(to: CGPoint(x: 0, y: height))
+            path.closeSubpath()
+        }
+    }
+}
+
+
 #Preview {
     SignUpView()
+        .environmentObject(LoginManagerData())
 }

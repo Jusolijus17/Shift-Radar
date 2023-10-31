@@ -49,6 +49,8 @@
 		3DD88D662AE87D9F0018291D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DD88D652AE87D9F0018291D /* Assets.xcassets */; };
 		3DD88D692AE87D9F0018291D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DD88D682AE87D9F0018291D /* Preview Assets.xcassets */; };
 		3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD88D6F2AE87E6E0018291D /* SignUpView.swift */; };
+		3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEDAB4D2AECB45A00771E43 /* Shapes.swift */; };
+		3DEDAB502AECB67A00771E43 /* SuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */; };
 		3DF600752AEADAA6008F6971 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF600742AEADAA6008F6971 /* InfoView.swift */; };
 		3DF600772AEADAB6008F6971 /* EmailConfirmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */; };
 /* End PBXBuildFile section */
@@ -70,6 +72,8 @@
 		3DD88D652AE87D9F0018291D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3DD88D682AE87D9F0018291D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3DD88D6F2AE87E6E0018291D /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
+		3DEDAB4D2AECB45A00771E43 /* Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shapes.swift; sourceTree = "<group>"; };
+		3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessView.swift; sourceTree = "<group>"; };
 		3DF600742AEADAA6008F6971 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailConfirmView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -169,9 +173,11 @@
 		3DF600782AEADAC0008F6971 /* SignUp */ = {
 			isa = PBXGroup;
 			children = (
+				3DEDAB4D2AECB45A00771E43 /* Shapes.swift */,
 				3DD88D6F2AE87E6E0018291D /* SignUpView.swift */,
 				3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */,
 				3DF600742AEADAA6008F6971 /* InfoView.swift */,
+				3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */,
 			);
 			path = SignUp;
 			sourceTree = "<group>";
@@ -279,8 +285,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DEDAB502AECB67A00771E43 /* SuccessView.swift in Sources */,
 				3D92F39F2AE8B58F0032DE1F /* StaffView.swift in Sources */,
 				3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */,
+				3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */,
 				3D92F3992AE8B4370032DE1F /* PickupShiftView.swift in Sources */,
 				3DD88D642AE87D9E0018291D /* LoginView.swift in Sources */,
 				3D92F39D2AE8B5350032DE1F /* RequestShiftView.swift in Sources */,

@@ -11,7 +11,6 @@ import FirebaseAuth
 struct LoginView: View {
     @State private var email: String = ""
     @State private var password: String = ""
-    
     @State private var error: String?
 
     var body: some View {
@@ -52,7 +51,9 @@ struct LoginView: View {
                 
                 if let error = error {
                     Text(error)
+                        .multilineTextAlignment(.center)
                         .foregroundStyle(.red)
+                        .padding(.bottom)
                 }
 
                 NavigationLink("No account? Sign up!", destination: {
@@ -60,18 +61,21 @@ struct LoginView: View {
                         .navigationBarBackButtonHidden()
                 })
                 
-                Button("Login") {
+                Button {
                     login()
+                } label: {
+                    Text("Login")
+                        .frame(maxWidth: .infinity)
+                        .fontWeight(.semibold)
+                        .padding()
+                        .foregroundColor(.white)
+                        .background {
+                            RoundedRectangle(cornerRadius: 25.0)
+                                .fill(Color.accentColor)
+                                .padding(.horizontal)
+                        }
                 }
-                .frame(maxWidth: .infinity)
-                .fontWeight(.semibold)
-                .padding()
-                .foregroundColor(.white)
-                .background {
-                    RoundedRectangle(cornerRadius: 25.0)
-                        .fill(Color.accentColor)
-                        .padding(.horizontal)
-                }
+                
             }
             .padding()
             .background {

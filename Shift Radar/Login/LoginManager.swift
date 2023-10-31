@@ -9,28 +9,51 @@ import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
 
+class LoginManagerData: ObservableObject {
+    @Published var isCreatingAccount: Bool = false
+    @Published var isUserLoggedIn: Bool = (Auth.auth().currentUser != nil)
+}
+
 struct LoginManager: View {
     @StateObject private var userData = UserData()
-    @State private var isUserLoggedIn: Bool = (Auth.auth().currentUser != nil)
+    @StateObject private var loginManagerData = LoginManagerData()
+    
+    @State var authHandler: AuthStateDidChangeListenerHandle?
 
     var body: some View {
         Group {
-            if isUserLoggedIn {
+            if loginManagerData.isUserLoggedIn {
                 TabViewManager()
                     .environmentObject(userData)
             } else {
                 LoginView()
+                    .environmentObject(loginManagerData)
             }
         }
         .onAppear {
-            Auth.auth().addStateDidChangeListener { (auth, user) in
+            attachAuthListener()
+        }
+        .onDisappear {
+            detachAuthListener()
+        }
+    }
+    
+    func attachAuthListener() {
+        authHandler = Auth.auth().addStateDidChangeListener { (auth, user) in
+            if !loginManagerData.isCreatingAccount {
                 withAnimation {
-                    self.isUserLoggedIn = (user != nil)
-                    if self.isUserLoggedIn {
+                    self.loginManagerData.isUserLoggedIn = (user != nil)
+                    if self.loginManagerData.isUserLoggedIn {
                         self.loadUserData()
                     }
                 }
             }
+        }
+    }
+    
+    func detachAuthListener() {
+        if let authHandler = authHandler {
+            Auth.auth().removeStateDidChangeListener(authHandler)
         }
     }
 
