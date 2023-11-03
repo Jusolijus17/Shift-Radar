@@ -9,10 +9,18 @@ import SwiftUI
 
 struct OfferShiftView: View {
     var body: some View {
-        Text("Offer shift view")
+        VStack {
+            Image("desert")
+                .padding()
+            Text("It's empty in here...")
+                .font(.title2)
+                .fontWeight(.semibold)
+            Text("You have no offered shifts yet")
+                .font(.caption2)
+        }
     }
 }
 
 #Preview {
-    TabViewManager()
+    TabViewManager_Previews.previews
 }

@@ -53,6 +53,7 @@
 		3DEDAB502AECB67A00771E43 /* SuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */; };
 		3DF600752AEADAA6008F6971 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF600742AEADAA6008F6971 /* InfoView.swift */; };
 		3DF600772AEADAB6008F6971 /* EmailConfirmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */; };
+		3DFA29082AF497DC0082439D /* SignUpViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DFA29072AF497DC0082439D /* SignUpViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +77,7 @@
 		3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessView.swift; sourceTree = "<group>"; };
 		3DF600742AEADAA6008F6971 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailConfirmView.swift; sourceTree = "<group>"; };
+		3DFA29072AF497DC0082439D /* SignUpViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -175,6 +177,7 @@
 			children = (
 				3DEDAB4D2AECB45A00771E43 /* Shapes.swift */,
 				3DD88D6F2AE87E6E0018291D /* SignUpView.swift */,
+				3DFA29072AF497DC0082439D /* SignUpViewModel.swift */,
 				3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */,
 				3DF600742AEADAA6008F6971 /* InfoView.swift */,
 				3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */,
@@ -286,6 +289,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3DEDAB502AECB67A00771E43 /* SuccessView.swift in Sources */,
+				3DFA29082AF497DC0082439D /* SignUpViewModel.swift in Sources */,
 				3D92F39F2AE8B58F0032DE1F /* StaffView.swift in Sources */,
 				3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */,
 				3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */,
