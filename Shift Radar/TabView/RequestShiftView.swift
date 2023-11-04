@@ -14,5 +14,5 @@ struct RequestShiftView: View {
 }
 
 #Preview {
-    TabViewManager()
+    TabViewManager_Previews.PreviewWrapper(selectedTab: 2)
 }

@@ -42,7 +42,6 @@ struct PickupShiftView: View {
                 }
             }
         }
-        .background(Color(uiColor: .secondarySystemBackground))
     }
 }
 

@@ -14,5 +14,5 @@ struct StaffView: View {
 }
 
 #Preview {
-    TabViewManager()
+    TabViewManager_Previews.PreviewWrapper(selectedTab: 3)
 }

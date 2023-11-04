@@ -10,7 +10,7 @@ import UIKit
 import FirebaseAuth
 
 struct TabViewManager: View {
-    @State private var selectedTab = 0
+    @State var selectedTab = 0
     @State private var showSettings = false
     
     @EnvironmentObject var userData: UserData
@@ -50,6 +50,8 @@ struct TabViewManager: View {
                 .toolbarBackground(Color.accentColor2, for: .tabBar)
                 .toolbarBackground(.visible, for: .tabBar)
                 .toolbarColorScheme(.dark, for: .tabBar)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(hex: "#F2F2F2"))
             }
             .navigationTitle("Shift Radar")
             .navigationBarTitleDisplayMode(.inline)
@@ -116,12 +118,23 @@ struct TabViewManager: View {
 
 struct TabViewManager_Previews: PreviewProvider {
     static var previews: some View {
-        let userData = UserData()
+        PreviewWrapper(selectedTab: 0)
+    }
+    
+    struct PreviewWrapper: View {
+        @State private var selectedTab: Int
+        var userData = UserData()
         
-        TabViewManager()
-            .environmentObject(userData)
-            .onAppear(perform: {
-                userData.profileImage = UIImage(named: "preview1")
-            })
+        init(selectedTab: Int) {
+            self._selectedTab = State(initialValue: selectedTab)
+        }
+        
+        var body: some View {
+            TabViewManager(selectedTab: selectedTab)
+                .environmentObject(userData)
+                .onAppear {
+                    userData.profileImage = UIImage(named: "preview1")
+                }
+        }
     }
 }
