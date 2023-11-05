@@ -88,13 +88,14 @@ struct TabViewManager: View {
                             .font(.system(size: 16, design: .rounded))
                             .frame(width: 35, height: 35)
                             .background(Color.white)
-                            .foregroundColor(Color.accentColor)
+                            .foregroundColor(Color.accent)
                             .clipShape(Circle())
                     }
                 }
             }
-            .toolbarBackground(Color.accentColor, for: .navigationBar)
+            .toolbarBackground(.accent, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
         }
         .sheet(isPresented: $showSettings, content: {
             Button {
