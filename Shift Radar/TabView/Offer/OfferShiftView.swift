@@ -21,6 +21,8 @@ struct OfferShiftView: View {
             }
             .sheet(isPresented: $viewModel.showModal) {
                 OfferShiftModalView()
+                    .interactiveDismissDisabled()
+                    .presentationDetents([.fraction(0.9), .fraction(0.96)])
             }
         }
         .environmentObject(viewModel)
@@ -64,7 +66,6 @@ struct NoOfferView: View {
 struct OfferShiftModalView: View {
     @EnvironmentObject var viewModel: OfferShiftViewModel
     @Environment(\.dismiss) var dismiss
-    @State private var selectedItem: String = "Option 1"
     
     init() {
         UIDatePicker.appearance().minuteInterval = 5
@@ -167,7 +168,9 @@ struct OfferShiftModalView: View {
                 CompensationView()
                 Spacer()
                 Button {
-                    
+                    viewModel.saveShift {
+                        dismiss()
+                    }
                 } label: {
                     Label("Offer shift", systemImage: "plus")
                         .transition(.identity)
@@ -179,6 +182,13 @@ struct OfferShiftModalView: View {
                             RoundedRectangle(cornerRadius: 18)
                                 .fill(Color.accentColor)
                         }
+                        .overlay {
+                            if viewModel.isSaving {
+                                ProgressView()
+                                    .tint(.accentColor2)
+                            }
+                        }
+                        .disabled(viewModel.isSaving)
                 }
             }
             .padding(.horizontal, 20)
@@ -234,14 +244,7 @@ struct BoxSelector: View {
     }
 }
 
-enum CompensationType {
-    case give
-    case sell
-    case trade
-}
-
 struct CompensationView: View {
-    @State private var compensationType: CompensationType = .sell
     @EnvironmentObject var viewModel: OfferShiftViewModel
     
     var body: some View {
@@ -249,10 +252,10 @@ struct CompensationView: View {
             HStack {
                 VStack {
                     Button {
-                        compensationType = .give
+                        viewModel.changeCompensationType(newValue: .give)
                     } label: {
                         Image(systemName: "gift")
-                            .foregroundStyle(compensationType == .give ? .white : .black.opacity(0.5))
+                            .foregroundStyle(viewModel.shiftData.compensationType == .give ? .white : .black.opacity(0.5))
                             .font(.title2)
                             .padding()
                             .background {
@@ -260,17 +263,17 @@ struct CompensationView: View {
                             }
                         
                     }
-                    .foregroundStyle(compensationType == .give ? Color.accent : Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(viewModel.shiftData.compensationType == .give ? Color.accent : Color(uiColor: .tertiaryLabel))
                     Text("Give")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                 }
                 Spacer()
                 VStack {
                     Button {
-                        compensationType = .sell
+                        viewModel.changeCompensationType(newValue: .sell)
                     } label: {
                         Image(systemName: "dollarsign")
-                            .foregroundStyle(compensationType == .sell ? .white : .black.opacity(0.5))
+                            .foregroundStyle(viewModel.shiftData.compensationType == .sell ? .white : .black.opacity(0.5))
                             .font(.title2)
                             .padding()
                             .background {
@@ -278,17 +281,17 @@ struct CompensationView: View {
                             }
                         
                     }
-                    .foregroundStyle(compensationType == .sell ? Color.accent : Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(viewModel.shiftData.compensationType == .sell ? Color.accent : Color(uiColor: .tertiaryLabel))
                     Text("Sell")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                 }
                 Spacer()
                 VStack {
                     Button {
-                        compensationType = .trade
+                        viewModel.changeCompensationType(newValue: .trade)
                     } label: {
                         Image(systemName: "arrow.triangle.2.circlepath")
-                            .foregroundStyle(compensationType == .trade ? .white : .black.opacity(0.5))
+                            .foregroundStyle(viewModel.shiftData.compensationType == .trade ? .white : .black.opacity(0.5))
                             .font(.title2)
                             .padding()
                             .background {
@@ -296,14 +299,14 @@ struct CompensationView: View {
                             }
                         
                     }
-                    .foregroundStyle(compensationType == .trade ? Color.accent : Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(viewModel.shiftData.compensationType == .trade ? Color.accent : Color(uiColor: .tertiaryLabel))
                     Text("Trade")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                 }
             }
-            .sensoryFeedback(.impact, trigger: compensationType)
+            .sensoryFeedback(.impact, trigger: viewModel.shiftData.compensationType)
             
-            switch compensationType {
+            switch viewModel.shiftData.compensationType {
             case .give:
                 Text("Give")
                     .padding(.vertical, 5)
@@ -367,13 +370,16 @@ struct AvailabilitiesView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             
             ScrollView {
-                ForEach(viewModel.shiftData.availabilities.indices, id: \.self) { index in
-                    let availability = viewModel.shiftData.availabilities[index]
-                    Text("Slot \(index + 1): \(availability.date, formatter: itemFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
-                        .font(.system(size: 12, design: .rounded))
-                        .foregroundStyle(.secondary)
+                VStack {
+                    ForEach(viewModel.shiftData.availabilities.indices, id: \.self) { index in
+                        let availability = viewModel.shiftData.availabilities[index]
+                        Text("Slot \(index + 1): \(availability.date, formatter: itemFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
+                            .font(.system(size: 12, design: .rounded))
+                            .foregroundStyle(.secondary)
+                    }
+                    .onDelete(perform: deleteAvailability)
                 }
-                .onDelete(perform: deleteAvailability)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
