@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D13CC822AF9C17E00E14CF4 /* OfferShiftViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D13CC812AF9C17E00E14CF4 /* OfferShiftViewModal.swift */; };
+		3D13CC842AF9C1CE00E14CF4 /* CustomObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D13CC832AF9C1CE00E14CF4 /* CustomObjects.swift */; };
 		3D33AF232AE9D747003116A5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */; };
 		3D33AF262AE9DB3F003116A5 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 3D33AF252AE9DB3F003116A5 /* FirebaseAnalytics */; };
 		3D33AF282AE9DB3F003116A5 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 3D33AF272AE9DB3F003116A5 /* FirebaseAnalyticsOnDeviceConversion */; };
@@ -42,7 +44,6 @@
 		3D92F39D2AE8B5350032DE1F /* RequestShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F39C2AE8B5350032DE1F /* RequestShiftView.swift */; };
 		3D92F39F2AE8B58F0032DE1F /* StaffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F39E2AE8B58F0032DE1F /* StaffView.swift */; };
 		3D92F3A12AE8B7650032DE1F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3A02AE8B7650032DE1F /* Extensions.swift */; };
-		3D92F3A32AE8C09B0032DE1F /* SimpleIconSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3A22AE8C09B0032DE1F /* SimpleIconSelection.swift */; };
 		3D92F3A52AE9A8540032DE1F /* ShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3A42AE9A8540032DE1F /* ShiftView.swift */; };
 		3DD88D622AE87D9E0018291D /* Shift_RadarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD88D612AE87D9E0018291D /* Shift_RadarApp.swift */; };
 		3DD88D642AE87D9E0018291D /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD88D632AE87D9E0018291D /* LoginView.swift */; };
@@ -58,6 +59,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3D13CC812AF9C17E00E14CF4 /* OfferShiftViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferShiftViewModal.swift; sourceTree = "<group>"; };
+		3D13CC832AF9C1CE00E14CF4 /* CustomObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomObjects.swift; sourceTree = "<group>"; };
 		3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3D92F3932AE8B2250032DE1F /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
 		3D92F3962AE8B3600032DE1F /* TabViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewManager.swift; sourceTree = "<group>"; };
@@ -66,7 +69,6 @@
 		3D92F39C2AE8B5350032DE1F /* RequestShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestShiftView.swift; sourceTree = "<group>"; };
 		3D92F39E2AE8B58F0032DE1F /* StaffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaffView.swift; sourceTree = "<group>"; };
 		3D92F3A02AE8B7650032DE1F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		3D92F3A22AE8C09B0032DE1F /* SimpleIconSelection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleIconSelection.swift; sourceTree = "<group>"; };
 		3D92F3A42AE9A8540032DE1F /* ShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiftView.swift; sourceTree = "<group>"; };
 		3DD88D5E2AE87D9E0018291D /* Shift Radar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shift Radar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DD88D612AE87D9E0018291D /* Shift_RadarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shift_RadarApp.swift; sourceTree = "<group>"; };
@@ -120,6 +122,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3D13CC852AF9C25E00E14CF4 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				3D92F3A02AE8B7650032DE1F /* Extensions.swift */,
+				3D13CC832AF9C1CE00E14CF4 /* CustomObjects.swift */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		3D13CC862AF9C2AD00E14CF4 /* Request */ = {
+			isa = PBXGroup;
+			children = (
+				3D92F39C2AE8B5350032DE1F /* RequestShiftView.swift */,
+			);
+			path = Request;
+			sourceTree = "<group>";
+		};
+		3D13CC872AF9C2B500E14CF4 /* Pickup */ = {
+			isa = PBXGroup;
+			children = (
+				3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */,
+			);
+			path = Pickup;
+			sourceTree = "<group>";
+		};
 		3D92F3952AE8B34E0032DE1F /* Login */ = {
 			isa = PBXGroup;
 			children = (
@@ -154,8 +181,7 @@
 				3DD88D652AE87D9F0018291D /* Assets.xcassets */,
 				3DD88D672AE87D9F0018291D /* Preview Content */,
 				3DEF31372AF58BE7009F6737 /* TabView */,
-				3D92F3A02AE8B7650032DE1F /* Extensions.swift */,
-				3D92F3A22AE8C09B0032DE1F /* SimpleIconSelection.swift */,
+				3D13CC852AF9C25E00E14CF4 /* Other */,
 				3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */,
 			);
 			path = "Shift Radar";
@@ -174,6 +200,7 @@
 			children = (
 				3D92F39A2AE8B4770032DE1F /* OfferShiftView.swift */,
 				3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */,
+				3D13CC812AF9C17E00E14CF4 /* OfferShiftViewModal.swift */,
 			);
 			path = Offer;
 			sourceTree = "<group>";
@@ -183,9 +210,9 @@
 			children = (
 				3D92F3962AE8B3600032DE1F /* TabViewManager.swift */,
 				3D92F3A42AE9A8540032DE1F /* ShiftView.swift */,
-				3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */,
+				3D13CC872AF9C2B500E14CF4 /* Pickup */,
 				3DEF31362AF58BD5009F6737 /* Offer */,
-				3D92F39C2AE8B5350032DE1F /* RequestShiftView.swift */,
+				3D13CC862AF9C2AD00E14CF4 /* Request */,
 				3D92F39E2AE8B58F0032DE1F /* StaffView.swift */,
 			);
 			path = TabView;
@@ -310,6 +337,7 @@
 				3DEDAB502AECB67A00771E43 /* SuccessView.swift in Sources */,
 				3DFA29082AF497DC0082439D /* SignUpViewModel.swift in Sources */,
 				3D92F39F2AE8B58F0032DE1F /* StaffView.swift in Sources */,
+				3D13CC822AF9C17E00E14CF4 /* OfferShiftViewModal.swift in Sources */,
 				3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */,
 				3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */,
 				3D92F3992AE8B4370032DE1F /* PickupShiftView.swift in Sources */,
@@ -317,11 +345,11 @@
 				3D92F39D2AE8B5350032DE1F /* RequestShiftView.swift in Sources */,
 				3DF600752AEADAA6008F6971 /* InfoView.swift in Sources */,
 				3D92F3A12AE8B7650032DE1F /* Extensions.swift in Sources */,
+				3D13CC842AF9C1CE00E14CF4 /* CustomObjects.swift in Sources */,
 				3D92F3942AE8B2250032DE1F /* LoginManager.swift in Sources */,
 				3DF600772AEADAB6008F6971 /* EmailConfirmView.swift in Sources */,
 				3D92F39B2AE8B4770032DE1F /* OfferShiftView.swift in Sources */,
 				3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */,
-				3D92F3A32AE8C09B0032DE1F /* SimpleIconSelection.swift in Sources */,
 				3DD88D622AE87D9E0018291D /* Shift_RadarApp.swift in Sources */,
 				3DEF31352AF58B50009F6737 /* OfferShiftViewModel.swift in Sources */,
 				3D92F3A52AE9A8540032DE1F /* ShiftView.swift in Sources */,

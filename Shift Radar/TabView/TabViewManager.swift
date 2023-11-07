@@ -19,17 +19,17 @@ struct TabViewManager: View {
         NavigationView {
             TabView(selection: $selectedTab) {
                 Group {
+                    OfferShiftViewController()
+                        .tabItem {
+                            Image(systemName: "gift")
+                            Text("Offer")
+                        }
+                        .tag(0)
+                    
                     PickupShiftView()
                         .tabItem {
                             Image(systemName: "hand.raised")
                             Text("Pickup")
-                        }
-                        .tag(0)
-                    
-                    OfferShiftView()
-                        .tabItem {
-                            Image(systemName: "gift")
-                            Text("Offer")
                         }
                         .tag(1)
                     

@@ -7,6 +7,9 @@
 
 import Foundation
 import SwiftUI
+import FirebaseFirestore
+import FirebaseAuth
+import FirebaseStorage
 
 class SignUpViewModel: ObservableObject {
     @Published var password: String = ""
@@ -30,79 +33,76 @@ class SignUpViewModel: ObservableObject {
     }
     
     func createAccount() {
-        withAnimation(.spring(duration: 0.5)) {
-            accountCreationState = .emailConfirmation
-            backgroundHeightMultiplier = 0.38
+        if verifyInfo() {
+            isLoading = true // commence le chargement
+            Auth.auth().createUser(withEmail: "\(userData.email)@aircanada.ca", password: password) { authResult, error in
+                if let error = error {
+                    self.error = error.localizedDescription
+                    self.isLoading = false
+                    return
+                }
+
+                if let uid = authResult?.user.uid {
+                    // Si la photo de profil existe
+                    if let profileImage = self.userData.profileImage,
+                       let data = profileImage.jpegData(compressionQuality: 0.5) {
+                        let storageRef = Storage.storage().reference().child("profile_images").child("\(uid).jpeg")
+
+                        storageRef.putData(data, metadata: nil) { (metadata, err) in
+                            if let err = err {
+                                self.error = "Error uploading profile image: \(err.localizedDescription)"
+                                self.isLoading = false
+                                return
+                            }
+
+                            storageRef.downloadURL { (url, err) in
+                                if let err = err {
+                                    self.error = "Error fetching profile image URL: \(err.localizedDescription)"
+                                    self.isLoading = false
+                                    return
+                                }
+
+                                if let profileImageUrl = url?.absoluteString {
+                                    let db = Firestore.firestore()
+                                    db.collection("users").document(uid).setData([
+                                        "firstName": self.userData.firstName,
+                                        "lastName": self.userData.lastName,
+                                        "employeeNumber": self.userData.employeeNumber,
+                                        "profileImageUrl": profileImageUrl
+                                    ]) { err in
+                                        self.isLoading = false
+                                        if let err = err {
+                                            self.error = "Error saving user data: \(err.localizedDescription)"
+                                        } else {
+                                            print("Account and user data created!")
+                                            withAnimation(.spring(duration: 0.5)) {
+                                                self.accountCreationState = .emailConfirmation
+                                                self.backgroundHeightMultiplier = 0.38
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // Si l'utilisateur n'a pas choisi d'image de profil
+                        let db = Firestore.firestore()
+                        db.collection("users").document(uid).setData([
+                            "firstName": self.userData.firstName,
+                            "lastName": self.userData.lastName,
+                            "employeeNumber": self.userData.employeeNumber
+                        ]) { err in
+                            self.isLoading = false
+                            if let err = err {
+                                self.error = "Error saving user data: \(err.localizedDescription)"
+                            } else {
+                                print("Account and user data created!")
+                            }
+                        }
+                    }
+                }
+            }
         }
-//        if verifyInfo() {
-//            isLoading = true // commence le chargement
-//            Auth.auth().createUser(withEmail: "\(userData.email)@aircanada.ca", password: password) { authResult, error in
-//                if let error = error {
-//                    self.error = error.localizedDescription
-//                    self.isLoading = false
-//                    return
-//                }
-//
-//                if let uid = authResult?.user.uid {
-//                    // Si la photo de profil existe
-//                    if let profileImage = self.userData.profileImage,
-//                       let data = profileImage.jpegData(compressionQuality: 0.5) {
-//                        let storageRef = Storage.storage().reference().child("profile_images").child("\(uid).jpeg")
-//
-//                        storageRef.putData(data, metadata: nil) { (metadata, err) in
-//                            if let err = err {
-//                                self.error = "Error uploading profile image: \(err.localizedDescription)"
-//                                self.isLoading = false
-//                                return
-//                            }
-//
-//                            storageRef.downloadURL { (url, err) in
-//                                if let err = err {
-//                                    self.error = "Error fetching profile image URL: \(err.localizedDescription)"
-//                                    self.isLoading = false
-//                                    return
-//                                }
-//
-//                                if let profileImageUrl = url?.absoluteString {
-//                                    let db = Firestore.firestore()
-//                                    db.collection("users").document(uid).setData([
-//                                        "firstName": self.userData.firstName,
-//                                        "lastName": self.userData.lastName,
-//                                        "employeeNumber": self.userData.employeeNumber,
-//                                        "profileImageUrl": profileImageUrl
-//                                    ]) { err in
-//                                        self.isLoading = false
-//                                        if let err = err {
-//                                            self.error = "Error saving user data: \(err.localizedDescription)"
-//                                        } else {
-//                                            print("Account and user data created!")
-//                                            withAnimation {
-//                                                accountCreated = true
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    } else {
-//                        // Si l'utilisateur n'a pas choisi d'image de profil
-//                        let db = Firestore.firestore()
-//                        db.collection("users").document(uid).setData([
-//                            "firstName": self.userData.firstName,
-//                            "lastName": self.userData.lastName,
-//                            "employeeNumber": self.userData.employeeNumber
-//                        ]) { err in
-//                            self.isLoading = false
-//                            if let err = err {
-//                                self.error = "Error saving user data: \(err.localizedDescription)"
-//                            } else {
-//                                print("Account and user data created!")
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
     
     func verifyEmail() {

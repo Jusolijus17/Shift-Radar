@@ -176,34 +176,6 @@ struct SearchView: View {
     }
 }
 
-struct CustomTextField: View {
-    @Binding var text: String
-    var placeholder: String
-    var systemName: String
-
-    var body: some View {
-        HStack {
-            Image(systemName: systemName)
-                .foregroundColor(Color(hex: "#A3A3A3"))
-            TextField(placeholder, text: $text)
-        }
-    }
-}
-
-struct CustomSecureField: View {
-    @Binding var text: String
-    var placeholder: String
-    var systemName: String
-
-    var body: some View {
-        HStack {
-            Image(systemName: systemName)
-                .foregroundColor(.gray)
-            SecureField(placeholder, text: $text)
-        }
-    }
-}
-
 struct DatePickerButtonView: View {
     @State private var isDatePickerShown = false
     @State private var selectedDate = Date()
