@@ -11,109 +11,143 @@ struct OfferShiftModalView: View {
     @EnvironmentObject var viewModel: OfferShiftViewModel
     @Environment(\.dismiss) var dismiss
     
+    @State private var vibrate: Bool = false
+    
     init() {
         UIDatePicker.appearance().minuteInterval = 5
     }
     
     var body: some View {
         NavigationView {
-            VStack(alignment: .leading) {
-                VStack(alignment: .leading) {
-                    Text("SELECT DATE")
-                        .font(.system(size: 15, weight: .semibold, design: .rounded))
-                    DatePicker("", selection: $viewModel.shiftData.date, displayedComponents: .date)
-                        .labelsHidden()
-                }
-                .padding(.bottom)
-                
-                HStack(alignment: .bottom) {
-                    VStack(alignment: .leading) {
-                        Text("START TIME")
-                            .font(.system(size: 13, weight: .semibold, design: .rounded))
-                        DatePicker("", selection: $viewModel.shiftData.startTime, displayedComponents: .hourAndMinute)
-                            .labelsHidden()
-                            .tint(.accent)
-                    }
-                    Text("TO")
-                        .font(.system(size: 15, weight: .semibold, design: .rounded))
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 5)
-                        .padding(.bottom, 10)
-                    VStack(alignment: .leading) {
-                        Text("END TIME")
-                            .font(.system(size: 13, weight: .semibold, design: .rounded))
-                        DatePicker("", selection: $viewModel.shiftData.endTime, displayedComponents: .hourAndMinute)
-                            .labelsHidden()
-                            .tint(.accent)
-                    }
-                    VStack(alignment: .leading) {
-                        Text("\(viewModel.hoursBetweenShiftTimes())H")
-                            .font(.system(size: 22, weight: .semibold, design: .rounded))
-                        Text("SHIFT TIME")
-                            .font(.system(size: 13, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                Text("LOCATION")
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
-                    .padding(.vertical, 5)
-                HStack {
-                    Text("Recently used:")
-                        .font(.system(size: 10, weight: .semibold, design: .rounded))
-                        .foregroundStyle(.secondary)
-                    BoxSelector(options: ["RAMP", "FLOATER", "BAGROOM"]) { selection in
-                        // Do something after tapping
-                    }
-                }
-                .padding(.bottom, 10)
-                HStack {
-                    Text("Filter:")
-                        .font(.system(size: 10, weight: .semibold, design: .rounded))
-                        .foregroundStyle(.secondary)
-                    ScrollView(.horizontal) {
-                        BoxSelector(options: ["DOMESTIC", "TRANSBORDER", "INTERNATIONAL", "OTHER"]) { selection in
-                            // Do something after tapping
-                        }
-                    }
-                    .scrollIndicators(.hidden)
-                    .background(
-                        GeometryReader { geometry in
-                            HStack {
-                                Spacer()
-                                // Ombre à droite
-                                LinearGradient(gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.1)]), startPoint: .leading, endPoint: .trailing)
-                                    .frame(width: 10)
-                                    .blur(radius: 3)
+            VStack {
+                ScrollView {
+                    ScrollViewReader { reader in
+                        VStack(alignment: .leading) {
+                            VStack(alignment: .leading) {
+                                Text("SELECT DATE")
+                                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                DatePicker("", selection: $viewModel.shiftData.startTime, displayedComponents: .date)
+                                    .labelsHidden()
                             }
-                            .frame(width: geometry.size.width, height: geometry.size.height)
+                            .padding(.bottom)
+                            
+                            HStack(alignment: .bottom) {
+                                VStack(alignment: .leading) {
+                                    Text("START TIME")
+                                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                    DatePicker("", selection: $viewModel.shiftData.startTime, displayedComponents: .hourAndMinute)
+                                        .labelsHidden()
+                                        .tint(.accent)
+                                        .onChange(of: viewModel.shiftData.startTime) { oldValue, newValue in
+                                            viewModel.refreshEndTime(oldValue, newValue)
+                                        }
+                                }
+                                Text("TO")
+                                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 5)
+                                    .padding(.bottom, 10)
+                                VStack(alignment: .leading) {
+                                    Text("END TIME")
+                                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                    DatePicker("", selection: $viewModel.shiftData.endTime, displayedComponents: .hourAndMinute)
+                                        .labelsHidden()
+                                        .tint(.accent)
+                                }
+                                VStack(alignment: .leading) {
+                                    Text("\(viewModel.hoursBetweenShiftTimes())H")
+                                        .font(.system(size: 22, weight: .semibold, design: .rounded))
+                                    Text("SHIFT TIME")
+                                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            Text("LOCATION")
+                                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                .padding(.vertical, 5)
+                            HStack {
+                                Text("Recently used:")
+                                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(.secondary)
+                                BoxSelector(options: ["RAMP", "FLOATER", "BAGROOM"]) { selection in
+                                    // Do something after tapping
+                                }
+                            }
+                            .padding(.bottom, 10)
+                            HStack {
+                                Text("Filter:")
+                                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(.secondary)
+                                ScrollView(.horizontal) {
+                                    BoxSelector(options: ["DOMESTIC", "TRANSBORDER", "INTERNATIONAL", "OTHER"]) { selection in
+                                        // Do something after tapping
+                                    }
+                                }
+                                .scrollIndicators(.hidden)
+                                .background(
+                                    GeometryReader { geometry in
+                                        HStack {
+                                            Spacer()
+                                            // Ombre à droite
+                                            LinearGradient(gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.1)]), startPoint: .leading, endPoint: .trailing)
+                                                .frame(width: 10)
+                                                .blur(radius: 3)
+                                        }
+                                        .frame(width: geometry.size.width, height: geometry.size.height)
+                                    }
+                                        .clipped()
+                                )
+                                .edgesIgnoringSafeArea(.horizontal)
+                            }
+                            .padding(.bottom, 10)
+                            Picker("", selection: $viewModel.shiftData.location) {
+                                ForEach(viewModel.menuOptions, id: \.self) {
+                                    Text($0)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .frame(height: 50)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 5)
+                                    .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                            )
+                            Text("COMPENSATION")
+                                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                .padding(.vertical, 5)
+                            Text("What do I want in return for my shift?")
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                .foregroundStyle(.secondary)
+                            CompensationView()
+                            Spacer()
+                                .id("bottom")
                         }
-                            .clipped()
-                    )
-                    .edgesIgnoringSafeArea(.horizontal)
-                }
-                .padding(.bottom, 10)
-                Picker("", selection: $viewModel.shiftData.location) {
-                    ForEach(viewModel.menuOptions, id: \.self) {
-                        Text($0)
+                        .sensoryFeedback(.success, trigger: vibrate)
+                        .padding(.horizontal, 20)
+                        .navigationTitle("Offer shift")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem {
+                                Button {
+                                    dismiss()
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.title2)
+                                }
+                                .tint(.secondary.opacity(0.5))
+                            }
+                        }
+                        .onChange(of: viewModel.shiftData.compensationType) { _, newValue in
+                            withAnimation {
+                                reader.scrollTo("bottom")
+                            }
+                        }
                     }
                 }
-                .pickerStyle(.menu)
-                .frame(height: 50)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
-                )
-                Text("COMPENSATION")
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
-                    .padding(.vertical, 5)
-                Text("What do I want in return for my shift?")
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.secondary)
-                CompensationView()
-                Spacer()
+                
                 Button {
                     viewModel.saveShift {
+                        vibrate.toggle()
                         dismiss()
                     }
                 } label: {
@@ -134,20 +168,7 @@ struct OfferShiftModalView: View {
                             }
                         }
                         .disabled(viewModel.isSaving)
-                }
-            }
-            .padding(.horizontal, 20)
-            .navigationTitle("Offer shift")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
-                    }
-                    .tint(.secondary.opacity(0.5))
+                        .padding(.horizontal)
                 }
             }
         }
@@ -218,8 +239,7 @@ struct CompensationView: View {
             
             switch viewModel.shiftData.compensationType {
             case .give:
-                Text("Give")
-                    .padding(.vertical, 5)
+                EmptyView()
             case .sell:
                 HStack(alignment: .bottom) {
                     Text("0$")
@@ -283,7 +303,7 @@ struct AvailabilitiesView: View {
                 VStack {
                     ForEach(viewModel.shiftData.availabilities.indices, id: \.self) { index in
                         let availability = viewModel.shiftData.availabilities[index]
-                        Text("Slot \(index + 1): \(availability.date, formatter: itemFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
+                        Text("Slot \(index + 1): \(availability.date, formatter: dateFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
                             .font(.system(size: 12, design: .rounded))
                             .foregroundStyle(.secondary)
                     }
@@ -299,16 +319,98 @@ struct AvailabilitiesView: View {
     }
 }
 
-private let itemFormatter: DateFormatter = {
+let dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateStyle = .medium
     formatter.timeStyle = .none
     return formatter
 }()
 
-private let timeFormatter: DateFormatter = {
+let timeFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateStyle = .none
     formatter.timeStyle = .short
     return formatter
 }()
+
+struct ConfirmationView: View {
+    var body: some View {
+        NavigationView {
+            VStack {
+                Text("YOU'RE OFFERING:")
+                    .underline()
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
+                
+                Spacer()
+                
+                Text("Nov 13th, 2023")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                
+                Text("FLOATER_IT_CR19_PDA")
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                
+                Text("06:00 - 14:00")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.secondary)
+                
+                Image(systemName: "arrow.up.arrow.down")
+                    .fontWeight(.semibold)
+                    .padding(.vertical)
+                    .foregroundStyle(.accent)
+                
+                Text("In exchange of one of these dates:")
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                
+                Text("Nov 16, 2023 from 11:00 to 23:00")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text("OR")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                Text("Nov 18, 2023 from 5:00 to 14:30")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
+                
+                Button {
+                    
+                } label: {
+                    Label("Swipe to confirm", systemImage: "chevron.right.2")
+                        .foregroundStyle(.white)
+                        .fontWeight(.semibold)
+                        .padding(.vertical)
+                        .padding(.horizontal, 75)
+                        .background {
+                            RoundedRectangle(cornerRadius: 30)
+                        }
+                }
+            }
+            .toolbar {
+                ToolbarItem {
+                    Button {
+                        
+                    } label: {
+                        Image(systemName: "arrow.backward.circle.fill")
+                            .font(.title2)
+                    }
+                    .tint(.secondary.opacity(0.5))
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    Text("Bruv")
+        .sheet(isPresented: .constant(true), content: {
+            ConfirmationView()
+                .presentationDetents([.medium])
+        })
+}
+
+//#Preview {
+//    TabViewManager_Previews.PreviewWrapper(selectedTab: 0)
+//}
+

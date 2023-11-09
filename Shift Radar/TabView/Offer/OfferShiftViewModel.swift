@@ -12,85 +12,7 @@ import FirebaseDatabase
 import FirebaseAuth
 import Foundation
 
-// Make CompensationType conform to Codable
-enum CompensationType: String, Codable {
-    case give
-    case sell
-    case trade
-}
-
-// Make Availability conform to Codable
-struct Availability: Codable {
-    var date: Date
-    var startTime: Date
-    var endTime: Date
-}
-
-// Make Shift conform to Codable
-struct Shift: Codable {
-    //@DocumentID var id: String?
-    var date: Date
-    var startTime: Date
-    var endTime: Date
-    var location: String
-    var compensationType: CompensationType
-    var moneyCompensation: Double
-    var availabilities: [Availability]
-    
-    init() {
-        self.date = Date()
-        self.startTime = Date()
-        self.endTime = Date()
-        self.location = ""
-        self.compensationType = .give
-        self.moneyCompensation = 0
-        self.availabilities = []
-    }
-    
-    // Custom keys for encoding and decoding
-    enum CodingKeys: String, CodingKey {
-        case date
-        case startTime
-        case endTime
-        case location
-        case compensationType
-        case moneyCompensation
-        case availabilities
-    }
-    
-    // Custom initializer from decoder
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        date = try container.decode(Date.self, forKey: .date)
-        startTime = try container.decode(Date.self, forKey: .startTime)
-        endTime = try container.decode(Date.self, forKey: .endTime)
-        location = try container.decode(String.self, forKey: .location)
-        let compensationTypeString = try container.decode(String.self, forKey: .compensationType)
-        guard let compensationType = CompensationType(rawValue: compensationTypeString) else {
-            throw DecodingError.dataCorruptedError(forKey: .compensationType,
-                in: container,
-                debugDescription: "CompensationType does not match any known value")
-        }
-        self.compensationType = compensationType
-        moneyCompensation = try container.decode(Double.self, forKey: .moneyCompensation)
-        availabilities = try container.decode([Availability].self, forKey: .availabilities)
-    }
-    
-    // Custom encode function
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(date, forKey: .date)
-        try container.encode(startTime, forKey: .startTime)
-        try container.encode(endTime, forKey: .endTime)
-        try container.encode(location, forKey: .location)
-        try container.encode(compensationType.rawValue, forKey: .compensationType)
-        try container.encode(moneyCompensation, forKey: .moneyCompensation)
-        try container.encode(availabilities, forKey: .availabilities)
-    }
-}
-
 class OfferShiftViewModel: ObservableObject {
-    @Published var isEmpty: Bool = true
     @Published var error: String?
     @Published var isSaving: Bool = false
     
@@ -99,6 +21,9 @@ class OfferShiftViewModel: ObservableObject {
             shiftData.location = menuOptions[0]
         }
     }
+    
+    @Published var offeredShifts: [Shift] = []
+    private var shiftsListener: ListenerRegistration?
     
     // Modal
     @Published var showModal: Bool = false
@@ -123,7 +48,12 @@ class OfferShiftViewModel: ObservableObject {
         }
         
         self.shiftData = newShift
-        loadMenuOptions()
+        fetchOfferedShifts()
+    }
+    
+    deinit {
+        print("DEINIT called")
+        stopListeningToOfferedShifts()
     }
     
     func hoursBetweenShiftTimes() -> Int {
@@ -136,32 +66,58 @@ class OfferShiftViewModel: ObservableObject {
         return hours
     }
     
+    func refreshEndTime(_ oldValue: Date, _ newValue: Date) {
+        let calendar = Calendar.current
+        
+        let currentComponents = calendar.dateComponents([.year, .month, .day], from: oldValue)
+        let newComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: newValue)
+        
+        let endTimeComponents = calendar.dateComponents([.hour, .minute], from: shiftData.endTime)
+        
+        if currentComponents.year != newComponents.year ||
+            currentComponents.month != newComponents.month ||
+            currentComponents.day != newComponents.day {
+            
+            var newDate = DateComponents()
+            newDate.year = newComponents.year
+            newDate.month = newComponents.month
+            
+            // Déballez les heures et les minutes de manière sécurisée.
+            if let newHour = newComponents.hour, let newMinute = newComponents.minute,
+               let endHour = endTimeComponents.hour, let endMinute = endTimeComponents.minute {
+               
+                // Vérifiez si endTime est techniquement le lendemain.
+                if endHour < newHour || (endHour == newHour && endMinute < newMinute) {
+                    // endTime est le lendemain, ajoutez un jour à newComponents.day.
+                    if let nextDay = calendar.date(byAdding: .day, value: 1, to: calendar.date(from: newComponents)!) {
+                        let nextDayComponents = calendar.dateComponents([.day], from: nextDay)
+                        newDate.day = nextDayComponents.day
+                    }
+                } else {
+                    // Si ce n'est pas le lendemain, gardez le même jour.
+                    newDate.day = newComponents.day
+                }
+                
+                newDate.hour = endHour
+                newDate.minute = endMinute
+                
+                // Créez la nouvelle date de fin et affectez-la.
+                if let newEndTime = calendar.date(from: newDate) {
+                    shiftData.endTime = newEndTime
+                }
+            }
+        }
+    }
+    
     func changeCompensationType(newValue: CompensationType) {
         shiftData.compensationType = newValue
+        
+        
     }
     
     func saveShift(dismissAction: @escaping () -> Void) {
         guard shiftIsValid() else { return }
         isSaving = true
-        
-//        let shiftDict: [String: Any] = [
-//            "date": Timestamp(date: shiftData.date),
-//            "startTime": Timestamp(date: shiftData.startTime),
-//            "endTime": Timestamp(date: shiftData.endTime),
-//            "location": shiftData.location,
-//            "compensationType": String(describing: shiftData.compensationType),
-//            "moneyCompensation": shiftData.moneyCompensation,
-//            "availabilities": shiftData.availabilities.map { availability in
-//                return [
-//                    "date": Timestamp(date: availability.date),
-//                    "startTime": Timestamp(date: availability.startTime),
-//                    "endTime": Timestamp(date: availability.endTime)
-//                ]
-//            }
-//        ]
-        
-        // debugging
-        Auth.auth().signIn(withEmail: "testaccount@aircanada.ca", password: "Bosesony2011")
         
         guard let userUID = Auth.auth().currentUser?.uid else {
             print( "User must be logged in to save a shift.")
@@ -230,7 +186,7 @@ class OfferShiftViewModel: ObservableObject {
     }
     
     // Vérifiez si une mise à jour est nécessaire avant de charger les options
-    private func loadMenuOptionsIfNeeded() {
+    func loadMenuOptionsIfNeeded() {
         let ref = Database.database().reference(withPath: "dynamicData/locations/lastUpdated")
         ref.observeSingleEvent(of: .value, with: { snapshot in
             if let timestamp = snapshot.value as? TimeInterval, timestamp > self.lastOptionsUpdate {
@@ -270,9 +226,103 @@ class OfferShiftViewModel: ObservableObject {
         return UserDefaults.standard.stringArray(forKey: "cachedMenuOptions") ?? []
     }
     
-    private func getMyOffers() {
+    private func fetchOfferedShifts() {
+        //debugging
+        Auth.auth().signIn(withEmail: "testaccount@aircanada.ca", password: "Bosesony2011")
         
+        guard let userUID = Auth.auth().currentUser?.uid else {
+            print("User must be logged in to fetch offered shifts.")
+            return
+        }
+        
+        let db = Firestore.firestore()
+        let userShiftsRef = db.collection("users").document(userUID).collection("shifts").document("offered")
+
+        shiftsListener = userShiftsRef.addSnapshotListener { [weak self] (documentSnapshot, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("Error listening for offered shifts updates: \(error)")
+                self.error = "Error listening for offered shifts updates: \(error)"
+                return
+            }
+
+            guard let documentSnapshot = documentSnapshot, documentSnapshot.exists,
+                  let refs = documentSnapshot.data()?["refs"] as? [String] else {
+                print("Document does not exist or 'refs' field is missing.")
+                return
+            }
+
+            // Array to hold the fetched shifts
+            var fetchedShifts: [Shift] = []
+            let group = DispatchGroup()
+
+            for ref in refs {
+                group.enter()
+                let shiftRef = db.collection("shifts").document(ref)
+                shiftRef.getDocument { (shiftDoc, err) in
+                    defer { group.leave() }
+                    if let err = err {
+                        print("Error fetching shift: \(err)")
+                    } else if let shiftDoc = shiftDoc, shiftDoc.exists {
+                        do {
+                            let shift = try shiftDoc.data(as: Shift.self)
+                            fetchedShifts.append(shift)
+                        } catch {
+                            print("Error decoding shift: \(error)")
+                        }
+                    }
+                }
+            }
+
+            // Wait for all fetches to complete
+            group.notify(queue: .main) {
+                self.offeredShifts = fetchedShifts
+            }
+        }
     }
     
+    private func stopListeningToOfferedShifts() {
+        shiftsListener?.remove()
+        shiftsListener = nil
+    }
+    
+    func deleteShift(_ id: String?) {
+        guard let id = id else { return }
+        
+        //debugging
+        Auth.auth().signIn(withEmail: "testaccount@aircanada.ca", password: "Bosesony2011")
+        
+        guard let userUID = Auth.auth().currentUser?.uid else {
+            print("User must be logged in to delete a shift.")
+            return
+        }
+        
+        let db = Firestore.firestore()
+        
+        // Créez une référence au document shift dans la collection 'shifts'
+        let shiftRef = db.collection("shifts").document(id)
+        
+        // Commencez par supprimer le shift lui-même
+        shiftRef.delete { error in
+            if let error = error {
+                print("Error deleting shift document: \(error)")
+            } else {
+                print("Shift successfully deleted")
+            }
+        }
+        
+        // Ensuite, supprimez la référence de ce shift dans le tableau 'refs' du document 'offered'
+        let userShiftsRef = db.collection("users").document(userUID).collection("shifts").document("offered")
+        
+        // Utilisez FieldValue.arrayRemove pour supprimer l'ID du shift du tableau 'refs'
+        userShiftsRef.updateData(["refs": FieldValue.arrayRemove([id])]) { error in
+            if let error = error {
+                print("Error removing shift reference from user document: \(error)")
+            } else {
+                print("Shift reference successfully removed from user document")
+            }
+        }
+    }
 }
 

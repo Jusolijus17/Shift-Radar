@@ -36,28 +36,38 @@ struct LoginManager: View {
         .onDisappear {
             detachAuthListener()
         }
-    }
-    
-    func attachAuthListener() {
-        authHandler = Auth.auth().addStateDidChangeListener { (auth, user) in
-            if !loginManagerData.isCreatingAccount {
-                withAnimation {
-                    self.loginManagerData.isUserLoggedIn = (user != nil)
-                    if self.loginManagerData.isUserLoggedIn {
-                        self.loadUserData()
-                    }
-                }
+        .onChange(of: loginManagerData.isCreatingAccount) { oldValue, newValue in
+            if newValue == false {
+                verifyConnection()
             }
         }
     }
     
-    func detachAuthListener() {
+    private func attachAuthListener() {
+        authHandler = Auth.auth().addStateDidChangeListener { (auth, user) in
+            if !loginManagerData.isCreatingAccount {
+                verifyConnection()
+            }
+        }
+    }
+    
+    private func verifyConnection() {
+        withAnimation {
+            let user = Auth.auth().currentUser
+            self.loginManagerData.isUserLoggedIn = (user != nil)
+            if self.loginManagerData.isUserLoggedIn {
+                self.loadUserData()
+            }
+        }
+    }
+    
+    private func detachAuthListener() {
         if let authHandler = authHandler {
             Auth.auth().removeStateDidChangeListener(authHandler)
         }
     }
 
-    func loadUserData() {
+    private func loadUserData() {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
         }

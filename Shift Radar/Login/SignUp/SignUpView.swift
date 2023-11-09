@@ -22,66 +22,75 @@ struct SignUpView: View {
     
     var body: some View {
         
-        VStack {
-            viewModel.accountCreationState == .success ? Spacer() : nil
-            PictureView(showSheet: $showSheet)
-                .padding(.top, viewModel.accountCreationState == .emailConfirmation ? 100 : 20)
-            
-            if viewModel.accountCreationState == .emailConfirmation || viewModel.accountCreationState == .success {
-                Text(viewModel.labelText)
-                    .foregroundStyle(viewModel.accountCreationState == .success ? Color.white : Color.black)
-                    .font(.headline)
-                    .padding(.vertical, 22)
-                    .transition(.opacity)
-            }
-            if viewModel.accountCreationState == .basicInfo {
-                Spacer()
-                InfoView(password: $viewModel.password, confirmPassword: $viewModel.confirmPassword)
-                    .transition(.move(edge: .leading).combined(with: .opacity))
-                Spacer()
-            }
-            
-            if viewModel.accountCreationState == .emailConfirmation {
-                EmailConfirmView()
-            }
-            
-            if let error = viewModel.error {
-                Text(error)
-                    .foregroundStyle(.red)
-            }
-            
-            Spacer()
-            
-            if viewModel.accountCreationState == .basicInfo && !viewModel.isLoading {
-                Button("Already have an account? Login.") {
-                    presentationMode.wrappedValue.dismiss()
+        ScrollView {
+            VStack {
+                viewModel.accountCreationState == .success ? Spacer() : nil
+                PictureView(showSheet: $showSheet)
+                    .padding(.top, viewModel.accountCreationState == .emailConfirmation ? 100 : 20)
+                
+                if viewModel.accountCreationState == .emailConfirmation || viewModel.accountCreationState == .success {
+                    Text(viewModel.labelText)
+                        .foregroundStyle(viewModel.accountCreationState == .success ? Color.white : Color.black)
+                        .font(.headline)
+                        .padding(.vertical, 22)
+                        .transition(.opacity)
                 }
-                .disabled(viewModel.isLoading)
-            }
-            
-            Button(action: {
-                buttonTap()
-            }, label: {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .frame(width: 25, height: 25)
-                } else {
-                    Text(viewModel.buttonText)
-                        .transition(.identity)
-                        .frame(maxWidth: .infinity)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 25.0)
-                                .fill(Color.accentColor)
-                        }
-                        .opacity(viewModel.isLoading ? 0.6 : 1)
-                        .padding(.horizontal)
+                if viewModel.accountCreationState == .basicInfo {
+                    Spacer()
+                    InfoView(password: $viewModel.password, confirmPassword: $viewModel.confirmPassword)
+                        .transition(.move(edge: .leading).combined(with: .opacity))
+                    Spacer()
                 }
-            })
-            //.disabled(isLoading || accountCreationState == .emailConfirmation)
-            
+                
+                if viewModel.accountCreationState == .emailConfirmation {
+                    EmailConfirmView()
+                }
+                
+                if let error = viewModel.error {
+                    Text(error)
+                        .foregroundStyle(.red)
+                }
+                
+                Spacer()
+                
+                if viewModel.accountCreationState == .basicInfo && !viewModel.isLoading {
+                    Button("Already have an account? Login.") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .disabled(viewModel.isLoading)
+                }
+                
+                Button(action: {
+                    buttonTap()
+                }, label: {
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .frame(width: 25, height: 25)
+                    } else {
+                        Text(viewModel.buttonText)
+                            .transition(.identity)
+                            .frame(maxWidth: .infinity)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .padding()
+                            .background {
+                                RoundedRectangle(cornerRadius: 25.0)
+                                    .fill(Color.accentColor)
+                            }
+                            .opacity(viewModel.isLoading ? 0.6 : 1)
+                            .padding(.horizontal)
+                    }
+                })
+                //.disabled(isLoading || accountCreationState == .emailConfirmation)
+                
+            }
+            .sheet(isPresented: $showSheet) {
+                ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
+                    .onDisappear(perform: {
+                        viewModel.userData.profileImage = image
+                    })
+            }
+            .environmentObject(viewModel.userData)
         }
         .background {
             GeometryReader { geo in
@@ -93,13 +102,6 @@ struct SignUpView: View {
             .background(Color(hex: "#F2F2F2"))
             .ignoresSafeArea()
         }
-        .sheet(isPresented: $showSheet) {
-            ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
-                .onDisappear(perform: {
-                    viewModel.userData.profileImage = image
-                })
-        }
-        .environmentObject(viewModel.userData)
     }
     
     func buttonTap() {
@@ -110,6 +112,7 @@ struct SignUpView: View {
         case .emailConfirmation:
             viewModel.verifyEmail()
         case .success:
+            loginManagerData.isCreatingAccount = false
             return
         }
     }
@@ -165,7 +168,7 @@ struct SemiRoundedRectangle: Shape {
         get { curveHeight }
         set { curveHeight = newValue }
     }
-
+    
     func path(in rect: CGRect) -> Path {
         let width = rect.size.width
         let height = rect.size.height

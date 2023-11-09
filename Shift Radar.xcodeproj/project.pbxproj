@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D12E3B42AFC5A2300C38AB2 /* Shift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D12E3B32AFC5A2300C38AB2 /* Shift.swift */; };
 		3D13CC822AF9C17E00E14CF4 /* OfferShiftViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D13CC812AF9C17E00E14CF4 /* OfferShiftViewModal.swift */; };
 		3D13CC842AF9C1CE00E14CF4 /* CustomObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D13CC832AF9C1CE00E14CF4 /* CustomObjects.swift */; };
 		3D33AF232AE9D747003116A5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */; };
@@ -59,6 +60,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3D12E3B32AFC5A2300C38AB2 /* Shift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shift.swift; sourceTree = "<group>"; };
 		3D13CC812AF9C17E00E14CF4 /* OfferShiftViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferShiftViewModal.swift; sourceTree = "<group>"; };
 		3D13CC832AF9C1CE00E14CF4 /* CustomObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomObjects.swift; sourceTree = "<group>"; };
 		3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -122,6 +124,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3D12E3B52AFC5A2700C38AB2 /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				3D12E3B32AFC5A2300C38AB2 /* Shift.swift */,
+			);
+			path = Objects;
+			sourceTree = "<group>";
+		};
 		3D13CC852AF9C25E00E14CF4 /* Other */ = {
 			isa = PBXGroup;
 			children = (
@@ -180,6 +190,7 @@
 				3D92F3952AE8B34E0032DE1F /* Login */,
 				3DD88D652AE87D9F0018291D /* Assets.xcassets */,
 				3DD88D672AE87D9F0018291D /* Preview Content */,
+				3D12E3B52AFC5A2700C38AB2 /* Objects */,
 				3DEF31372AF58BE7009F6737 /* TabView */,
 				3D13CC852AF9C25E00E14CF4 /* Other */,
 				3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */,
@@ -338,6 +349,7 @@
 				3DFA29082AF497DC0082439D /* SignUpViewModel.swift in Sources */,
 				3D92F39F2AE8B58F0032DE1F /* StaffView.swift in Sources */,
 				3D13CC822AF9C17E00E14CF4 /* OfferShiftViewModal.swift in Sources */,
+				3D12E3B42AFC5A2300C38AB2 /* Shift.swift in Sources */,
 				3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */,
 				3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */,
 				3D92F3992AE8B4370032DE1F /* PickupShiftView.swift in Sources */,
@@ -494,6 +506,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -523,6 +536,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

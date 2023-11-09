@@ -36,7 +36,7 @@ struct PickupShiftView: View {
             ScrollView {
                 VStack(spacing: 10) {  // 10 est l'espacement entre chaque ShiftView
                     ForEach(0..<10) { _ in  // Ceci affichera 10 ShiftViews
-                        ShiftView()
+                        ShiftView(hasOffer: .constant(false), shift: .constant(Shift()), onDelete: { _ in })
                             .padding(.horizontal)
                     }
                 }
@@ -213,5 +213,5 @@ struct DatePickerButtonView: View {
 }
 
 #Preview {
-    TabViewManager_Previews.previews
+    TabViewManager_Previews.PreviewWrapper(selectedTab: 1)
 }
