@@ -11,7 +11,7 @@ struct BoxSelector: View {
     let options: [String]
     @State private var selectedOption: String?
     
-    var selectionChanged: (_ selection: String) -> Void
+    var selectionChanged: (String?) -> Void = { _ in }
     
     var body: some View {
         HStack {
@@ -29,7 +29,7 @@ struct BoxSelector: View {
                         withAnimation {
                             if selectedOption == option {
                                 selectedOption = nil
-                                selectionChanged(option)
+                                selectionChanged(nil)
                             } else {
                                 selectedOption = option
                                 selectionChanged(option)
@@ -39,6 +39,14 @@ struct BoxSelector: View {
                     .sensoryFeedback(.impact, trigger: selectedOption)
             }
         }
+    }
+}
+
+extension BoxSelector {
+    func onSelectionChanged(_ selection: @escaping (String?) -> Void) -> Self {
+        var copy = self
+        copy.selectionChanged = selection
+        return copy
     }
 }
 
@@ -72,6 +80,7 @@ struct CustomSlider: View {
                     .frame(width: 35, height: 20)
                     .offset(x: self.sliderOffset(sliderWidth: geometry.size.width), y: -30)
             }
+            .sensoryFeedback(.impact(intensity: 0.8), trigger: value)
         }
         .frame(height: 30)
     }

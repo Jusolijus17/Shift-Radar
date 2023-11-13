@@ -134,6 +134,7 @@ struct ShiftView: View {
                     Image(systemName: "ellipsis")
                         .rotationEffect(.degrees(90.0))
                         .tint(.black)
+                        .padding(5)
                 }
 
             }

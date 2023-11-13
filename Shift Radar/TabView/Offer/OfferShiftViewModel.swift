@@ -18,7 +18,22 @@ class OfferShiftViewModel: ObservableObject {
     
     @Published var menuOptions: [String] = [] {
         didSet {
-            shiftData.location = menuOptions[0]
+            if !menuOptions.isEmpty {
+                shiftData.location = menuOptions[0]
+            }
+        }
+    }
+    
+    // Options
+    @Published var filters: [String] = ["RAMP", "FLOATER", "OTHER"]
+    @Published var optionFilter: String = ""
+    var filteredMenuOptions: [String] {
+        if optionFilter == "OTHER" {
+            return menuOptions.filter { option in
+                filters.filter { $0 != "OTHER" }.allSatisfy { !option.contains($0) }
+            }
+        } else {
+            return menuOptions.filter { $0.contains(optionFilter) || optionFilter.isEmpty }
         }
     }
     
@@ -27,6 +42,7 @@ class OfferShiftViewModel: ObservableObject {
     
     // Modal
     @Published var showModal: Bool = false
+    @Published var confirmOffer: Bool = false
     
     // Shift data
     @Published var shiftData: Shift
@@ -48,12 +64,16 @@ class OfferShiftViewModel: ObservableObject {
         }
         
         self.shiftData = newShift
-        fetchOfferedShifts()
+        createShiftsObserver()
     }
     
     deinit {
-        print("DEINIT called")
         stopListeningToOfferedShifts()
+    }
+    
+    func applyOptionFilter(_ filter: String?) {
+        optionFilter = filter ?? ""
+        shiftData.location = filteredMenuOptions[0]
     }
     
     func hoursBetweenShiftTimes() -> Int {
@@ -110,9 +130,18 @@ class OfferShiftViewModel: ObservableObject {
     }
     
     func changeCompensationType(newValue: CompensationType) {
-        shiftData.compensationType = newValue
+        switch newValue {
+        case .give:
+            shiftData.moneyCompensation = 0
+        case .sell:
+            shiftData.availabilities = []
+        case .trade:
+            shiftData.moneyCompensation = 0
+        }
         
-        
+        withAnimation(.easeIn(duration: 0.2)) {
+            shiftData.compensationType = newValue
+        }
     }
     
     func saveShift(dismissAction: @escaping () -> Void) {
@@ -193,7 +222,7 @@ class OfferShiftViewModel: ObservableObject {
                 self.loadMenuOptions()
                 self.lastOptionsUpdate = timestamp
             } else {
-                self.menuOptions = self.getCachedMenuOptions()
+                self.menuOptions = self.getCachedMenuOptions().sorted()
             }
         })
     }
@@ -210,7 +239,7 @@ class OfferShiftViewModel: ObservableObject {
                 }
             }
             DispatchQueue.main.async {
-                self.menuOptions = newOptions
+                self.menuOptions = newOptions.sorted()
                 self.cacheMenuOptions(options: newOptions)
             }
         })
@@ -226,10 +255,7 @@ class OfferShiftViewModel: ObservableObject {
         return UserDefaults.standard.stringArray(forKey: "cachedMenuOptions") ?? []
     }
     
-    private func fetchOfferedShifts() {
-        //debugging
-        Auth.auth().signIn(withEmail: "testaccount@aircanada.ca", password: "Bosesony2011")
-        
+    private func createShiftsObserver() {
         guard let userUID = Auth.auth().currentUser?.uid else {
             print("User must be logged in to fetch offered shifts.")
             return
@@ -289,9 +315,6 @@ class OfferShiftViewModel: ObservableObject {
     
     func deleteShift(_ id: String?) {
         guard let id = id else { return }
-        
-        //debugging
-        Auth.auth().signIn(withEmail: "testaccount@aircanada.ca", password: "Bosesony2011")
         
         guard let userUID = Auth.auth().currentUser?.uid else {
             print("User must be logged in to delete a shift.")

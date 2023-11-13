@@ -42,6 +42,26 @@ extension Color {
     }
 }
 
+extension CGSize {
+    static var inactiveThumbSize: CGSize {
+        return CGSize(width: 70, height: 50)
+    }
+    
+    static var activeThumbSize: CGSize {
+        return CGSize(width: 85, height: 50)
+    }
+    
+    static var trackSize: CGSize {
+        return CGSize(width: 280, height: 50)
+    }
+}
+
+extension Comparable {
+    func clamp<T: Comparable>(lower: T, _ upper: T) -> T {
+        return min(max(self as! T, lower), upper)
+    }
+}
+
 struct NoHitTesting: ViewModifier {
     func body(content: Content) -> some View {
         SwiftUIWrapper { content }.allowsHitTesting(false)

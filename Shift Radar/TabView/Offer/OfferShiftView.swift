@@ -31,6 +31,13 @@ struct OfferShiftViewController: View {
                     .onAppear {
                         viewModel.loadMenuOptionsIfNeeded()
                     }
+                    .onChange(of: viewModel.confirmOffer) { _, newValue in
+                        if newValue == true {
+                            currentDetent = .medium
+                        } else {
+                            currentDetent = .fraction(0.8)
+                        }
+                    }
             }
         }
         .environmentObject(viewModel)
@@ -133,6 +140,11 @@ struct NoShiftOfferView: View {
     }
 }
 
+import FirebaseAuth
+
 #Preview {
     TabViewManager_Previews.PreviewWrapper(selectedTab: 0)
+        .onAppear {
+            Auth.auth().signIn(withEmail: "testaccount@aircanada.ca", password: "Bosesony2011")
+        }
 }
