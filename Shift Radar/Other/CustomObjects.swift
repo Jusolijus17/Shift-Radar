@@ -9,7 +9,7 @@ import SwiftUI
 
 struct BoxSelector: View {
     let options: [String]
-    @State private var selectedOption: String?
+    @State var selectedOption: String?
     
     var selectionChanged: (String?) -> Void = { _ in }
     
@@ -138,5 +138,101 @@ struct SimpleIconSelection: View {
             RoundedRectangle(cornerRadius: 5)
                 .stroke(Color.gray.opacity(0.5), lineWidth: 1)  // Ajout d'une bordure
         )
+    }
+}
+
+struct SwipeToConfirmButton: View {
+    @State private var thumbSize: CGSize = CGSize.inactiveThumbSize
+    @State private var dragOffset: CGSize = .zero
+    @State private var isEnough = false
+    
+    private var actionSuccess: (() -> Void)?
+    
+    let trackSize = CGSize.trackSize
+    
+    var body: some View {
+        
+        ZStack {
+            Capsule()
+                .frame(width: trackSize.width, height: trackSize.height)
+                .foregroundColor(Color.accent)
+            
+            Text("Swipe to confirm")
+                .font(.caption)
+                .foregroundStyle(.white)
+                .offset(x: 30, y: 0)
+                .opacity(Double(1 - (self.dragOffset.width*2)/self.trackSize.width))
+            
+            ZStack {
+                Capsule()
+                    .frame(width: thumbSize.width, height: thumbSize.height)
+                    .foregroundStyle(.white)
+                    .overlay {
+                        Capsule()
+                            .stroke(Color.accent, lineWidth: 2.0)
+                            .frame(width: thumbSize.width, height: thumbSize.height - 2.0)
+                    }
+                
+                Image(systemName: "arrow.right")
+                    .foregroundStyle(.black)
+            }
+            .offset(x: getDragOffsetX(), y: 0)
+            .gesture(
+                DragGesture()
+                    .onChanged({ value in self.handleDragChanged(value) })
+                    .onEnded({ _ in self.handleDragEnded() })
+            )
+        }
+    }
+    
+    private func getDragOffsetX() -> CGFloat {
+        let clmapedDragOffsetX = dragOffset.width.clamp(lower: 0, trackSize.width - thumbSize.width)
+        return -(trackSize.width/2 - thumbSize.width/2 - clmapedDragOffsetX)
+    }
+    
+    private func handleDragChanged(_ value: DragGesture.Value) -> Void {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)){
+            self.dragOffset = value.translation
+        }
+        
+        let dragWidth = value.translation.width
+        let targetDragWidth = self.trackSize.width - (self.thumbSize.width*2)
+        let wasInitiated = dragWidth > 2
+        let didReachTarget = dragWidth > targetDragWidth
+        
+        self.thumbSize = wasInitiated ? CGSize.activeThumbSize : CGSize.inactiveThumbSize
+        
+        if didReachTarget {
+            self.isEnough = true
+        } else {
+            self.isEnough = false
+        }
+    }
+    
+    private func handleDragEnded() -> Void {
+        if isEnough {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                dragOffset = CGSize(width: trackSize.width - thumbSize.width, height: 0)
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                if let actionSuccess = actionSuccess {
+                    actionSuccess()
+                }
+            }
+        } else {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                dragOffset = .zero
+                thumbSize = CGSize.inactiveThumbSize
+            }
+        }
+    }
+}
+
+extension SwipeToConfirmButton {
+    func onSwipeSuccess(_ action : @escaping () -> Void) -> Self {
+        var this = self
+        this.actionSuccess = action
+        return this
     }
 }

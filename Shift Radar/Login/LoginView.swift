@@ -86,7 +86,7 @@ struct LoginView: View {
                         .frame(width: 1100, height: 1100)
                         .offset(y: 700)
                 }
-                .background(Color(hex: "#F2F2F2"))
+                .background(Color.background)
                 .ignoresSafeArea()
             }
         }

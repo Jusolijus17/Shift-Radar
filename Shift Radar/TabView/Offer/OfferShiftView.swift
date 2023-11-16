@@ -11,19 +11,21 @@ struct OfferShiftViewController: View {
     @StateObject private var viewModel = OfferShiftViewModel()
     
     @State var currentDetent: PresentationDetent = .fraction(0.8)
-    @State var availableDetents: Set<PresentationDetent> = [.fraction(0.8), .medium]
+    @State var availableDetents: Set<PresentationDetent> = [.fraction(0.8), .fraction(0.5)]
     
     var body: some View {
         NavigationView {
             VStack {
-                if viewModel.offeredShifts.isEmpty {
+                if viewModel.isLoadingShifts {
+                    ProgressView()
+                } else if viewModel.offeredShifts.isEmpty {
                     NoShiftOfferView(showModal: $viewModel.showModal)
                 } else {
                     OfferShiftView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(hex: "#F2F2F2"))
+            .background(Color.background)
             .sheet(isPresented: $viewModel.showModal) {
                 OfferShiftModalView()
                     .interactiveDismissDisabled()
@@ -33,7 +35,7 @@ struct OfferShiftViewController: View {
                     }
                     .onChange(of: viewModel.confirmOffer) { _, newValue in
                         if newValue == true {
-                            currentDetent = .medium
+                            currentDetent = .fraction(0.5)
                         } else {
                             currentDetent = .fraction(0.8)
                         }

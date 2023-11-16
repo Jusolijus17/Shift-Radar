@@ -14,7 +14,7 @@ enum CompensationType: String, Codable {
     case trade
 }
 
-struct Availability: Codable {
+struct Availability: Codable, Hashable {
     var date: Date
     var startTime: Date
     var endTime: Date
@@ -39,4 +39,12 @@ struct Shift: Codable {
         self.moneyCompensation = 0
         self.availabilities = []
     }
+}
+
+enum ShiftErrorType {
+    case date
+    case duration
+    case location
+    case availabilities
+    case saving
 }

@@ -13,9 +13,12 @@ import FirebaseAuth
 import Foundation
 
 class OfferShiftViewModel: ObservableObject {
-    @Published var error: String?
+    // Gestion des Erreurs et de l'État de Sauvegarde
+    @Published var shiftErrorType: ShiftErrorType?
     @Published var isSaving: Bool = false
+    @Published var isLoadingShifts: Bool = false
     
+    // Options de Menu et Filtrage
     @Published var menuOptions: [String] = [] {
         didSet {
             if !menuOptions.isEmpty {
@@ -23,8 +26,6 @@ class OfferShiftViewModel: ObservableObject {
             }
         }
     }
-    
-    // Options
     @Published var filters: [String] = ["RAMP", "FLOATER", "OTHER"]
     @Published var optionFilter: String = ""
     var filteredMenuOptions: [String] {
@@ -37,17 +38,18 @@ class OfferShiftViewModel: ObservableObject {
         }
     }
     
+    // Gestion des Shifts et Écouteurs
     @Published var offeredShifts: [Shift] = []
     private var shiftsListener: ListenerRegistration?
     
-    // Modal
+    // Gestion des Modals et de l'Interface Utilisateur
     @Published var showModal: Bool = false
     @Published var confirmOffer: Bool = false
     
-    // Shift data
+    // Données du Shift
     @Published var shiftData: Shift
     
-    // Timestamp de la dernière mise à jour des options
+    // Timestamps et Configuration Persistante
     private var lastOptionsUpdate: TimeInterval {
         get { UserDefaults.standard.double(forKey: "lastOptionsUpdate") }
         set { UserDefaults.standard.set(newValue, forKey: "lastOptionsUpdate") }
@@ -163,7 +165,7 @@ class OfferShiftViewModel: ObservableObject {
                 guard let self = self else { return }
                 
                 if let err = error {
-                    self.error = "Error adding document: \(err)"
+                    self.shiftErrorType = .saving
                     print("Error adding document: \(err)")
                     self.isSaving = false
                 } else {
@@ -180,7 +182,7 @@ class OfferShiftViewModel: ObservableObject {
                             // Si le document 'offered' n'existe pas encore, il faut le créer avec le premier shift
                             userShiftsRef.setData(["refs": [generalShiftsRef.documentID]], merge: true) { error in
                                 if let err = error {
-                                    self.error = "Error creating user shift reference: \(err)"
+                                    self.shiftErrorType = .saving
                                     print("Error creating user shift reference: \(err)")
                                     self.isSaving = false
                                 } else {
@@ -203,14 +205,22 @@ class OfferShiftViewModel: ObservableObject {
     }
     
     func shiftIsValid() -> Bool {
+        guard shiftData.startTime >= Date() else {
+            shiftErrorType = .date
+            print("Shift date cannot be in the past.")
+            return false
+        }
         guard hoursBetweenShiftTimes() != 0 else {
-            error = "Your shift must be at least 1h."
+            shiftErrorType = .duration
+            print("Shift must be at least 1h.")
             return false
         }
         guard shiftData.location != "" else {
-            error = "Please select your location."
+            shiftErrorType = .location
+            print("Please select your location.")
             return false
         }
+        shiftErrorType = nil
         return true
     }
     
@@ -261,6 +271,8 @@ class OfferShiftViewModel: ObservableObject {
             return
         }
         
+        isLoadingShifts = true
+        
         let db = Firestore.firestore()
         let userShiftsRef = db.collection("users").document(userUID).collection("shifts").document("offered")
 
@@ -269,13 +281,14 @@ class OfferShiftViewModel: ObservableObject {
             
             if let error = error {
                 print("Error listening for offered shifts updates: \(error)")
-                self.error = "Error listening for offered shifts updates: \(error)"
+                isLoadingShifts = false
                 return
             }
 
             guard let documentSnapshot = documentSnapshot, documentSnapshot.exists,
                   let refs = documentSnapshot.data()?["refs"] as? [String] else {
                 print("Document does not exist or 'refs' field is missing.")
+                isLoadingShifts = false
                 return
             }
 
@@ -304,6 +317,7 @@ class OfferShiftViewModel: ObservableObject {
             // Wait for all fetches to complete
             group.notify(queue: .main) {
                 self.offeredShifts = fetchedShifts
+                self.isLoadingShifts = false
             }
         }
     }

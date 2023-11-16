@@ -9,35 +9,37 @@ import SwiftUI
 
 struct PickupShiftView: View {
     var body: some View {
-        VStack {
-            SearchView()
-                .padding()
-            Spacer()
-            HStack {
-                Text("Your picked up shifts")
-                    .font(.subheadline)
+        NavigationView {
+            VStack {
+                SearchView()
+                    .padding()
                 Spacer()
-                Button(action: {
-                    
-                }, label: {
-                    Image(systemName: "line.3.horizontal")
-                        .font(.title2)
-                        .foregroundStyle(.gray)
-                })
-                Button(action: {
-                    
-                }, label: {
-                    Image(systemName: "line.3.horizontal.decrease")
-                        .font(.title2)
-                        .foregroundStyle(.gray)
-                })
-            }
-            .padding(.horizontal)
-            ScrollView {
-                VStack(spacing: 10) {  // 10 est l'espacement entre chaque ShiftView
-                    ForEach(0..<10) { _ in  // Ceci affichera 10 ShiftViews
-                        ShiftView(hasOffer: .constant(false), shift: .constant(Shift()), onDelete: { _ in })
-                            .padding(.horizontal)
+                HStack {
+                    Text("Your picked up shifts")
+                        .font(.subheadline)
+                    Spacer()
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.title2)
+                            .foregroundStyle(.gray)
+                    })
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "line.3.horizontal.decrease")
+                            .font(.title2)
+                            .foregroundStyle(.gray)
+                    })
+                }
+                .padding(.horizontal)
+                ScrollView {
+                    VStack(spacing: 10) {  // 10 est l'espacement entre chaque ShiftView
+                        ForEach(0..<10) { _ in  // Ceci affichera 10 ShiftViews
+                            ShiftView(hasOffer: .constant(false), shift: .constant(Shift()), onDelete: { _ in })
+                                .padding(.horizontal)
+                        }
                     }
                 }
             }

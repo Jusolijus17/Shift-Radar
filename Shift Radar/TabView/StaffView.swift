@@ -9,7 +9,9 @@ import SwiftUI
 
 struct StaffView: View {
     var body: some View {
-        Text("Staff view")
+        NavigationView {
+            Text("Staff view")
+        }
     }
 }
 

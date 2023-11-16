@@ -34,7 +34,7 @@ struct OfferShiftModalView: View {
             .transition(.move(edge: .leading))
         } else {
             NavigationView {
-                ConfirmShiftView()
+                ConfirmShiftView(shiftData: $viewModel.shiftData)
                     .onConfirm {
                         viewModel.saveShift {
                             success.toggle()
@@ -70,8 +70,10 @@ struct ShiftDetailView: View {
                         VStack(alignment: .leading) {
                             Text("SELECT DATE")
                                 .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                .foregroundStyle(viewModel.shiftErrorType == .date ? Color.red : Color.black)
                             DatePicker("", selection: $viewModel.shiftData.startTime, displayedComponents: .date)
                                 .labelsHidden()
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .padding(.bottom)
                         
@@ -101,6 +103,7 @@ struct ShiftDetailView: View {
                             VStack(alignment: .leading) {
                                 Text("\(viewModel.hoursBetweenShiftTimes())H")
                                     .font(.system(size: 22, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(viewModel.shiftErrorType == .duration ? Color.red : Color.black)
                                 Text("SHIFT TIME")
                                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                                     .foregroundStyle(.secondary)
@@ -108,19 +111,20 @@ struct ShiftDetailView: View {
                         }
                         Text("LOCATION")
                             .font(.system(size: 15, weight: .semibold, design: .rounded))
+                            .foregroundStyle(viewModel.shiftErrorType == .location ? Color.red : Color.black)
                             .padding(.vertical, 5)
                         HStack {
-                            Text("Recently used:")
+                            Text("Filter:")
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.secondary)
-                            BoxSelector(options: viewModel.filters)
+                            BoxSelector(options: viewModel.filters, selectedOption: viewModel.optionFilter)
                                 .onSelectionChanged { selection in
                                     viewModel.applyOptionFilter(selection)
                                 }
                         }
                         .padding(.bottom, 10)
                         HStack {
-                            Text("Filter:")
+                            Text("Recently used:")
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.secondary)
                             ScrollView(.horizontal) {
@@ -167,7 +171,7 @@ struct ShiftDetailView: View {
                     }
                     .sensoryFeedback(.success, trigger: vibrate)
                     .padding(.horizontal, 20)
-                    .onChange(of: viewModel.shiftData.compensationType) { _, newValue in
+                    .onChange(of: viewModel.shiftData.compensationType) { _, _ in
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             withAnimation {
                                 reader.scrollTo("bottom")
@@ -179,13 +183,11 @@ struct ShiftDetailView: View {
             
             Button {
                 vibrate.toggle()
-                withAnimation {
-                    viewModel.confirmOffer = true
+                if viewModel.shiftIsValid() {
+                    withAnimation {
+                        viewModel.confirmOffer = true
+                    }
                 }
-//                    viewModel.saveShift {
-//                        vibrate.toggle()
-//                        dismiss()
-//                    }
             } label: {
                 Label("Offer shift", systemImage: "plus")
                     .transition(.identity)
@@ -316,7 +318,6 @@ struct AvailabilitiesView: View {
                 Text("TO")
                     .font(.system(size: 15, weight: .semibold, design: .rounded))
                     .foregroundStyle(.secondary)
-                    .padding(.horizontal, 2)
                 
                 DatePicker("", selection: $newAvailabilityEndTime,
                            displayedComponents: .hourAndMinute)
@@ -354,24 +355,12 @@ struct AvailabilitiesView: View {
     }
 }
 
-let dateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .medium
-    formatter.timeStyle = .none
-    return formatter
-}()
-
-let timeFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .none
-    formatter.timeStyle = .short
-    return formatter
-}()
-
 struct ConfirmShiftView: View {
     
-    private var actionConfirm: (() -> Void)?
-    private var actionCancel: (() -> Void)?
+    @Binding var shiftData: Shift
+    
+    var actionConfirm: (() -> Void)?
+    var actionCancel: (() -> Void)?
     
     var body: some View {
         NavigationView {
@@ -382,58 +371,61 @@ struct ConfirmShiftView: View {
                 
                 Spacer()
                 
-                Text("Nov 13th, 2023")
-                    .font(.caption2)
+                Text(shiftData.startTime, formatter: dateFormatter)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
                 
-                Text("FLOATER_IT_CR19_PDA")
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                Text(shiftData.location)
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
                 
-                Text("06:00 - 14:00")
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                Text("\(shiftData.startTime, formatter: timeFormatter) - \(shiftData.endTime, formatter: timeFormatter)")
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundStyle(.secondary)
                 
                 Image(systemName: "arrow.up.arrow.down")
+                    .font(.title)
                     .fontWeight(.semibold)
                     .padding(.vertical)
                     .foregroundStyle(.accent)
                 
-                Text("In exchange of one of these dates:")
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                
-                Text("Nov 16, 2023 from 11:00 to 23:00")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text("OR")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-                Text("Nov 18, 2023 from 5:00 to 14:30")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                switch shiftData.compensationType {
+                case .give:
+                    Text("Simply giving.")
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                case .sell:
+                    Text("Selling for:")
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        .padding(.bottom, 5)
+                    Text("\(Int(shiftData.moneyCompensation))$")
+                case .trade:
+                    Text("In exchange of one of these dates:")
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        .padding(.bottom, 5)
+                    ScrollView {
+                        ForEach(shiftData.availabilities, id: \.self) { availability in
+                            Text("\(availability.date, formatter: dateFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(maxHeight: 50)
+                }
                 
                 Spacer()
                 
-//                Button {
-//                    
-//                } label: {
-//                    Label("Swipe to confirm", systemImage: "chevron.right.2")
-//                        .foregroundStyle(.white)
-//                        .fontWeight(.semibold)
-//                        .padding(.vertical)
-//                        .padding(.horizontal, 75)
-//                        .background {
-//                            RoundedRectangle(cornerRadius: 30)
-//                        }
-//                }
                 SwipeToConfirmButton()
                     .onSwipeSuccess {
-                        actionConfirm!()
+                        if let actionConfirm = actionConfirm {
+                            actionConfirm()
+                        }
                     }
             }
             .toolbar {
                 ToolbarItem {
                     Button {
-                        actionCancel!()
+                        if let actionCancel = actionCancel {
+                            actionCancel()
+                        }
                     } label: {
                         Image(systemName: "arrow.backward.circle.fill")
                             .font(.title2)
@@ -459,107 +451,38 @@ extension ConfirmShiftView {
     }
 }
 
-struct SwipeToConfirmButton: View {
-    @State private var thumbSize: CGSize = CGSize.inactiveThumbSize
-    @State private var dragOffset: CGSize = .zero
-    @State private var isEnough = false
-    
-    private var actionSuccess: (() -> Void)?
-    
-    let trackSize = CGSize.trackSize
-    
-    var body: some View {
-        
-        ZStack {
-            Capsule()
-                .frame(width: trackSize.width, height: trackSize.height)
-                .foregroundColor(Color.accent)
-            
-            Text("Swipe to confirm")
-                .font(.caption)
-                .foregroundStyle(.white)
-                .offset(x: 30, y: 0)
-                .opacity(Double(1 - (self.dragOffset.width*2)/self.trackSize.width))
-            
-            ZStack {
-                Capsule()
-                    .frame(width: thumbSize.width, height: thumbSize.height)
-                    .foregroundStyle(.white)
-                    .overlay {
-                        Capsule()
-                            .stroke(Color.accent, lineWidth: 2.0)
-                            .frame(width: thumbSize.width, height: thumbSize.height - 1.0)
-                    }
-                
-                Image(systemName: "arrow.right")
-                    .foregroundStyle(.black)
-            }
-            .offset(x: getDragOffsetX(), y: 0)
-            .gesture(
-                DragGesture()
-                    .onChanged({ value in self.handleDragChanged(value) })
-                    .onEnded({ _ in self.handleDragEnded() })
-            )
-        }
-    }
-    
-    private func getDragOffsetX() -> CGFloat {
-        let clmapedDragOffsetX = dragOffset.width.clamp(lower: 0, trackSize.width - thumbSize.width)
-        return -(trackSize.width/2 - thumbSize.width/2 - clmapedDragOffsetX)
-    }
-    
-    private func handleDragChanged(_ value: DragGesture.Value) -> Void {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)){
-            self.dragOffset = value.translation
-        }
-        
-        let dragWidth = value.translation.width
-        let targetDragWidth = self.trackSize.width - (self.thumbSize.width*2)
-        let wasInitiated = dragWidth > 2
-        let didReachTarget = dragWidth > targetDragWidth
-        
-        self.thumbSize = wasInitiated ? CGSize.activeThumbSize : CGSize.inactiveThumbSize
-        
-        if didReachTarget {
-            self.isEnough = true
-        } else {
-            self.isEnough = false
-        }
-    }
-    
-    private func handleDragEnded() -> Void {
-        if isEnough {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                dragOffset = CGSize(width: trackSize.width - thumbSize.width, height: 0)
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                self.actionSuccess!()
-            }
-        } else {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                dragOffset = .zero
-                thumbSize = CGSize.inactiveThumbSize
-            }
-        }
-    }
-}
-
-extension SwipeToConfirmButton {
-    func onSwipeSuccess(_ action : @escaping () -> Void) -> Self {
-        var this = self
-        this.actionSuccess = action
-        return this
-    }
-}
-
 //#Preview {
 //    Text("Bruv")
 //        .sheet(isPresented: .constant(true), content: {
-//            ConfirmationView(didConfirm: .constant(false))
+//            ConfirmShiftView(shiftData: .constant(Shift()))
 //                .presentationDetents([.medium])
+//
 //        })
 //}
+
+//struct ConfirmShiftView_Previews: PreviewProvider {
+//    struct PreviewWrapper: View {
+//        @State var shift = Shift()
+//
+//        var body: some View {
+//            Text("Bruv")
+//                .sheet(isPresented: .constant(true), content: {
+//                    ConfirmShiftView(shiftData: $shift)
+//                        .presentationDetents([.fraction(0.5)])
+//                })
+//                .onAppear {
+//                    shift.location = "TESTING"
+//                    shift.compensationType = .trade
+//                    shift.availabilities = [Availability(date: Date(), startTime: Date(), endTime: Date()), Availability(date: Date(), startTime: Date(), endTime: Date())]
+//                }
+//        }
+//    }
+//
+//    static var previews: some View {
+//        PreviewWrapper()
+//    }
+//}
+
 
 #Preview {
     TabViewManager_Previews.PreviewWrapper(selectedTab: 0)

@@ -81,3 +81,17 @@ struct SwiftUIWrapper<T: View>: UIViewControllerRepresentable {
     }
     func updateUIViewController(_ uiViewController: UIHostingController<T>, context: Context) {}
 }
+
+let dateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .medium
+    formatter.timeStyle = .none
+    return formatter
+}()
+
+let timeFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .none
+    formatter.timeStyle = .short
+    return formatter
+}()

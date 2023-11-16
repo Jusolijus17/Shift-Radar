@@ -51,7 +51,7 @@ struct TabViewManager: View {
                 .toolbarBackground(.visible, for: .tabBar)
                 .toolbarColorScheme(.dark, for: .tabBar)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(hex: "#F2F2F2"))
+                .background(Color.background)
             }
             .navigationTitle("Shift Radar")
             .navigationBarTitleDisplayMode(.inline)

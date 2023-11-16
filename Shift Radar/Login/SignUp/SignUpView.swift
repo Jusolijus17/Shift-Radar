@@ -99,7 +99,7 @@ struct SignUpView: View {
                     .frame(height: geo.size.height * viewModel.backgroundHeightMultiplier)
                     .frame(maxHeight: .infinity, alignment: .bottom)
             }
-            .background(Color(hex: "#F2F2F2"))
+            .background(Color.background)
             .ignoresSafeArea()
         }
     }

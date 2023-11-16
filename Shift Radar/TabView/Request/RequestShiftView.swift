@@ -9,7 +9,9 @@ import SwiftUI
 
 struct RequestShiftView: View {
     var body: some View {
-        Text("Request view")
+        NavigationView {
+            Text("Request view")
+        }
     }
 }
 
