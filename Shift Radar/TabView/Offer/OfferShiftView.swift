@@ -30,8 +30,8 @@ struct OfferShiftViewController: View {
                 OfferShiftModalView()
                     .interactiveDismissDisabled()
                     .presentationDetents(availableDetents, selection: $currentDetent)
-                    .onAppear {
-                        viewModel.loadMenuOptionsIfNeeded()
+                    .onDisappear {
+                        currentDetent = .fraction(0.8)
                     }
                     .onChange(of: viewModel.confirmOffer) { _, newValue in
                         if newValue == true {
@@ -102,6 +102,7 @@ struct OfferShiftView: View {
                     Text("Show past shifts")
                         .underline()
                 }
+                .padding(.bottom)
 
             }
         }

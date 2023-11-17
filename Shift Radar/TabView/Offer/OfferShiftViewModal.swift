@@ -11,50 +11,57 @@ struct OfferShiftModalView: View {
     @EnvironmentObject var viewModel: OfferShiftViewModel
     @Environment(\.dismiss) var dismiss
     
+    @StateObject var model: OfferShiftModel = OfferShiftModel()
+    
     @State private var success: Bool = false
     
     var body: some View {
-        if !viewModel.confirmOffer {
-            NavigationView {
-                ShiftDetailView()
-                    .navigationTitle("Offer shift")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem {
-                            Button {
-                                dismiss()
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.title2)
+        Group {
+            if !viewModel.confirmOffer {
+                NavigationView {
+                    ShiftDetailView()
+                        .navigationTitle("Offer shift")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem {
+                                Button {
+                                    dismiss()
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.title2)
+                                }
+                                .tint(.secondary.opacity(0.5))
                             }
-                            .tint(.secondary.opacity(0.5))
                         }
-                    }
+                }
+                .transition(.move(edge: .leading))
+            } else {
+                NavigationView {
+                    ConfirmShiftView(shift: $model.shift)
+                        .onConfirm {
+                            model.saveShift {
+                                success.toggle()
+                                viewModel.confirmOffer = false
+                                dismiss()
+                            }
+                        }
+                        .onCancel {
+                            withAnimation {
+                                viewModel.confirmOffer = false
+                            }
+                        }
+                        .sensoryFeedback(.success, trigger: success)
+                }
+                .transition(.move(edge: .trailing))
             }
-            .transition(.move(edge: .leading))
-        } else {
-            NavigationView {
-                ConfirmShiftView(shiftData: $viewModel.shiftData)
-                    .onConfirm {
-                        viewModel.saveShift {
-                            success.toggle()
-                            dismiss()
-                        }
-                    }
-                    .onCancel {
-                        withAnimation {
-                            viewModel.confirmOffer = false
-                        }
-                    }
-                    .sensoryFeedback(.success, trigger: success)
-            }
-            .transition(.move(edge: .trailing))
         }
+        .environmentObject(model)
     }
 }
 
 struct ShiftDetailView: View {
     @EnvironmentObject var viewModel: OfferShiftViewModel
+    @EnvironmentObject var model: OfferShiftModel
     
     @State private var vibrate: Bool = false
     
@@ -70,8 +77,8 @@ struct ShiftDetailView: View {
                         VStack(alignment: .leading) {
                             Text("SELECT DATE")
                                 .font(.system(size: 15, weight: .semibold, design: .rounded))
-                                .foregroundStyle(viewModel.shiftErrorType == .date ? Color.red : Color.black)
-                            DatePicker("", selection: $viewModel.shiftData.startTime, displayedComponents: .date)
+                                .foregroundStyle(model.shiftErrorType == .date ? Color.red : Color.black)
+                            DatePicker("", selection: $model.shift.startTime, displayedComponents: .date)
                                 .labelsHidden()
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
@@ -81,11 +88,11 @@ struct ShiftDetailView: View {
                             VStack(alignment: .leading) {
                                 Text("START TIME")
                                     .font(.system(size: 13, weight: .semibold, design: .rounded))
-                                DatePicker("", selection: $viewModel.shiftData.startTime, displayedComponents: .hourAndMinute)
+                                DatePicker("", selection: $model.shift.startTime, displayedComponents: .hourAndMinute)
                                     .labelsHidden()
                                     .tint(.accent)
-                                    .onChange(of: viewModel.shiftData.startTime) { oldValue, newValue in
-                                        viewModel.refreshEndTime(oldValue, newValue)
+                                    .onChange(of: model.shift.startTime) { oldValue, newValue in
+                                        model.refreshEndTime(oldValue, newValue)
                                     }
                             }
                             Text("TO")
@@ -96,14 +103,14 @@ struct ShiftDetailView: View {
                             VStack(alignment: .leading) {
                                 Text("END TIME")
                                     .font(.system(size: 13, weight: .semibold, design: .rounded))
-                                DatePicker("", selection: $viewModel.shiftData.endTime, displayedComponents: .hourAndMinute)
+                                DatePicker("", selection: $model.shift.endTime, displayedComponents: .hourAndMinute)
                                     .labelsHidden()
                                     .tint(.accent)
                             }
                             VStack(alignment: .leading) {
-                                Text("\(viewModel.hoursBetweenShiftTimes())H")
+                                Text("\(model.hoursBetweenShiftTimes())H")
                                     .font(.system(size: 22, weight: .semibold, design: .rounded))
-                                    .foregroundStyle(viewModel.shiftErrorType == .duration ? Color.red : Color.black)
+                                    .foregroundStyle(model.shiftErrorType == .duration ? Color.red : Color.black)
                                 Text("SHIFT TIME")
                                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                                     .foregroundStyle(.secondary)
@@ -111,15 +118,15 @@ struct ShiftDetailView: View {
                         }
                         Text("LOCATION")
                             .font(.system(size: 15, weight: .semibold, design: .rounded))
-                            .foregroundStyle(viewModel.shiftErrorType == .location ? Color.red : Color.black)
+                            .foregroundStyle(model.shiftErrorType == .location ? Color.red : Color.black)
                             .padding(.vertical, 5)
                         HStack {
                             Text("Filter:")
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.secondary)
-                            BoxSelector(options: viewModel.filters, selectedOption: viewModel.optionFilter)
+                            BoxSelector(options: model.filters, selectedOption: model.optionFilter)
                                 .onSelectionChanged { selection in
-                                    viewModel.applyOptionFilter(selection)
+                                    model.applyOptionFilter(selection)
                                 }
                         }
                         .padding(.bottom, 10)
@@ -147,8 +154,8 @@ struct ShiftDetailView: View {
                             .edgesIgnoringSafeArea(.horizontal)
                         }
                         .padding(.bottom, 10)
-                        Picker("", selection: $viewModel.shiftData.location) {
-                            ForEach(viewModel.filteredMenuOptions, id: \.self) {
+                        Picker("", selection: $model.shift.location) {
+                            ForEach(model.filteredMenuOptions, id: \.self) {
                                 Text($0)
                             }
                         }
@@ -171,7 +178,7 @@ struct ShiftDetailView: View {
                     }
                     .sensoryFeedback(.success, trigger: vibrate)
                     .padding(.horizontal, 20)
-                    .onChange(of: viewModel.shiftData.compensationType) { _, _ in
+                    .onChange(of: model.shift.compensationType) { _, _ in
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             withAnimation {
                                 reader.scrollTo("bottom")
@@ -183,7 +190,7 @@ struct ShiftDetailView: View {
             
             Button {
                 vibrate.toggle()
-                if viewModel.shiftIsValid() {
+                if model.shiftIsValid() {
                     withAnimation {
                         viewModel.confirmOffer = true
                     }
@@ -200,12 +207,12 @@ struct ShiftDetailView: View {
                             .fill(Color.accentColor)
                     }
                     .overlay {
-                        if viewModel.isSaving {
+                        if model.isSaving {
                             ProgressView()
                                 .tint(.accentColor2)
                         }
                     }
-                    .disabled(viewModel.isSaving)
+                    .disabled(model.isSaving)
                     .padding(.horizontal)
             }
         }
@@ -213,17 +220,17 @@ struct ShiftDetailView: View {
 }
 
 struct CompensationView: View {
-    @EnvironmentObject var viewModel: OfferShiftViewModel
+    @EnvironmentObject var model: OfferShiftModel
     
     var body: some View {
         VStack {
             HStack {
                 VStack {
                     Button {
-                        viewModel.changeCompensationType(newValue: .give)
+                        model.changeCompensationType(newValue: .give)
                     } label: {
                         Image(systemName: "gift")
-                            .foregroundStyle(viewModel.shiftData.compensationType == .give ? .white : .black.opacity(0.5))
+                            .foregroundStyle(model.shift.compensationType == .give ? .white : .black.opacity(0.5))
                             .font(.title2)
                             .padding()
                             .background {
@@ -231,17 +238,17 @@ struct CompensationView: View {
                             }
                         
                     }
-                    .foregroundStyle(viewModel.shiftData.compensationType == .give ? Color.accent : Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(model.shift.compensationType == .give ? Color.accent : Color(uiColor: .tertiaryLabel))
                     Text("Give")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                 }
                 Spacer()
                 VStack {
                     Button {
-                        viewModel.changeCompensationType(newValue: .sell)
+                        model.changeCompensationType(newValue: .sell)
                     } label: {
                         Image(systemName: "dollarsign")
-                            .foregroundStyle(viewModel.shiftData.compensationType == .sell ? .white : .black.opacity(0.5))
+                            .foregroundStyle(model.shift.compensationType == .sell ? .white : .black.opacity(0.5))
                             .font(.title2)
                             .padding()
                             .background {
@@ -249,17 +256,17 @@ struct CompensationView: View {
                             }
                         
                     }
-                    .foregroundStyle(viewModel.shiftData.compensationType == .sell ? Color.accent : Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(model.shift.compensationType == .sell ? Color.accent : Color(uiColor: .tertiaryLabel))
                     Text("Sell")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                 }
                 Spacer()
                 VStack {
                     Button {
-                        viewModel.changeCompensationType(newValue: .trade)
+                        model.changeCompensationType(newValue: .trade)
                     } label: {
                         Image(systemName: "arrow.triangle.2.circlepath")
-                            .foregroundStyle(viewModel.shiftData.compensationType == .trade ? .white : .black.opacity(0.5))
+                            .foregroundStyle(model.shift.compensationType == .trade ? .white : .black.opacity(0.5))
                             .font(.title2)
                             .padding()
                             .background {
@@ -267,21 +274,21 @@ struct CompensationView: View {
                             }
                         
                     }
-                    .foregroundStyle(viewModel.shiftData.compensationType == .trade ? Color.accent : Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(model.shift.compensationType == .trade ? Color.accent : Color(uiColor: .tertiaryLabel))
                     Text("Trade")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                 }
             }
-            .sensoryFeedback(.impact, trigger: viewModel.shiftData.compensationType)
+            .sensoryFeedback(.impact, trigger: model.shift.compensationType)
             
-            switch viewModel.shiftData.compensationType {
+            switch model.shift.compensationType {
             case .give:
                 EmptyView()
             case .sell:
                 HStack(alignment: .bottom) {
                     Text("0$")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    CustomSlider(value: $viewModel.shiftData.moneyCompensation, range: 0...100, step: 5)
+                    CustomSlider(value: $model.shift.moneyCompensation, range: 0...100, step: 5)
                         .padding(.bottom, 10)
                     Text("100$")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
@@ -295,7 +302,7 @@ struct CompensationView: View {
 }
 
 struct AvailabilitiesView: View {
-    @EnvironmentObject var viewModel: OfferShiftViewModel
+    @EnvironmentObject var model: OfferShiftModel
     @State private var newAvailabilityDate = Date()
     @State private var newAvailabilityStartTime = Date()
     @State private var newAvailabilityEndTime = Date()
@@ -327,7 +334,7 @@ struct AvailabilitiesView: View {
                     let newSlot = Availability(date: newAvailabilityDate,
                                                startTime: newAvailabilityStartTime,
                                                endTime: newAvailabilityEndTime)
-                    viewModel.shiftData.availabilities.append(newSlot)
+                    model.shift.availabilities.append(newSlot)
                 }) {
                     Image(systemName: "plus.circle.fill")
                         .font(.title2)
@@ -337,8 +344,8 @@ struct AvailabilitiesView: View {
             
             ScrollView {
                 VStack {
-                    ForEach(viewModel.shiftData.availabilities.indices, id: \.self) { index in
-                        let availability = viewModel.shiftData.availabilities[index]
+                    ForEach(model.shift.availabilities.indices, id: \.self) { index in
+                        let availability = model.shift.availabilities[index]
                         Text("Slot \(index + 1): \(availability.date, formatter: dateFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
                             .font(.system(size: 12, design: .rounded))
                             .foregroundStyle(.secondary)
@@ -351,13 +358,13 @@ struct AvailabilitiesView: View {
     }
     
     func deleteAvailability(at offsets: IndexSet) {
-        viewModel.shiftData.availabilities.remove(atOffsets: offsets)
+        model.shift.availabilities.remove(atOffsets: offsets)
     }
 }
 
 struct ConfirmShiftView: View {
     
-    @Binding var shiftData: Shift
+    @Binding var shift: Shift
     
     var actionConfirm: (() -> Void)?
     var actionCancel: (() -> Void)?
@@ -371,14 +378,14 @@ struct ConfirmShiftView: View {
                 
                 Spacer()
                 
-                Text(shiftData.startTime, formatter: dateFormatter)
+                Text(shift.startTime, formatter: dateFormatter)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
-                Text(shiftData.location)
+                Text(shift.location)
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
                 
-                Text("\(shiftData.startTime, formatter: timeFormatter) - \(shiftData.endTime, formatter: timeFormatter)")
+                Text("\(shift.startTime, formatter: timeFormatter) - \(shift.endTime, formatter: timeFormatter)")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundStyle(.secondary)
                 
@@ -388,7 +395,7 @@ struct ConfirmShiftView: View {
                     .padding(.vertical)
                     .foregroundStyle(.accent)
                 
-                switch shiftData.compensationType {
+                switch shift.compensationType {
                 case .give:
                     Text("Simply giving.")
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
@@ -396,13 +403,13 @@ struct ConfirmShiftView: View {
                     Text("Selling for:")
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .padding(.bottom, 5)
-                    Text("\(Int(shiftData.moneyCompensation))$")
+                    Text("\(Int(shift.moneyCompensation))$")
                 case .trade:
                     Text("In exchange of one of these dates:")
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .padding(.bottom, 5)
                     ScrollView {
-                        ForEach(shiftData.availabilities, id: \.self) { availability in
+                        ForEach(shift.availabilities, id: \.self) { availability in
                             Text("\(availability.date, formatter: dateFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
@@ -454,7 +461,7 @@ extension ConfirmShiftView {
 //#Preview {
 //    Text("Bruv")
 //        .sheet(isPresented: .constant(true), content: {
-//            ConfirmShiftView(shiftData: .constant(Shift()))
+//            ConfirmShiftView(shift: .constant(Shift()))
 //                .presentationDetents([.medium])
 //
 //        })
@@ -467,7 +474,7 @@ extension ConfirmShiftView {
 //        var body: some View {
 //            Text("Bruv")
 //                .sheet(isPresented: .constant(true), content: {
-//                    ConfirmShiftView(shiftData: $shift)
+//                    ConfirmShiftView(shift: $shift)
 //                        .presentationDetents([.fraction(0.5)])
 //                })
 //                .onAppear {
