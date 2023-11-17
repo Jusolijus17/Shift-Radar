@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PickupShiftView: View {
+    @StateObject var viewModel = PickupShiftViewModel()
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -35,14 +37,17 @@ struct PickupShiftView: View {
                 }
                 .padding(.horizontal)
                 ScrollView {
-                    VStack(spacing: 10) {  // 10 est l'espacement entre chaque ShiftView
-                        ForEach(0..<10) { _ in  // Ceci affichera 10 ShiftViews
-                            ShiftView(hasOffer: .constant(false), shift: .constant(Shift()), onDelete: { _ in })
+                    VStack(spacing: 10) {
+                        ForEach($viewModel.offeredShifts, id: \.self) { $shift in
+                            ShiftView(hasOffer: .constant(false), shift: $shift, onDelete: { _ in })
                                 .padding(.horizontal)
                         }
+                        Spacer()
                     }
+                    .padding(.top, 15)
                 }
             }
+            .background(Color.background)
         }
     }
 }
