@@ -69,11 +69,11 @@ struct OfferShiftView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             ScrollView {
                 VStack(spacing: 20) {
-                    ForEach(0..<viewModel.offeredShifts.count, id: \.self) { index in
-                        ShiftView(hasOffer: .constant(index.isMultiple(of: 2) ? true : false), shift: $viewModel.offeredShifts[index], onDelete: { id in
+                    ForEach($viewModel.offeredShifts, id: \.self) { $shift in
+                        ShiftView(hasOffer: .constant(false), shift: $shift, onDelete: { id in
                             viewModel.deleteShift(id)
                         })
-                            .padding(.horizontal)
+                        .padding(.horizontal)
                     }
                 }
                 .padding(.top, 15)

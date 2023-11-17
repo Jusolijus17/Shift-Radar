@@ -87,11 +87,6 @@ class OfferShiftViewModel: ObservableObject {
         }
     }
     
-    private func stopListeningToOfferedShifts() {
-        shiftsListener?.remove()
-        shiftsListener = nil
-    }
-    
     func deleteShift(_ id: String?) {
         guard let id = id else { return }
         
@@ -125,6 +120,11 @@ class OfferShiftViewModel: ObservableObject {
                 print("Shift reference successfully removed from user document")
             }
         }
+    }
+    
+    private func stopListeningToOfferedShifts() {
+        shiftsListener?.remove()
+        shiftsListener = nil
     }
 }
 

@@ -20,7 +20,7 @@ struct Availability: Codable, Hashable {
     var endTime: Date
 }
 
-struct Shift: Codable {
+struct Shift: Codable, Hashable {
     @DocumentID var id: String?
     var offeredDate: Date
     var startTime: Date
