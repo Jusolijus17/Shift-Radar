@@ -16,6 +16,8 @@ class OfferShiftViewModel: ObservableObject {
     @Published var confirmOffer: Bool = false
     
     // Gestion des Shifts et Écouteurs
+    @Published var selectedShift: Shift = Shift.newShift()
+    @Published var isEditingShift: Bool = false
     @Published var offeredShifts: [Shift] = []
     private var shiftsListener: ListenerRegistration?
     
@@ -29,6 +31,24 @@ class OfferShiftViewModel: ObservableObject {
     deinit {
         stopListeningToOfferedShifts()
     }
+    
+    func prepareNewShift() {
+        selectedShift = Shift.newShift()
+        isEditingShift = false
+    }
+    
+    func selectShiftForEditing(_ shift: Shift) {
+        selectedShift = shift
+        isEditingShift = true
+        showModal = true
+    }
+    
+    private func stopListeningToOfferedShifts() {
+        shiftsListener?.remove()
+        shiftsListener = nil
+    }
+    
+    // MARK: - Firestore functions
     
     private func createShiftsObserver() {
         guard let userUID = Auth.auth().currentUser?.uid else {
@@ -57,7 +77,6 @@ class OfferShiftViewModel: ObservableObject {
                 return
             }
 
-            // Array to hold the fetched shifts
             var fetchedShifts: [Shift] = []
             let group = DispatchGroup()
 
@@ -87,8 +106,8 @@ class OfferShiftViewModel: ObservableObject {
         }
     }
     
-    func deleteShift(_ id: String?) {
-        guard let id = id else { return }
+    func deleteShift(_ shift: Shift) {
+        guard let id = shift.id else { return }
         
         guard let userUID = Auth.auth().currentUser?.uid else {
             print("User must be logged in to delete a shift.")
@@ -122,9 +141,63 @@ class OfferShiftViewModel: ObservableObject {
         }
     }
     
-    private func stopListeningToOfferedShifts() {
-        shiftsListener?.remove()
-        shiftsListener = nil
+    func refreshShifts() async {
+        guard let userUID = Auth.auth().currentUser?.uid else {
+            print("User must be logged in to fetch offered shifts.")
+            return
+        }
+
+        let db = Firestore.firestore()
+        let userShiftsRef = db.collection("users").document(userUID).collection("shifts").document("offered")
+
+        await withCheckedContinuation { continuation in
+            userShiftsRef.getDocument { [weak self] (documentSnapshot, error) in
+                guard let self = self else {
+                    continuation.resume()
+                    return
+                }
+
+                if let error = error {
+                    print("Error listening for offered shifts updates: \(error)")
+                    continuation.resume()
+                    return
+                }
+
+                guard let documentSnapshot = documentSnapshot, documentSnapshot.exists,
+                      let refs = documentSnapshot.data()?["refs"] as? [String] else {
+                    print("Document does not exist or 'refs' field is missing.")
+                    continuation.resume()
+                    return
+                }
+
+                var fetchedShifts: [Shift] = []
+                let group = DispatchGroup()
+
+                for ref in refs {
+                    group.enter()
+                    let shiftRef = db.collection("shifts").document(ref)
+                    shiftRef.getDocument { (shiftDoc, err) in
+                        defer { group.leave() }
+                        if let err = err {
+                            print("Error fetching shift: \(err)")
+                        } else if let shiftDoc = shiftDoc, shiftDoc.exists {
+                            do {
+                                let shift = try shiftDoc.data(as: Shift.self)
+                                fetchedShifts.append(shift)
+                            } catch {
+                                print("Error decoding shift: \(error)")
+                            }
+                        }
+                    }
+                }
+
+                group.notify(queue: .main) {
+                    self.offeredShifts = fetchedShifts
+                    continuation.resume()
+                }
+            }
+        }
     }
+
 }
 
