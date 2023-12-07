@@ -8,8 +8,10 @@
 import Foundation
 import SwiftUI
 import FirebaseFirestore
+import FirebaseFirestoreSwift
 import FirebaseAuth
 import FirebaseStorage
+import FirebaseFunctions
 
 class SignUpViewModel: ObservableObject {
     @Published var password: String = ""
@@ -20,6 +22,7 @@ class SignUpViewModel: ObservableObject {
     @Published var accountCreationState = AccountCreationState.basicInfo
     @Published var backgroundHeightMultiplier: CGFloat = 0.32
     @Published var labelText: String = "One last step..."
+    @Published var profilePicture: UIImage?
     
     var buttonText: String {
         switch accountCreationState {
@@ -33,76 +36,103 @@ class SignUpViewModel: ObservableObject {
     }
     
     func createAccount() {
-        if verifyInfo() {
-            isLoading = true // commence le chargement
-            Auth.auth().createUser(withEmail: "\(userData.email)@aircanada.ca", password: password) { authResult, error in
-                if let error = error {
-                    self.error = error.localizedDescription
-                    self.isLoading = false
+        guard verifyInfo() else { return }
+        self.isLoading = true
+        
+        let functions = Functions.functions()
+        let data = userData.toDictionary()
+        
+        Auth.auth().createUser(withEmail: "\(userData.email)@aircanada.ca", password: password) { authResult, error in
+            if let error = error {
+                self.error = error.localizedDescription
+                self.isLoading = false
+                return
+            }
+            
+            functions.httpsCallable("createAccount").call(data) { [weak self] result, error in
+                if let error = error as NSError? {
+                    self?.handleError(error)
                     return
                 }
-
-                if let uid = authResult?.user.uid {
-                    // Si la photo de profil existe
-                    if let profileImage = self.userData.profileImage,
-                       let data = profileImage.jpegData(compressionQuality: 0.5) {
-                        let storageRef = Storage.storage().reference().child("profile_images").child("\(uid).jpeg")
-
-                        storageRef.putData(data, metadata: nil) { (metadata, err) in
-                            if let err = err {
-                                self.error = "Error uploading profile image: \(err.localizedDescription)"
-                                self.isLoading = false
-                                return
-                            }
-
-                            storageRef.downloadURL { (url, err) in
-                                if let err = err {
-                                    self.error = "Error fetching profile image URL: \(err.localizedDescription)"
-                                    self.isLoading = false
-                                    return
-                                }
-
-                                if let profileImageUrl = url?.absoluteString {
-                                    let db = Firestore.firestore()
-                                    db.collection("users").document(uid).setData([
-                                        "firstName": self.userData.firstName,
-                                        "lastName": self.userData.lastName,
-                                        "employeeNumber": self.userData.employeeNumber,
-                                        "profileImageUrl": profileImageUrl
-                                    ]) { err in
-                                        self.isLoading = false
-                                        if let err = err {
-                                            self.error = "Error saving user data: \(err.localizedDescription)"
-                                        } else {
-                                            print("Account and user data created!")
-                                            withAnimation(.spring(duration: 0.5)) {
-                                                self.accountCreationState = .emailConfirmation
-                                                self.backgroundHeightMultiplier = 0.38
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                
+                print("Compte créé avec succès.")
+                self?.uploadProfilePictureIfNeeded { success in
+                    if success {
+                        self?.updateUI()
                     } else {
-                        // Si l'utilisateur n'a pas choisi d'image de profil
-                        let db = Firestore.firestore()
-                        db.collection("users").document(uid).setData([
-                            "firstName": self.userData.firstName,
-                            "lastName": self.userData.lastName,
-                            "employeeNumber": self.userData.employeeNumber
-                        ]) { err in
-                            self.isLoading = false
-                            if let err = err {
-                                self.error = "Error saving user data: \(err.localizedDescription)"
-                            } else {
-                                print("Account and user data created!")
-                            }
-                        }
+                        self?.error = "Error uploading profile picture"
+                        self?.isLoading = false
                     }
                 }
             }
         }
+    }
+    
+    private func handleError(_ error: NSError) {
+        self.isLoading = false
+        if error.domain == FunctionsErrorDomain {
+            let code = FunctionsErrorCode(rawValue: error.code)
+            let message = error.localizedDescription
+            let details = error.userInfo[FunctionsErrorDetailsKey]
+            if let code = code, let details = details {
+                print("Error \(code) \(message) \(details)")
+            } else {
+                print("Error \(message)")
+            }
+        }
+        self.error = "Error calling cloud function"
+    }
+    
+    private func uploadProfilePictureIfNeeded(completion: @escaping (Bool) -> Void) {
+        if let profilePicture = self.profilePicture {
+            self.uploadProfilePicture(profilePicture) { result in
+                switch result {
+                case .success(let url):
+                    self.userData.profileImageUrl = url
+                    completion(true)
+                case .failure(let error):
+                    print("Error uploading profile picture: \(error)")
+                    completion(false)
+                }
+            }
+        } else {
+            completion(true)
+        }
+    }
+    
+    private func uploadProfilePicture(_ image: UIImage, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            completion(.failure(ImageUploadError.noUser))
+            return
+        }
+        guard let imageData = image.jpegData(compressionQuality: 0.4) else {
+            completion(.failure(ImageUploadError.imageConversionFailed))
+            return
+        }
+
+        let storageRef = Storage.storage().reference().child("profilePictures/\(uid)/profile.jpg")
+        storageRef.putData(imageData, metadata: nil) { metadata, error in
+            guard metadata != nil else {
+                completion(.failure(error ?? ImageUploadError.uploadFailed))
+                return
+            }
+            
+            storageRef.downloadURL { url, error in
+                guard let downloadURL = url else {
+                    completion(.failure(error ?? ImageUploadError.urlRetrievalFailed))
+                    return
+                }
+                completion(.success(downloadURL.absoluteString))
+            }
+        }
+    }
+    
+    private func updateUI() {
+        withAnimation(.spring(duration: 0.5)) {
+            self.accountCreationState = .emailConfirmation
+            self.backgroundHeightMultiplier = 0.38
+        }
+        self.isLoading = false
     }
     
     func verifyEmail() {
@@ -158,6 +188,14 @@ class SignUpViewModel: ObservableObject {
         return true
     }
 }
+
+enum ImageUploadError: Error {
+    case noUser
+    case imageConversionFailed
+    case uploadFailed
+    case urlRetrievalFailed
+}
+
 
 enum AccountCreationState {
     case basicInfo, emailConfirmation, success

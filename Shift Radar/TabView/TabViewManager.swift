@@ -13,7 +13,7 @@ struct TabViewManager: View {
     @State var selectedTab = 0
     @State private var showSettings = false
     
-    @EnvironmentObject var userData: UserData
+    @EnvironmentObject var appModel: AppViewModel
     
     var body: some View {
         NavigationView {
@@ -57,27 +57,10 @@ struct TabViewManager: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    if let profileImage = userData.profileImage {
-                        Button {
-                            // show profile
-                        } label: {
-                            Image(uiImage: profileImage)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 35, height: 35)
-                                .clipShape(Circle())
-                        }
-                    } else {
-                        Button {
-                            // show profile
-                        } label: {
-                            Image(systemName: "person")
-                                .frame(width: 35, height: 35)
-                                .background {
-                                    Circle()
-                                        .fill(.white)
-                                }
-                        }
+                    Button {
+                        // show profile
+                    } label: {
+                        ProfileImageView(userData: appModel.userData)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -117,6 +100,29 @@ struct TabViewManager: View {
     }
 }
 
+struct ProfileImageView: View {
+    var userData: UserData?
+    
+    var body: some View {
+        Group {
+            if let urlString = userData?.profileImageUrl, let url = URL(string: urlString) {
+                AsyncImage(url: url) { image in
+                    image.resizable()
+                } placeholder: {
+                    ProgressView()
+                }
+                .frame(width: 35, height: 35)
+                .clipShape(Circle())
+            } else {
+                Image(systemName: "person")
+                    .frame(width: 35, height: 35)
+                    .background(Color.white)
+                    .clipShape(Circle())
+            }
+        }
+    }
+}
+
 struct TabViewManager_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWrapper(selectedTab: 0)
@@ -124,7 +130,6 @@ struct TabViewManager_Previews: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State private var selectedTab: Int
-        var userData = UserData()
         
         init(selectedTab: Int) {
             self._selectedTab = State(initialValue: selectedTab)
@@ -132,10 +137,6 @@ struct TabViewManager_Previews: PreviewProvider {
         
         var body: some View {
             TabViewManager(selectedTab: selectedTab)
-                .environmentObject(userData)
-                .onAppear {
-                    userData.profileImage = UIImage(named: "preview1")
-                }
         }
     }
 }

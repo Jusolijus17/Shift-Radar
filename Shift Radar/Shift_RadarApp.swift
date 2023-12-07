@@ -19,9 +19,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct Shift_RadarApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject private var appModel = AppViewModel()
     var body: some Scene {
         WindowGroup {
             LoginManager()
         }
+        .environmentObject(appModel)
     }
 }
