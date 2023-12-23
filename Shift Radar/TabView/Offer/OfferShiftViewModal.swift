@@ -11,9 +11,13 @@ struct OfferShiftModalView: View {
     @EnvironmentObject var viewModel: OfferShiftViewModel
     @Environment(\.dismiss) var dismiss
     
-    @StateObject var model: OfferShiftModel = OfferShiftModel()
+    @StateObject var model: OfferShiftModel
     
     @State private var success: Bool = false
+    
+    init(shift: Shift, isEditing: Bool) {
+        _model = StateObject(wrappedValue: OfferShiftModel(shift: shift, isEditing: isEditing))
+    }
     
     var body: some View {
         Group {
@@ -62,6 +66,7 @@ struct OfferShiftModalView: View {
 struct ShiftDetailView: View {
     @EnvironmentObject var viewModel: OfferShiftViewModel
     @EnvironmentObject var model: OfferShiftModel
+    @Environment(\.dismiss) var dismiss
     
     @State private var vibrate: Bool = false
     
@@ -190,30 +195,45 @@ struct ShiftDetailView: View {
             
             Button {
                 vibrate.toggle()
-                if model.shiftIsValid() {
-                    withAnimation {
-                        viewModel.confirmOffer = true
+                if model.isEditing {
+                    model.editShift {
+                        Task {
+                            await viewModel.refreshShifts()
+                        }
+                        dismiss()
+                    }
+                } else {
+                    if model.shiftIsValid() {
+                        withAnimation {
+                            viewModel.confirmOffer = true
+                        }
                     }
                 }
             } label: {
-                Label("Offer shift", systemImage: "plus")
-                    .transition(.identity)
-                    .frame(maxWidth: .infinity)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 18)
-                            .fill(Color.accentColor)
+                Group {
+                    if model.isEditing {
+                        Text("Save changes")
+                    } else {
+                        Label("Offer shift", systemImage: "plus")
                     }
-                    .overlay {
-                        if model.isSaving {
-                            ProgressView()
-                                .tint(.accentColor2)
-                        }
+                }
+                .transition(.identity)
+                .frame(maxWidth: .infinity)
+                .fontWeight(.semibold)
+                .foregroundStyle(.white)
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(Color.accentColor)
+                }
+                .overlay {
+                    if model.isSaving {
+                        ProgressView()
+                            .tint(.accentColor2)
                     }
-                    .disabled(model.isSaving)
-                    .padding(.horizontal)
+                }
+                .disabled(model.isSaving)
+                .padding(.horizontal)
             }
         }
     }

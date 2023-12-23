@@ -39,7 +39,7 @@ struct PickupShiftView: View {
                 ScrollView {
                     VStack(spacing: 10) {
                         ForEach($viewModel.offeredShifts, id: \.self) { $shift in
-                            ShiftView(hasOffer: .constant(false), shift: $shift, onDelete: { _ in })
+                            ShiftView(hasOffer: .constant(false), shift: $shift)
                                 .padding(.horizontal)
                         }
                         Spacer()

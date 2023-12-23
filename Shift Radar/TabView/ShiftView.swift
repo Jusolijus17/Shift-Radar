@@ -79,7 +79,9 @@ struct ShiftView: View {
     @Binding var hasOffer: Bool
     @Binding var shift: Shift
     
-    var onDelete: (_ id: String?) -> Void
+    var onDelete: () -> Void = { }
+    var onEdit: () -> Void = { }
+    var showsActions: Bool = false
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -118,25 +120,27 @@ struct ShiftView: View {
                     }
                 }
                 
-                Menu {
-                    Button(role: .destructive) {
-                        onDelete(shift.id)
+                if showsActions {
+                    Menu {
+                        Button(role: .destructive) {
+                            onDelete()
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        Button {
+                            onEdit()
+                        } label: {
+                            Label("Edit", systemImage: "pencil")
+                        }
+                        .menuOrder(.priority)
                     } label: {
-                        Label("Delete", systemImage: "trash")
+                        Image(systemName: "ellipsis")
+                            .rotationEffect(.degrees(90.0))
+                            .tint(.black)
+                            .padding(5)
                     }
-                    Button {
-                        
-                    } label: {
-                        Label("Edit", systemImage: "pencil")
-                    }
-                    .menuOrder(.priority)
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .rotationEffect(.degrees(90.0))
-                        .tint(.black)
-                        .padding(5)
                 }
-
+                
             }
             .padding([.vertical, .leading], 15)
             .padding(.trailing, 5)
@@ -209,6 +213,26 @@ struct ShiftView: View {
 
 }
 
+extension ShiftView {
+    func onDelete(_ action: @escaping () -> Void) -> Self {
+        var copy = self
+        copy.onDelete = action
+        return copy
+    }
+    
+    func onEdit(_ action: @escaping () -> Void) -> Self {
+        var copy = self
+        copy.onEdit = action
+        return copy
+    }
+    func showsMoreActions() -> Self {
+        var copy = self
+        copy.showsActions = true
+        return copy
+    }
+}
+
 #Preview {
-    ShiftView(hasOffer: .constant(true), shift: .constant(Shift()), onDelete: { _ in })
+    ShiftView(hasOffer: .constant(true), shift: .constant(Shift()))
+        .showsMoreActions()
 }

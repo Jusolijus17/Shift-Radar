@@ -17,6 +17,8 @@ class OfferShiftModel: ObservableObject {
     @Published var confirmOffer: Bool = false
     @Published var filters: [String] = ["RAMP", "FLOATER", "OTHER"]
     @Published var isSaving: Bool = false
+    @Published var isEditing: Bool
+    
     @Published var menuOptions: [String] = [] {
         didSet {
             if !menuOptions.isEmpty {
@@ -37,18 +39,48 @@ class OfferShiftModel: ObservableObject {
             return menuOptions.filter { $0.contains(optionFilter) || optionFilter.isEmpty }
         }
     }
+    
+    @Published var confirmOffer: Bool = false
+    
     private var lastOptionsUpdate: TimeInterval {
         get { UserDefaults.standard.double(forKey: "lastOptionsUpdate") }
         set { UserDefaults.standard.set(newValue, forKey: "lastOptionsUpdate") }
     }
     
-    init() {
+    init(shift: Shift, isEditing: Bool = false) {
+        self.shift = shift
+        self.isEditing = isEditing
         loadMenuOptionsIfNeeded()
     }
     
     func applyOptionFilter(_ filter: String?) {
         optionFilter = filter ?? ""
         shift.location = filteredMenuOptions[0]
+    }
+    
+    // Mettez en cache les options dans UserDefaults
+    private func cacheMenuOptions(options: [String]) {
+        UserDefaults.standard.set(options, forKey: "cachedMenuOptions")
+    }
+    
+    func changeCompensationType(newValue: CompensationType) {
+        switch newValue {
+        case .give:
+            shift.moneyCompensation = 0
+        case .sell:
+            shift.availabilities = []
+        case .trade:
+            shift.moneyCompensation = 0
+        }
+        
+        withAnimation(.easeIn(duration: 0.2)) {
+            shift.compensationType = newValue
+        }
+    }
+    
+    // Obtenez les options mises en cache de UserDefaults
+    private func getCachedMenuOptions() -> [String] {
+        return UserDefaults.standard.stringArray(forKey: "cachedMenuOptions") ?? []
     }
     
     func hoursBetweenShiftTimes() -> Int {
@@ -59,6 +91,8 @@ class OfferShiftModel: ObservableObject {
         }
         return hours
     }
+    
+    
     
     func refreshEndTime(_ oldValue: Date, _ newValue: Date) {
         let calendar = Calendar.current
@@ -103,19 +137,89 @@ class OfferShiftModel: ObservableObject {
         }
     }
     
-    func changeCompensationType(newValue: CompensationType) {
-        switch newValue {
-        case .give:
-            shift.moneyCompensation = 0
-        case .sell:
-            shift.availabilities = []
-        case .trade:
-            shift.moneyCompensation = 0
+    func shiftIsValid() -> Bool {
+        guard shift.startTime >= Date() else {
+            shiftErrorType = .date
+            print("Shift date cannot be in the past.")
+            return false
         }
-        
-        withAnimation(.easeIn(duration: 0.2)) {
-            shift.compensationType = newValue
+        guard hoursBetweenShiftTimes() != 0 else {
+            shiftErrorType = .duration
+            print("Shift must be at least 1h.")
+            return false
         }
+        guard shift.location != "" else {
+            shiftErrorType = .location
+            print("Please select your location.")
+            return false
+        }
+        shiftErrorType = nil
+        return true
+    }
+    
+    // MARK: - Firebase functions
+    
+    func editShift(dismissAction: @escaping () -> Void) {
+        guard shiftIsValid(), let shiftID = shift.id else {
+            print("Invalid Shift or Shift ID not found.")
+            return
+        }
+        isSaving = true
+
+        // Référence à la base de données Firestore
+        let db = Firestore.firestore()
+        let shiftRef = db.collection("shifts").document(shiftID)
+
+        do {
+            try shiftRef.setData(from: shift) { [weak self] error in
+                guard let self = self else { return }
+
+                if let err = error {
+                    self.shiftErrorType = .saving
+                    print("Error updating document: \(err)")
+                    self.isSaving = false
+                } else {
+                    print("Document updated with ID: \(shiftRef.documentID)")
+                    self.isSaving = false
+                    dismissAction()
+                }
+            }
+        } catch {
+            print(error)
+            self.isSaving = false
+        }
+    }
+    
+    // Chargez les options de Firebase et mettez-les en cache
+    private func loadMenuOptions() {
+        let ref = Database.database().reference(withPath: "dynamicData/locations/options")
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+            var newOptions: [String] = []
+            for child in snapshot.children {
+                if let snapshot = child as? DataSnapshot,
+                   let value = snapshot.value as? String {
+                    newOptions.append(value)
+                }
+            }
+            DispatchQueue.main.async {
+                self.menuOptions = newOptions.sorted()
+                self.cacheMenuOptions(options: newOptions)
+            }
+        })
+    }
+    
+    
+    // Vérifiez si une mise à jour est nécessaire avant de charger les options
+    func loadMenuOptionsIfNeeded() {
+        let ref = Database.database().reference(withPath: "dynamicData/locations/lastUpdated")
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+            if let timestamp = snapshot.value as? TimeInterval, timestamp > self.lastOptionsUpdate {
+                self.loadMenuOptions()
+                self.lastOptionsUpdate = timestamp
+            } else {
+                self.menuOptions = self.getCachedMenuOptions().sorted()
+            }
+        })
     }
     
     func saveShift(dismissAction: @escaping () -> Void) {
