@@ -55,8 +55,8 @@ extension Shift {
         var newShift = Shift()
         
         if let startOfDay = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: currentDate) {
-            newShift.startTime = startOfDay
-            newShift.endTime = calendar.date(byAdding: .hour, value: 0, to: startOfDay) ?? startOfDay
+            newShift.start = startOfDay
+            newShift.end = calendar.date(byAdding: .hour, value: 0, to: startOfDay) ?? startOfDay
         }
         
         return newShift

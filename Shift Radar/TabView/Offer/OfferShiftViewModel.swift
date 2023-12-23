@@ -111,26 +111,28 @@ class OfferShiftViewModel: ObservableObject {
     }
     
     func deleteShift(_ shift: Shift) {
-        guard let id = shift.id else { 
+        guard let shiftId = shift.id else {
             print("No shiftId, cannot delete shift.")
             self.showError(message: "Error deleting shift. No shift ID")
-            return 
+            return
         }
         
         guard let userUID = Auth.auth().currentUser?.uid else {
             print("User must be logged in to delete a shift.")
+            return
+        }
         
         guard let index = self.offeredShifts.firstIndex(where: { $0.id == shiftId }) else {
             print("Shift not found in offeredShifts")
             return
         }
         let removedShift = self.offeredShifts.remove(at: index)
-
+        
         let functions = Functions.functions()
         
         functions.httpsCallable("deleteShift").call(["shiftId": shiftId]) { [weak self] result, error in
             guard let self = self else { return }
-
+            
             if let error = error {
                 print("Error calling deleteShift function: \(error)")
                 self.showError(message: "Error deleting shift. Please try again.")
@@ -180,25 +182,6 @@ class OfferShiftViewModel: ObservableObject {
 //            }
 //        }
 //    }
-    
-    func refreshShifts() async {
-        guard let userUID = Auth.auth().currentUser?.uid else {
-            print("User must be logged in to fetch offered shifts.")
-            return
-        }
-
-        let db = Firestore.firestore()
-        let userShiftsRef = db.collection("users").document(userUID).collection("shifts").document("offered")
-        
-        // Utilisez FieldValue.arrayRemove pour supprimer l'ID du shift du tableau 'refs'
-        userShiftsRef.updateData(["refs": FieldValue.arrayRemove([id])]) { error in
-            if let error = error {
-                print("Error removing shift reference from user document: \(error)")
-            } else {
-                print("Shift reference successfully removed from user document")
-            }
-        }
-    }
     
     func refreshShifts() async {
         guard let userUID = Auth.auth().currentUser?.uid else {

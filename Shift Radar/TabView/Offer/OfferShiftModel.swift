@@ -40,8 +40,6 @@ class OfferShiftModel: ObservableObject {
         }
     }
     
-    @Published var confirmOffer: Bool = false
-    
     private var lastOptionsUpdate: TimeInterval {
         get { UserDefaults.standard.double(forKey: "lastOptionsUpdate") }
         set { UserDefaults.standard.set(newValue, forKey: "lastOptionsUpdate") }
@@ -137,26 +135,6 @@ class OfferShiftModel: ObservableObject {
         }
     }
     
-    func shiftIsValid() -> Bool {
-        guard shift.startTime >= Date() else {
-            shiftErrorType = .date
-            print("Shift date cannot be in the past.")
-            return false
-        }
-        guard hoursBetweenShiftTimes() != 0 else {
-            shiftErrorType = .duration
-            print("Shift must be at least 1h.")
-            return false
-        }
-        guard shift.location != "" else {
-            shiftErrorType = .location
-            print("Please select your location.")
-            return false
-        }
-        shiftErrorType = nil
-        return true
-    }
-    
     // MARK: - Firebase functions
     
     func editShift(dismissAction: @escaping () -> Void) {
@@ -188,38 +166,6 @@ class OfferShiftModel: ObservableObject {
             print(error)
             self.isSaving = false
         }
-    }
-    
-    // Chargez les options de Firebase et mettez-les en cache
-    private func loadMenuOptions() {
-        let ref = Database.database().reference(withPath: "dynamicData/locations/options")
-        ref.observeSingleEvent(of: .value, with: { snapshot in
-            var newOptions: [String] = []
-            for child in snapshot.children {
-                if let snapshot = child as? DataSnapshot,
-                   let value = snapshot.value as? String {
-                    newOptions.append(value)
-                }
-            }
-            DispatchQueue.main.async {
-                self.menuOptions = newOptions.sorted()
-                self.cacheMenuOptions(options: newOptions)
-            }
-        })
-    }
-    
-    
-    // Vérifiez si une mise à jour est nécessaire avant de charger les options
-    func loadMenuOptionsIfNeeded() {
-        let ref = Database.database().reference(withPath: "dynamicData/locations/lastUpdated")
-        ref.observeSingleEvent(of: .value, with: { snapshot in
-            if let timestamp = snapshot.value as? TimeInterval, timestamp > self.lastOptionsUpdate {
-                self.loadMenuOptions()
-                self.lastOptionsUpdate = timestamp
-            } else {
-                self.menuOptions = self.getCachedMenuOptions().sorted()
-            }
-        })
     }
     
     func saveShift(dismissAction: @escaping () -> Void) {
@@ -291,16 +237,6 @@ class OfferShiftModel: ObservableObject {
                 self.cacheMenuOptions(options: newOptions)
             }
         })
-    }
-    
-    // Mettez en cache les options dans UserDefaults
-    private func cacheMenuOptions(options: [String]) {
-        UserDefaults.standard.set(options, forKey: "cachedMenuOptions")
-    }
-    
-    // Obtenez les options mises en cache de UserDefaults
-    private func getCachedMenuOptions() -> [String] {
-        return UserDefaults.standard.stringArray(forKey: "cachedMenuOptions") ?? []
     }
     
     // MARK: - Cloud Functions
