@@ -78,7 +78,7 @@ struct ShiftDetailView: View {
                             Text("SELECT DATE")
                                 .font(.system(size: 15, weight: .semibold, design: .rounded))
                                 .foregroundStyle(model.shiftErrorType == .date ? Color.red : Color.black)
-                            DatePicker("", selection: $model.shift.startTime, displayedComponents: .date)
+                            DatePicker("", selection: $model.shift.start, displayedComponents: .date)
                                 .labelsHidden()
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
@@ -88,10 +88,10 @@ struct ShiftDetailView: View {
                             VStack(alignment: .leading) {
                                 Text("START TIME")
                                     .font(.system(size: 13, weight: .semibold, design: .rounded))
-                                DatePicker("", selection: $model.shift.startTime, displayedComponents: .hourAndMinute)
+                                DatePicker("", selection: $model.shift.start, displayedComponents: .hourAndMinute)
                                     .labelsHidden()
                                     .tint(.accent)
-                                    .onChange(of: model.shift.startTime) { oldValue, newValue in
+                                    .onChange(of: model.shift.start) { oldValue, newValue in
                                         model.refreshEndTime(oldValue, newValue)
                                     }
                             }
@@ -103,7 +103,7 @@ struct ShiftDetailView: View {
                             VStack(alignment: .leading) {
                                 Text("END TIME")
                                     .font(.system(size: 13, weight: .semibold, design: .rounded))
-                                DatePicker("", selection: $model.shift.endTime, displayedComponents: .hourAndMinute)
+                                DatePicker("", selection: $model.shift.end, displayedComponents: .hourAndMinute)
                                     .labelsHidden()
                                     .tint(.accent)
                             }
@@ -378,14 +378,14 @@ struct ConfirmShiftView: View {
                 
                 Spacer()
                 
-                Text(shift.startTime, formatter: dateFormatter)
+                Text(shift.start, formatter: dateFormatter)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
                 Text(shift.location)
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
                 
-                Text("\(shift.startTime, formatter: timeFormatter) - \(shift.endTime, formatter: timeFormatter)")
+                Text("\(shift.start, formatter: timeFormatter) - \(shift.end, formatter: timeFormatter)")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundStyle(.secondary)
                 
@@ -480,7 +480,7 @@ extension ConfirmShiftView {
 //                .onAppear {
 //                    shift.location = "TESTING"
 //                    shift.compensationType = .trade
-//                    shift.availabilities = [Availability(date: Date(), startTime: Date(), endTime: Date()), Availability(date: Date(), startTime: Date(), endTime: Date())]
+//                    shift.availabilities = [Availability(date: Date(), start: Date(), end: Date()), Availability(date: Date(), start: Date(), end: Date())]
 //                }
 //        }
 //    }

@@ -8,12 +8,16 @@
 import SwiftUI
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import FirebaseFunctions
 import FirebaseAuth
 import Foundation
 
 class OfferShiftViewModel: ObservableObject {
     @Published var isLoadingShifts: Bool = false
     @Published var confirmOffer: Bool = false
+    
+    @Published var showAlert: Bool = false
+    @Published var error: String = ""
     
     // Gestion des Shifts et Écouteurs
     @Published var offeredShifts: [Shift] = []
@@ -87,40 +91,73 @@ class OfferShiftViewModel: ObservableObject {
         }
     }
     
-    func deleteShift(_ id: String?) {
-        guard let id = id else { return }
-        
-        guard let userUID = Auth.auth().currentUser?.uid else {
-            print("User must be logged in to delete a shift.")
+    func deleteShift(_ shiftId: String?) {
+        guard let shiftId = shiftId else {
+            print("No shiftId, cannot delete shift.")
+            self.showError(message: "Error deleting shift. No shift ID")
             return
         }
         
-        let db = Firestore.firestore()
+        guard let index = self.offeredShifts.firstIndex(where: { $0.id == shiftId }) else {
+            print("Shift not found in offeredShifts")
+            return
+        }
+        let removedShift = self.offeredShifts.remove(at: index)
+
+        let functions = Functions.functions()
         
-        // Créez une référence au document shift dans la collection 'shifts'
-        let shiftRef = db.collection("shifts").document(id)
-        
-        // Commencez par supprimer le shift lui-même
-        shiftRef.delete { error in
+        functions.httpsCallable("deleteShift").call(["shiftId": shiftId]) { [weak self] result, error in
+            guard let self = self else { return }
+
             if let error = error {
-                print("Error deleting shift document: \(error)")
+                print("Error calling deleteShift function: \(error)")
+                self.showError(message: "Error deleting shift. Please try again.")
+                self.offeredShifts.insert(removedShift, at: index)
             } else {
                 print("Shift successfully deleted")
             }
         }
-        
-        // Ensuite, supprimez la référence de ce shift dans le tableau 'refs' du document 'offered'
-        let userShiftsRef = db.collection("users").document(userUID).collection("shifts").document("offered")
-        
-        // Utilisez FieldValue.arrayRemove pour supprimer l'ID du shift du tableau 'refs'
-        userShiftsRef.updateData(["refs": FieldValue.arrayRemove([id])]) { error in
-            if let error = error {
-                print("Error removing shift reference from user document: \(error)")
-            } else {
-                print("Shift reference successfully removed from user document")
-            }
-        }
     }
+    
+    private func showError(message: String) {
+        self.showAlert = true
+        self.error = message
+    }
+    
+//    func deleteShift(_ id: String?) {
+//        guard let id = id else { return }
+//        
+//        guard let userUID = Auth.auth().currentUser?.uid else {
+//            print("User must be logged in to delete a shift.")
+//            return
+//        }
+//        
+//        let db = Firestore.firestore()
+//        
+//        // Créez une référence au document shift dans la collection 'shifts'
+//        let shiftRef = db.collection("shifts").document(id)
+//        
+//        // Commencez par supprimer le shift lui-même
+//        shiftRef.delete { error in
+//            if let error = error {
+//                print("Error deleting shift document: \(error)")
+//            } else {
+//                print("Shift successfully deleted")
+//            }
+//        }
+//        
+//        // Ensuite, supprimez la référence de ce shift dans le tableau 'refs' du document 'offered'
+//        let userShiftsRef = db.collection("users").document(userUID).collection("shifts").document("offered")
+//        
+//        // Utilisez FieldValue.arrayRemove pour supprimer l'ID du shift du tableau 'refs'
+//        userShiftsRef.updateData(["refs": FieldValue.arrayRemove([id])]) { error in
+//            if let error = error {
+//                print("Error removing shift reference from user document: \(error)")
+//            } else {
+//                print("Shift reference successfully removed from user document")
+//            }
+//        }
+//    }
     
     private func stopListeningToOfferedShifts() {
         shiftsListener?.remove()

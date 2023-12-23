@@ -73,6 +73,9 @@ struct OfferShiftView: View {
                         ShiftView(hasOffer: .constant(false), shift: $shift, onDelete: { id in
                             viewModel.deleteShift(id)
                         })
+                        .alert(viewModel.error, isPresented: $viewModel.showAlert, actions: {
+                            Button("OK", role: .cancel) { }
+                        })
                         .padding(.horizontal)
                     }
                 }
@@ -148,6 +151,6 @@ import FirebaseAuth
 #Preview {
     TabViewManager_Previews.PreviewWrapper(selectedTab: 0)
         .onAppear {
-            Auth.auth().signIn(withEmail: "testaccount@aircanada.ca", password: "Bosesony2011")
+            Auth.auth().signIn(withEmail: "testaccount2@aircanada.ca", password: "Bosesony")
         }
 }

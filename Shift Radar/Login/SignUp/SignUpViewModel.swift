@@ -5,10 +5,7 @@
 //  Created by Justin Lefrançois on 2023-11-02.
 //
 
-import Foundation
 import SwiftUI
-import FirebaseFirestore
-import FirebaseFirestoreSwift
 import FirebaseAuth
 import FirebaseStorage
 import FirebaseFunctions
@@ -32,98 +29,6 @@ class SignUpViewModel: ObservableObject {
             return "Waiting verification..."
         case .success:
             return "Enter Shift-Radar"
-        }
-    }
-    
-    func createAccount() {
-        guard verifyInfo() else { return }
-        self.isLoading = true
-        
-        let functions = Functions.functions()
-        let data = userData.toDictionary()
-        
-        Auth.auth().createUser(withEmail: "\(userData.email)@aircanada.ca", password: password) { authResult, error in
-            if let error = error {
-                self.error = error.localizedDescription
-                self.isLoading = false
-                return
-            }
-            
-            functions.httpsCallable("createAccount").call(data) { [weak self] result, error in
-                if let error = error as NSError? {
-                    self?.handleError(error)
-                    return
-                }
-                
-                print("Compte créé avec succès.")
-                self?.uploadProfilePictureIfNeeded { success in
-                    if success {
-                        self?.updateUI()
-                    } else {
-                        self?.error = "Error uploading profile picture"
-                        self?.isLoading = false
-                    }
-                }
-            }
-        }
-    }
-    
-    private func handleError(_ error: NSError) {
-        self.isLoading = false
-        if error.domain == FunctionsErrorDomain {
-            let code = FunctionsErrorCode(rawValue: error.code)
-            let message = error.localizedDescription
-            let details = error.userInfo[FunctionsErrorDetailsKey]
-            if let code = code, let details = details {
-                print("Error \(code) \(message) \(details)")
-            } else {
-                print("Error \(message)")
-            }
-        }
-        self.error = "Error calling cloud function"
-    }
-    
-    private func uploadProfilePictureIfNeeded(completion: @escaping (Bool) -> Void) {
-        if let profilePicture = self.profilePicture {
-            self.uploadProfilePicture(profilePicture) { result in
-                switch result {
-                case .success(let url):
-                    self.userData.profileImageUrl = url
-                    completion(true)
-                case .failure(let error):
-                    print("Error uploading profile picture: \(error)")
-                    completion(false)
-                }
-            }
-        } else {
-            completion(true)
-        }
-    }
-    
-    private func uploadProfilePicture(_ image: UIImage, completion: @escaping (Result<String, Error>) -> Void) {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            completion(.failure(ImageUploadError.noUser))
-            return
-        }
-        guard let imageData = image.jpegData(compressionQuality: 0.4) else {
-            completion(.failure(ImageUploadError.imageConversionFailed))
-            return
-        }
-
-        let storageRef = Storage.storage().reference().child("profilePictures/\(uid)/profile.jpg")
-        storageRef.putData(imageData, metadata: nil) { metadata, error in
-            guard metadata != nil else {
-                completion(.failure(error ?? ImageUploadError.uploadFailed))
-                return
-            }
-            
-            storageRef.downloadURL { url, error in
-                guard let downloadURL = url else {
-                    completion(.failure(error ?? ImageUploadError.urlRetrievalFailed))
-                    return
-                }
-                completion(.success(downloadURL.absoluteString))
-            }
         }
     }
     
@@ -187,6 +92,96 @@ class SignUpViewModel: ObservableObject {
         error = nil
         return true
     }
+    
+    // MARK: - Cloud Functions
+    
+    func createAccount() {
+        guard verifyInfo() else { return }
+        self.isLoading = true
+        
+        let functions = Functions.functions()
+        let data = userData.toDictionary()
+        
+        Auth.auth().createUser(withEmail: "\(userData.email)@aircanada.ca", password: password) { authResult, error in
+            if let error = error {
+                self.error = error.localizedDescription
+                self.isLoading = false
+                return
+            }
+            
+            functions.httpsCallable("createAccount").call(data) { [weak self] result, error in
+                if let error = error as NSError? {
+                    self?.handleError(error)
+                    return
+                }
+                
+                print("Compte créé avec succès.")
+                self?.uploadProfilePictureIfNeeded { success in
+                    if success {
+                        self?.updateUI()
+                    } else {
+                        self?.error = "Error uploading profile picture"
+                        self?.isLoading = false
+                    }
+                }
+            }
+        }
+    }
+    
+    private func handleError(_ error: NSError) {
+        self.isLoading = false
+        if error.domain == FunctionsErrorDomain {
+            let code = FunctionsErrorCode(rawValue: error.code)
+            let message = error.localizedDescription
+            let details = error.userInfo[FunctionsErrorDetailsKey]
+            print("Error occurred: [Code: \(code ?? .unknown)], Message: \(message), Details: \(details ?? "")")
+        }
+        self.error = "Error calling cloud function"
+    }
+    
+    private func uploadProfilePictureIfNeeded(completion: @escaping (Bool) -> Void) {
+        if let profilePicture = self.profilePicture {
+            self.uploadProfilePicture(profilePicture) { result in
+                switch result {
+                case .success(let url):
+                    self.userData.profileImageUrl = url
+                    completion(true)
+                case .failure(let error):
+                    print("Error uploading profile picture: \(error)")
+                    completion(false)
+                }
+            }
+        } else {
+            completion(true)
+        }
+    }
+    
+    private func uploadProfilePicture(_ image: UIImage, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            completion(.failure(ImageUploadError.noUser))
+            return
+        }
+        guard let imageData = image.jpegData(compressionQuality: 0.4) else {
+            completion(.failure(ImageUploadError.imageConversionFailed))
+            return
+        }
+
+        let storageRef = Storage.storage().reference().child("profilePictures/\(uid)/profile.jpg")
+        storageRef.putData(imageData, metadata: nil) { metadata, error in
+            guard metadata != nil else {
+                completion(.failure(error ?? ImageUploadError.uploadFailed))
+                return
+            }
+            
+            storageRef.downloadURL { url, error in
+                guard let downloadURL = url else {
+                    completion(.failure(error ?? ImageUploadError.urlRetrievalFailed))
+                    return
+                }
+                completion(.success(downloadURL.absoluteString))
+            }
+        }
+    }
 }
 
 enum ImageUploadError: Error {
@@ -195,7 +190,6 @@ enum ImageUploadError: Error {
     case uploadFailed
     case urlRetrievalFailed
 }
-
 
 enum AccountCreationState {
     case basicInfo, emailConfirmation, success

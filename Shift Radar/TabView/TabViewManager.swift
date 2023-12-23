@@ -137,6 +137,7 @@ struct TabViewManager_Previews: PreviewProvider {
         
         var body: some View {
             TabViewManager(selectedTab: selectedTab)
+                .environmentObject(AppViewModel())
         }
     }
 }
