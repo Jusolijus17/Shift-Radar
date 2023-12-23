@@ -143,28 +143,27 @@ class OfferShiftModel: ObservableObject {
             return
         }
         isSaving = true
-
-        // Référence à la base de données Firestore
-        let db = Firestore.firestore()
-        let shiftRef = db.collection("shifts").document(shiftID)
-
-        do {
-            try shiftRef.setData(from: shift) { [weak self] error in
-                guard let self = self else { return }
-
-                if let err = error {
-                    self.shiftErrorType = .saving
-                    print("Error updating document: \(err)")
-                    self.isSaving = false
-                } else {
-                    print("Document updated with ID: \(shiftRef.documentID)")
-                    self.isSaving = false
-                    dismissAction()
-                }
-            }
-        } catch {
-            print(error)
+        
+        guard let shiftDict = shift.toDictionary() else {
+            print("Error converting shift to dictionary.")
+            isSaving = false
+            return
+        }
+        
+        let functions = Functions.functions()
+        functions.httpsCallable("editShift").call(["shiftId": shiftID, "shift": shiftDict]) { [weak self] result, error in
+            guard let self = self else { return }
+            
             self.isSaving = false
+            if let err = error {
+                self.shiftErrorType = .saving
+                print("Error updating document: \(err)")
+                self.isSaving = false
+            } else {
+                print("Shift updated successfully")
+                self.isSaving = false
+                dismissAction()
+            }
         }
     }
     
@@ -265,62 +264,4 @@ class OfferShiftModel: ObservableObject {
             print("Error occurred: [Code: \(code ?? .unknown)], Message: \(message), Details: \(details ?? "")")
         }
     }
-    
-//    func saveShift(dismissAction: @escaping () -> Void) {
-//        guard shiftIsValid() else { return }
-//        isSaving = true
-//        
-//        guard let userUID = Auth.auth().currentUser?.uid else {
-//            print( "User must be logged in to save a shift.")
-//            self.isSaving = false
-//            return
-//        }
-//        
-//        // Référence à la base de données Firestore
-//        let db = Firestore.firestore()
-//        let generalShiftsRef = db.collection("shifts").document()
-//        
-//        do {
-//            try generalShiftsRef.setData(from: shift) { [weak self] error in
-//                guard let self = self else { return }
-//                
-//                if let err = error {
-//                    self.shiftErrorType = .saving
-//                    print("Error adding document: \(err)")
-//                    self.isSaving = false
-//                } else {
-//                    print("Document added with ID: \(generalShiftsRef.documentID)")
-//                    
-//                    // Ajouter la référence du nouveau shift dans un tableau sous 'offered' dans le document de l'utilisateur
-//                    let userShiftsRef = db.collection("users").document(userUID).collection("shifts").document("offered")
-//                    
-//                    // Commencez par essayer d'ajouter la référence au tableau existant
-//                    userShiftsRef.updateData(["refs": FieldValue.arrayUnion([generalShiftsRef.documentID])]) { [weak self] error in
-//                        guard let self = self else { return }
-//                        
-//                        if let _ = error {
-//                            // Si le document 'offered' n'existe pas encore, il faut le créer avec le premier shift
-//                            userShiftsRef.setData(["refs": [generalShiftsRef.documentID]], merge: true) { error in
-//                                if let err = error {
-//                                    self.shiftErrorType = .saving
-//                                    print("Error creating user shift reference: \(err)")
-//                                    self.isSaving = false
-//                                } else {
-//                                    print("User shift reference created with first ID: \(generalShiftsRef.documentID)")
-//                                    self.isSaving = false
-//                                    dismissAction()
-//                                }
-//                            }
-//                        } else {
-//                            print("User shift reference added with ID: \(generalShiftsRef.documentID)")
-//                            self.isSaving = false
-//                            dismissAction()
-//                        }
-//                    }
-//                }
-//            }
-//        } catch {
-//            print(error)
-//        }
-//    }
 }
