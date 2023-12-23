@@ -27,10 +27,11 @@ struct OfferShiftViewController: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
             .sheet(isPresented: $viewModel.showModal) {
-                OfferShiftModalView()
+                OfferShiftModalView(shift: viewModel.selectedShift, isEditing: viewModel.isEditingShift)
                     .interactiveDismissDisabled()
                     .presentationDetents(availableDetents, selection: $currentDetent)
                     .onDisappear {
+                        viewModel.prepareNewShift()
                         currentDetent = .fraction(0.8)
                     }
                     .onChange(of: viewModel.confirmOffer) { _, newValue in
@@ -70,10 +71,15 @@ struct OfferShiftView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     ForEach($viewModel.offeredShifts, id: \.self) { $shift in
-                        ShiftView(hasOffer: .constant(false), shift: $shift, onDelete: { id in
-                            viewModel.deleteShift(id)
-                        })
-                        .padding(.horizontal)
+                        ShiftView(hasOffer: .constant(false), shift: $shift)
+                            .showsMoreActions()
+                            .onDelete {
+                                viewModel.deleteShift(shift)
+                            }
+                            .onEdit {
+                                viewModel.selectShiftForEditing(shift)
+                            }
+                            .padding(.horizontal)
                     }
                 }
                 .padding(.top, 15)
@@ -104,6 +110,9 @@ struct OfferShiftView: View {
                 }
                 .padding(.bottom)
 
+            }
+            .refreshable {
+                await viewModel.refreshShifts()
             }
         }
     }
