@@ -68,11 +68,9 @@ struct TabViewManager: View {
                         showSettings.toggle()
                     } label: {
                         Image(systemName: "line.horizontal.3")
-                            .font(.system(size: 16, design: .rounded))
+                            .font(.title2)
+                            .fontWeight(.semibold)
                             .frame(width: 35, height: 35)
-                            .background(Color.white)
-                            .foregroundColor(Color.accent)
-                            .clipShape(Circle())
                     }
                 }
             }
@@ -114,10 +112,14 @@ struct ProfileImageView: View {
                 .frame(width: 35, height: 35)
                 .clipShape(Circle())
             } else {
-                Image(systemName: "person")
-                    .frame(width: 35, height: 35)
-                    .background(Color.white)
-                    .clipShape(Circle())
+                Image(systemName: "person.fill")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .padding(4)
+                    .overlay {
+                        Circle()
+                            .stroke(lineWidth: 2.0)
+                    }
             }
         }
     }
