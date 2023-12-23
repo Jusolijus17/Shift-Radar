@@ -88,7 +88,7 @@ struct ShiftView: View {
             HStack {
                 VStack {
                     HStack {
-                        Text("\(shift.startTime, formatter: dateFormatter)")
+                        Text("\(shift.start, formatter: dateFormatter)")
                             .font(.caption)
                             .fontWeight(.semibold)
                             .foregroundStyle(.tertiary)
@@ -105,7 +105,7 @@ struct ShiftView: View {
                         Spacer()
                     }
                     HStack {
-                        Text("\(shift.startTime, formatter: timeFormatter) - \(shift.endTime, formatter: timeFormatter)")
+                        Text("\(shift.start, formatter: timeFormatter) - \(shift.end, formatter: timeFormatter)")
                             .foregroundStyle(.secondary)
                             .fontWeight(.semibold)
                         Spacer()

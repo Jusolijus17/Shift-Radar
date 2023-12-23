@@ -10,12 +10,12 @@ import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
 import FirebaseDatabase
+import FirebaseFunctions
 
 class OfferShiftModel: ObservableObject {
-    @Published var shift: Shift
     
-    @Published var shiftErrorType: ShiftErrorType?
-    
+    @Published var confirmOffer: Bool = false
+    @Published var filters: [String] = ["RAMP", "FLOATER", "OTHER"]
     @Published var isSaving: Bool = false
     @Published var isEditing: Bool
     
@@ -26,8 +26,10 @@ class OfferShiftModel: ObservableObject {
             }
         }
     }
-    @Published var filters: [String] = ["RAMP", "FLOATER", "OTHER"]
     @Published var optionFilter: String = ""
+    @Published var shift = Shift()
+    @Published var shiftErrorType: ShiftErrorType?
+    
     var filteredMenuOptions: [String] {
         if optionFilter == "OTHER" {
             return menuOptions.filter { option in
@@ -81,11 +83,10 @@ class OfferShiftModel: ObservableObject {
     
     func hoursBetweenShiftTimes() -> Int {
         let calendar = Calendar.current
-        var hours = calendar.dateComponents([.hour], from: shift.startTime, to: shift.endTime).hour ?? 0
+        var hours = calendar.dateComponents([.hour], from: shift.start, to: shift.end).hour ?? 0
         if hours < 0 {
             hours += 24
         }
-        
         return hours
     }
     
@@ -97,7 +98,7 @@ class OfferShiftModel: ObservableObject {
         let currentComponents = calendar.dateComponents([.year, .month, .day], from: oldValue)
         let newComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: newValue)
         
-        let endTimeComponents = calendar.dateComponents([.hour, .minute], from: shift.endTime)
+        let endTimeComponents = calendar.dateComponents([.hour, .minute], from: shift.end)
         
         if currentComponents.year != newComponents.year ||
             currentComponents.month != newComponents.month ||
@@ -128,14 +129,66 @@ class OfferShiftModel: ObservableObject {
                 
                 // Créez la nouvelle date de fin et affectez-la.
                 if let newEndTime = calendar.date(from: newDate) {
-                    shift.endTime = newEndTime
+                    shift.end = newEndTime
                 }
             }
         }
     }
     
+    // MARK: - Firebase functions
+    
+    func editShift(dismissAction: @escaping () -> Void) {
+        guard shiftIsValid(), let shiftID = shift.id else {
+            print("Invalid Shift or Shift ID not found.")
+            return
+        }
+        isSaving = true
+        
+        guard let shiftDict = shift.toDictionary() else {
+            print("Error converting shift to dictionary.")
+            isSaving = false
+            return
+        }
+        
+        let functions = Functions.functions()
+        functions.httpsCallable("editShift").call(["shiftId": shiftID, "shift": shiftDict]) { [weak self] result, error in
+            guard let self = self else { return }
+            
+            self.isSaving = false
+            if let err = error {
+                self.shiftErrorType = .saving
+                print("Error updating document: \(err)")
+                self.isSaving = false
+            } else {
+                print("Shift updated successfully")
+                self.isSaving = false
+                dismissAction()
+            }
+        }
+    }
+    
+    func saveShift(dismissAction: @escaping () -> Void) {
+        guard shiftIsValid() else { return }
+        guard let shiftDict = self.shift.toDictionary() else { return }
+        print("shiftDict: \(shiftDict)")
+        self.isSaving = true
+        
+        callSaveShift(shift: shiftDict) { result in
+            switch result {
+            case .success(let shiftID):
+                print("Shift saved successfully with ID: \(shiftID)")
+                self.isSaving = false
+                dismissAction()
+            case .failure(let error):
+                print("Error saving shift: \(error)")
+                self.isSaving = false
+                self.shiftErrorType = .saving
+            }
+        }
+    }
+    
     func shiftIsValid() -> Bool {
-        guard shift.startTime >= Date() else {
+        guard shift.start >= Date() else {
             shiftErrorType = .date
             print("Shift date cannot be in the past.")
             return false
@@ -154,37 +207,17 @@ class OfferShiftModel: ObservableObject {
         return true
     }
     
-    // MARK: - Firebase functions
-    
-    func editShift(dismissAction: @escaping () -> Void) {
-        guard shiftIsValid(), let shiftID = shift.id else {
-            print("Invalid Shift or Shift ID not found.")
-            return
-        }
-        isSaving = true
-
-        // Référence à la base de données Firestore
-        let db = Firestore.firestore()
-        let shiftRef = db.collection("shifts").document(shiftID)
-
-        do {
-            try shiftRef.setData(from: shift) { [weak self] error in
-                guard let self = self else { return }
-
-                if let err = error {
-                    self.shiftErrorType = .saving
-                    print("Error updating document: \(err)")
-                    self.isSaving = false
-                } else {
-                    print("Document updated with ID: \(shiftRef.documentID)")
-                    self.isSaving = false
-                    dismissAction()
-                }
+    // Vérifiez si une mise à jour est nécessaire avant de charger les options
+    func loadMenuOptionsIfNeeded() {
+        let ref = Database.database().reference(withPath: "dynamicData/locations/lastUpdated")
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+            if let timestamp = snapshot.value as? TimeInterval, timestamp > self.lastOptionsUpdate {
+                self.loadMenuOptions()
+                self.lastOptionsUpdate = timestamp
+            } else {
+                self.menuOptions = self.getCachedMenuOptions().sorted()
             }
-        } catch {
-            print(error)
-            self.isSaving = false
-        }
+        })
     }
     
     // Chargez les options de Firebase et mettez-les en cache
@@ -205,75 +238,30 @@ class OfferShiftModel: ObservableObject {
         })
     }
     
+    // MARK: - Cloud Functions
     
-    // Vérifiez si une mise à jour est nécessaire avant de charger les options
-    func loadMenuOptionsIfNeeded() {
-        let ref = Database.database().reference(withPath: "dynamicData/locations/lastUpdated")
-        ref.observeSingleEvent(of: .value, with: { snapshot in
-            if let timestamp = snapshot.value as? TimeInterval, timestamp > self.lastOptionsUpdate {
-                self.loadMenuOptions()
-                self.lastOptionsUpdate = timestamp
-            } else {
-                self.menuOptions = self.getCachedMenuOptions().sorted()
+    private func callSaveShift(shift: [String: Any], completion: @escaping (Result<String, Error>) -> Void) {
+        // Obtenir une référence à Functions
+        let functions = Functions.functions()
+
+        // Appeler la fonction 'saveShift' et envoyer les données 'shift'
+        functions.httpsCallable("saveShift").call(["shift": shift]) { result, error in
+            if let error = error as NSError? {
+                self.handleError(error)
+                completion(.failure(error))
+            } else if let shiftID = (result?.data as? [String: Any])?["shiftID"] as? String {
+                print("Shift saved with ID: \(shiftID)")
+                completion(.success(shiftID))
             }
-        })
+        }
     }
     
-    func saveShift(dismissAction: @escaping () -> Void) {
-        guard shiftIsValid() else { return }
-        isSaving = true
-        
-        guard let userUID = Auth.auth().currentUser?.uid else {
-            print( "User must be logged in to save a shift.")
-            self.isSaving = false
-            return
-        }
-        
-        // Référence à la base de données Firestore
-        let db = Firestore.firestore()
-        let generalShiftsRef = db.collection("shifts").document()
-        
-        do {
-            try generalShiftsRef.setData(from: shift) { [weak self] error in
-                guard let self = self else { return }
-                
-                if let err = error {
-                    self.shiftErrorType = .saving
-                    print("Error adding document: \(err)")
-                    self.isSaving = false
-                } else {
-                    print("Document added with ID: \(generalShiftsRef.documentID)")
-                    
-                    // Ajouter la référence du nouveau shift dans un tableau sous 'offered' dans le document de l'utilisateur
-                    let userShiftsRef = db.collection("users").document(userUID).collection("shifts").document("offered")
-                    
-                    // Commencez par essayer d'ajouter la référence au tableau existant
-                    userShiftsRef.updateData(["refs": FieldValue.arrayUnion([generalShiftsRef.documentID])]) { [weak self] error in
-                        guard let self = self else { return }
-                        
-                        if let _ = error {
-                            // Si le document 'offered' n'existe pas encore, il faut le créer avec le premier shift
-                            userShiftsRef.setData(["refs": [generalShiftsRef.documentID]], merge: true) { error in
-                                if let err = error {
-                                    self.shiftErrorType = .saving
-                                    print("Error creating user shift reference: \(err)")
-                                    self.isSaving = false
-                                } else {
-                                    print("User shift reference created with first ID: \(generalShiftsRef.documentID)")
-                                    self.isSaving = false
-                                    dismissAction()
-                                }
-                            }
-                        } else {
-                            print("User shift reference added with ID: \(generalShiftsRef.documentID)")
-                            self.isSaving = false
-                            dismissAction()
-                        }
-                    }
-                }
-            }
-        } catch {
-            print(error)
+    private func handleError(_ error: NSError) {
+        if error.domain == FunctionsErrorDomain {
+            let code = FunctionsErrorCode(rawValue: error.code)
+            let message = error.localizedDescription
+            let details = error.userInfo[FunctionsErrorDetailsKey]
+            print("Error occurred: [Code: \(code ?? .unknown)], Message: \(message), Details: \(details ?? "")")
         }
     }
 }

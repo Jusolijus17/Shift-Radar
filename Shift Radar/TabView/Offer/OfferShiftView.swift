@@ -80,6 +80,9 @@ struct OfferShiftView: View {
                                 viewModel.selectShiftForEditing(shift)
                             }
                             .padding(.horizontal)
+                            .alert(viewModel.error, isPresented: $viewModel.showAlert, actions: {
+                                Button("OK", role: .cancel) { }
+                            })
                     }
                 }
                 .padding(.top, 15)
@@ -157,6 +160,6 @@ import FirebaseAuth
 #Preview {
     TabViewManager_Previews.PreviewWrapper(selectedTab: 0)
         .onAppear {
-            Auth.auth().signIn(withEmail: "testaccount@aircanada.ca", password: "Bosesony2011")
+            Auth.auth().signIn(withEmail: "testaccount2@aircanada.ca", password: "Bosesony")
         }
 }

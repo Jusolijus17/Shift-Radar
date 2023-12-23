@@ -181,6 +181,7 @@ struct SwipeToConfirmButton: View {
     @State private var thumbSize: CGSize = CGSize.inactiveThumbSize
     @State private var dragOffset: CGSize = .zero
     @State private var isEnough = false
+    @State private var showLoading = false
     
     private var actionSuccess: (() -> Void)?
     
@@ -209,8 +210,12 @@ struct SwipeToConfirmButton: View {
                             .frame(width: thumbSize.width, height: thumbSize.height - 2.0)
                     }
                 
-                Image(systemName: "arrow.right")
-                    .foregroundStyle(.black)
+                if !showLoading {
+                    Image(systemName: "arrow.right")
+                        .foregroundStyle(.black)
+                } else {
+                    ProgressView()
+                }
             }
             .offset(x: getDragOffsetX(), y: 0)
             .gesture(
@@ -253,6 +258,7 @@ struct SwipeToConfirmButton: View {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                 if let actionSuccess = actionSuccess {
+                    showLoading = true
                     actionSuccess()
                 }
             }
@@ -272,3 +278,7 @@ extension SwipeToConfirmButton {
         return this
     }
 }
+
+#Preview(body: {
+    SwipeToConfirmButton()
+})

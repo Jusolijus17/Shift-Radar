@@ -25,7 +25,7 @@ struct SignUpView: View {
         ScrollView {
             VStack {
                 viewModel.accountCreationState == .success ? Spacer() : nil
-                PictureView(showSheet: $showSheet)
+                PictureView(showSheet: $showSheet, profilePicture: $viewModel.profilePicture)
                     .padding(.top, viewModel.accountCreationState == .emailConfirmation ? 100 : 20)
                 
                 if viewModel.accountCreationState == .emailConfirmation || viewModel.accountCreationState == .success {
@@ -87,7 +87,7 @@ struct SignUpView: View {
             .sheet(isPresented: $showSheet) {
                 ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
                     .onDisappear(perform: {
-                        viewModel.userData.profileImage = image
+                        viewModel.profilePicture = image
                     })
             }
             .environmentObject(viewModel.userData)

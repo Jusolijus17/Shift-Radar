@@ -63,14 +63,13 @@ struct InfoView: View {
 
 struct PictureView: View {
     @Binding var showSheet: Bool
-    
-    @EnvironmentObject var userData: UserData
+    @Binding var profilePicture: UIImage?
     
     var body: some View {
         Button(action: {
             showSheet = true
         }, label: {
-            if let profileImage = userData.profileImage {
+            if let profileImage = profilePicture {
                 Image(uiImage: profileImage)
                     .resizable()
                     .scaledToFill()
