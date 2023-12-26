@@ -137,13 +137,14 @@ struct ShiftView: View {
                         Image(systemName: "ellipsis")
                             .rotationEffect(.degrees(90.0))
                             .tint(.black)
+                            .allowsTightening(false)
                             .padding(5)
                     }
                 }
                 
             }
             .padding([.vertical, .leading], 15)
-            .padding(.trailing, 5)
+            .padding(.trailing, showsActions ? 5 : 15)
             .clipShape(RoundedRectangle(cornerRadius: 5))
             .background {
                 RoundedRectangle(cornerRadius: 20)
@@ -170,7 +171,7 @@ struct ShiftView: View {
     }
     
     private func getIcon() -> String {
-        switch shift.compensationType {
+        switch shift.compensation.type {
         case .give:
             return "gift"
         case .sell:
@@ -181,11 +182,11 @@ struct ShiftView: View {
     }
     
     private func exchangeType() -> String {
-        switch shift.compensationType {
+        switch shift.compensation.type {
         case .give:
             return "Giving"
         case .sell:
-            return "Selling for \(Int(shift.moneyCompensation))$"
+            return "Selling for \(Int(shift.compensation.amount ?? 0))$"
         case .trade:
             return "Trading"
         }
@@ -205,7 +206,7 @@ struct ShiftView: View {
 
     private func daysSinceOffer() -> Int {
         let calendar = Calendar.current
-        let startDate = calendar.startOfDay(for: shift.offeredDate)
+        let startDate = calendar.startOfDay(for: shift.offeredDate ?? Date())
         let endDate = calendar.startOfDay(for: Date())
         let components = calendar.dateComponents([.day], from: startDate, to: endDate)
         return components.day ?? 0

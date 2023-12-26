@@ -62,17 +62,20 @@ class OfferShiftModel: ObservableObject {
     }
     
     func changeCompensationType(newValue: CompensationType) {
-        switch newValue {
-        case .give:
-            shift.moneyCompensation = 0
-        case .sell:
-            shift.availabilities = []
-        case .trade:
-            shift.moneyCompensation = 0
+        withAnimation(.easeIn(duration: 0.2)) {
+            shift.compensation.type = newValue
         }
         
-        withAnimation(.easeIn(duration: 0.2)) {
-            shift.compensationType = newValue
+        switch newValue {
+        case .give:
+            shift.compensation.amount = nil
+            shift.compensation.availabilities = nil
+        case .sell:
+            shift.compensation.amount = shift.compensation.amount ?? 0
+            shift.compensation.availabilities = nil
+        case .trade:
+            shift.compensation.amount = nil
+            shift.compensation.availabilities = shift.compensation.availabilities ?? []
         }
     }
     
@@ -89,8 +92,6 @@ class OfferShiftModel: ObservableObject {
         }
         return hours
     }
-    
-    
     
     func refreshEndTime(_ oldValue: Date, _ newValue: Date) {
         let calendar = Calendar.current
@@ -170,7 +171,6 @@ class OfferShiftModel: ObservableObject {
     func saveShift(dismissAction: @escaping () -> Void) {
         guard shiftIsValid() else { return }
         guard let shiftDict = self.shift.toDictionary() else { return }
-        print("shiftDict: \(shiftDict)")
         self.isSaving = true
         
         callSaveShift(shift: shiftDict) { result in
@@ -250,7 +250,6 @@ class OfferShiftModel: ObservableObject {
                 self.handleError(error)
                 completion(.failure(error))
             } else if let shiftID = (result?.data as? [String: Any])?["shiftID"] as? String {
-                print("Shift saved with ID: \(shiftID)")
                 completion(.success(shiftID))
             }
         }

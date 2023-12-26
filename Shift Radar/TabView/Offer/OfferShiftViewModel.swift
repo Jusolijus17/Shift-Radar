@@ -20,7 +20,7 @@ class OfferShiftViewModel: ObservableObject {
     @Published var error: String = ""
     
     // Gestion des Shifts et Écouteurs
-    @Published var selectedShift: Shift = Shift.newShift()
+    @Published var selectedShift: Shift = Shift()
     @Published var isEditingShift: Bool = false
     @Published var offeredShifts: [Shift] = []
     private var shiftsListener: ListenerRegistration?
@@ -37,7 +37,7 @@ class OfferShiftViewModel: ObservableObject {
     }
     
     func prepareNewShift() {
-        selectedShift = Shift.newShift()
+        selectedShift = Shift()
         isEditingShift = false
     }
     

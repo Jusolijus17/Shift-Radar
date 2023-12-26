@@ -70,7 +70,7 @@ struct OfferShiftView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             ScrollView {
                 VStack(spacing: 20) {
-                    ForEach($viewModel.offeredShifts, id: \.self) { $shift in
+                    ForEach($viewModel.offeredShifts) { $shift in
                         ShiftView(hasOffer: .constant(false), shift: $shift)
                             .showsMoreActions()
                             .onDelete {
