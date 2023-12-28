@@ -57,6 +57,9 @@
 		3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD88D6F2AE87E6E0018291D /* SignUpView.swift */; };
 		3DDE1C772B377D4E005BBB6E /* ReviewOfferViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */; };
 		3DDE1C792B379C3C005BBB6E /* PickupShiftViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */; };
+		3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModel.swift */; };
+		3DDE1C7D2B3A770A005BBB6E /* Offer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C7C2B3A770A005BBB6E /* Offer.swift */; };
+		3DDE1C7F2B3BF012005BBB6E /* ErrorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C7E2B3BF012005BBB6E /* ErrorAlert.swift */; };
 		3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEDAB4D2AECB45A00771E43 /* Shapes.swift */; };
 		3DEDAB502AECB67A00771E43 /* SuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */; };
 		3DEF31352AF58B50009F6737 /* OfferShiftViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */; };
@@ -90,6 +93,9 @@
 		3DD88D6F2AE87E6E0018291D /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewOfferViewModal.swift; sourceTree = "<group>"; };
 		3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupShiftViewModal.swift; sourceTree = "<group>"; };
+		3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupShiftModel.swift; sourceTree = "<group>"; };
+		3DDE1C7C2B3A770A005BBB6E /* Offer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Offer.swift; sourceTree = "<group>"; };
+		3DDE1C7E2B3BF012005BBB6E /* ErrorAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorAlert.swift; sourceTree = "<group>"; };
 		3DEDAB4D2AECB45A00771E43 /* Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shapes.swift; sourceTree = "<group>"; };
 		3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessView.swift; sourceTree = "<group>"; };
 		3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferShiftViewModel.swift; sourceTree = "<group>"; };
@@ -141,6 +147,8 @@
 			children = (
 				3D12E3B32AFC5A2300C38AB2 /* Shift.swift */,
 				3DC8310B2B18298400ED085C /* UserData.swift */,
+				3DDE1C7C2B3A770A005BBB6E /* Offer.swift */,
+				3DDE1C7E2B3BF012005BBB6E /* ErrorAlert.swift */,
 			);
 			path = Objects;
 			sourceTree = "<group>";
@@ -168,6 +176,7 @@
 				3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */,
 				3D23BA152B071F6900E745A9 /* PickupShiftViewModel.swift */,
 				3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */,
+				3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModel.swift */,
 			);
 			path = Pickup;
 			sourceTree = "<group>";
@@ -363,6 +372,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DDE1C7F2B3BF012005BBB6E /* ErrorAlert.swift in Sources */,
+				3DDE1C7D2B3A770A005BBB6E /* Offer.swift in Sources */,
 				3DC8310A2B18283200ED085C /* AppViewModel.swift in Sources */,
 				3DEDAB502AECB67A00771E43 /* SuccessView.swift in Sources */,
 				3DFA29082AF497DC0082439D /* SignUpViewModel.swift in Sources */,
@@ -383,6 +394,7 @@
 				3DF600772AEADAB6008F6971 /* EmailConfirmView.swift in Sources */,
 				3D92F39B2AE8B4770032DE1F /* OfferShiftView.swift in Sources */,
 				3DDE1C772B377D4E005BBB6E /* ReviewOfferViewModal.swift in Sources */,
+				3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModel.swift in Sources */,
 				3DC8310C2B18298400ED085C /* UserData.swift in Sources */,
 				3D23BA162B071F6900E745A9 /* PickupShiftViewModel.swift in Sources */,
 				3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */,

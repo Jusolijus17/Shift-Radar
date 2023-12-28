@@ -14,8 +14,24 @@ import FirebaseFunctions
 
 class OfferShiftModel: ObservableObject {
     
+    enum PositionFilters: String {
+        case RAMP
+        case FLOATER
+        case BAGROOM = "BAG"
+        case OTHER
+        
+        var displayName: String {
+            switch self {
+            case .BAGROOM:
+                return "BAGROOM"
+            default:
+                return self.rawValue
+            }
+        }
+    }
+    
     @Published var confirmOffer: Bool = false
-    @Published var filters: [String] = ["RAMP", "FLOATER", "OTHER"]
+    @Published var filters: [PositionFilters] = [.RAMP, .FLOATER, .BAGROOM, .OTHER]
     @Published var isSaving: Bool = false
     @Published var isEditing: Bool
     
@@ -33,10 +49,11 @@ class OfferShiftModel: ObservableObject {
     var filteredMenuOptions: [String] {
         if optionFilter == "OTHER" {
             return menuOptions.filter { option in
-                filters.filter { $0 != "OTHER" }.allSatisfy { !option.contains($0) }
+                filters.filter { $0 != .OTHER }.allSatisfy { !option.contains($0.rawValue) }
             }
         } else {
-            return menuOptions.filter { $0.contains(optionFilter) || optionFilter.isEmpty }
+            let filter = optionFilter == "BAGROOM" ? "BAG" : optionFilter
+            return menuOptions.filter { $0.contains(filter) || filter.isEmpty }
         }
     }
     
@@ -139,7 +156,7 @@ class OfferShiftModel: ObservableObject {
     // MARK: - Firebase functions
     
     func editShift(dismissAction: @escaping () -> Void) {
-        guard shiftIsValid(), let shiftID = shift.id else {
+        guard shiftIsValid(), shift.id != nil else {
             print("Invalid Shift or Shift ID not found.")
             return
         }
@@ -152,7 +169,7 @@ class OfferShiftModel: ObservableObject {
         }
         
         let functions = Functions.functions()
-        functions.httpsCallable("editShift").call(["shiftId": shiftID, "shift": shiftDict]) { [weak self] result, error in
+        functions.httpsCallable("editShift").call(["shift": shiftDict]) { [weak self] result, error in
             guard let self = self else { return }
             
             self.isSaving = false

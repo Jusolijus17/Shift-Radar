@@ -141,17 +141,17 @@ struct ShiftDetailView: View {
                             .foregroundStyle(model.shiftErrorType == .location ? Color.red : Color.black)
                             .padding(.vertical, 5)
                         HStack {
-                            Text("Filter:")
+                            Text("Position:")
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.secondary)
-                            BoxSelector(options: model.filters, selectedOption: model.optionFilter)
+                            BoxSelector(options: model.filters.map { $0.displayName }, selectedOption: model.optionFilter)
                                 .onSelectionChanged { selection in
                                     model.applyOptionFilter(selection)
                                 }
                         }
                         .padding(.bottom, 10)
                         HStack {
-                            Text("Recently used:")
+                            Text("Location:")
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.secondary)
                             ScrollView(.horizontal) {

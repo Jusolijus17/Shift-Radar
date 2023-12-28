@@ -10,9 +10,14 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class AppViewModel: ObservableObject {
+    @Published var uid: String?
     @Published var userData: UserData?
     @Published var isLoading: Bool = false
     @Published var loadingError: Error?
+    
+    init() {
+        self.uid = Auth.auth().currentUser?.uid
+    }
 
     func loadUserData() {
         guard let uid = Auth.auth().currentUser?.uid else {

@@ -19,14 +19,14 @@ struct OfferShiftViewController: View {
                 if viewModel.isLoadingShifts {
                     ProgressView()
                 } else if viewModel.offeredShifts.isEmpty {
-                    NoShiftOfferView(showModal: $viewModel.showModal)
+                    NoShiftOfferView(showModal: $viewModel.showEditModal)
                 } else {
                     OfferShiftView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
-            .sheet(isPresented: $viewModel.showModal) {
+            .sheet(isPresented: $viewModel.showEditModal) {
                 OfferShiftModalView(shift: viewModel.selectedShift, isEditing: viewModel.isEditingShift)
                     .interactiveDismissDisabled()
                     .presentationDetents(availableDetents, selection: $currentDetent)
@@ -41,6 +41,18 @@ struct OfferShiftViewController: View {
                             currentDetent = .fraction(0.8)
                         }
                     }
+            }
+            .sheet(isPresented: $viewModel.showReviewModal) {
+                ReviewPickupModalView(shift: viewModel.selectedShift, offers: $viewModel.shiftOffers)
+                    .presentationDetents([.medium])
+                    .alert(isPresented: $viewModel.showAlert, content: {
+                        Alert(
+                            title: Text(self.viewModel.error?.title ?? "Error"),
+                            message: Text(self.viewModel.error?.message ?? "Unknown error"),
+                            dismissButton: .default(Text("OK")) {
+                                viewModel.showReviewModal.toggle()
+                            })
+                    })
             }
         }
         .environmentObject(viewModel)
@@ -71,17 +83,28 @@ struct OfferShiftView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     ForEach($viewModel.offeredShifts) { $shift in
-                        ShiftView(hasOffer: .constant(false), shift: $shift)
-                            .showsMoreActions()
+                        ShiftView(shift: $shift)
+                            .showMoreActions()
+                            .showOffers()
                             .onDelete {
                                 viewModel.deleteShift(shift)
                             }
                             .onEdit {
                                 viewModel.selectShiftForEditing(shift)
                             }
+                            .onTap {
+                                if (shift.offersRef?.count ?? 0) != 0 {
+                                    viewModel.selectShiftForReview(shift)
+                                } else {
+                                    
+                                }
+                            }
                             .padding(.horizontal)
-                            .alert(viewModel.error, isPresented: $viewModel.showAlert, actions: {
-                                Button("OK", role: .cancel) { }
+                            .alert(isPresented: $viewModel.showAlert, content: {
+                                Alert(
+                                    title: Text(self.viewModel.error?.title ?? "Error"),
+                                    message: Text(self.viewModel.error?.message ?? "Unknown error"),
+                                    dismissButton: .default(Text("OK")))
                             })
                     }
                 }
@@ -89,7 +112,7 @@ struct OfferShiftView: View {
                 .padding(1)
                 
                 Button {
-                    viewModel.showModal = true
+                    viewModel.showEditModal = true
                 } label: {
                     Label("Offer shift", systemImage: "plus")
                         .transition(.identity)
@@ -102,7 +125,7 @@ struct OfferShiftView: View {
                                 .fill(Color.accentColor)
                         }
                 }
-                .sensoryFeedback(.impact, trigger: viewModel.showModal)
+                .sensoryFeedback(.impact, trigger: viewModel.showEditModal)
                 .padding([.horizontal, .top])
                 
                 Button {

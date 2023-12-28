@@ -42,8 +42,8 @@ struct PickupShiftView: View {
                 ScrollView {
                     VStack(spacing: 10) {
                         ForEach($viewModel.offeredShifts) { $shift in
-                            ShiftView(hasOffer: .constant(false), shift: $shift)
-                                .onTapGesture {
+                            ShiftView(shift: $shift)
+                                .onTap {
                                     if $shift.wrappedValue.compensation.type == .give {
                                         selectedDetent = .fraction(0.35)
                                     } else {
@@ -144,17 +144,6 @@ struct SearchView: View {
                 }
                 .frame(height: 40)
                 .padding(.horizontal)
-                
-                //                Button(action: {}) {
-                //                    Label("Select dates", systemImage: "calendar")
-                //                        .padding(.horizontal)
-//                        .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
-//                        .overlay(
-//                            RoundedRectangle(cornerRadius: 5)
-//                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-//                        )
-//                }
-//                .padding(.horizontal)
                 
                 HStack {
                     let icons = [

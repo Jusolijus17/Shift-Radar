@@ -16,17 +16,20 @@ class OfferShiftViewModel: ObservableObject {
     @Published var isLoadingShifts: Bool = false
     @Published var confirmOffer: Bool = false
     
-    @Published var showAlert: Bool = false
-    @Published var error: String = ""
-    
     // Gestion des Shifts et Écouteurs
     @Published var selectedShift: Shift = Shift()
     @Published var isEditingShift: Bool = false
     @Published var offeredShifts: [Shift] = []
+    @Published var shiftOffers: [Offer] = []
     private var shiftsListener: ListenerRegistration?
     
     // Gestion des Modals et de l'Interface Utilisateur
-    @Published var showModal: Bool = false
+    @Published var showEditModal: Bool = false
+    @Published var showReviewModal: Bool = false
+    
+    // Gestion des erreurs
+    @Published var error: ErrorAlert?
+    @Published var showAlert: Bool = false
     
     init() {
         createShiftsObserver()
@@ -44,7 +47,23 @@ class OfferShiftViewModel: ObservableObject {
     func selectShiftForEditing(_ shift: Shift) {
         selectedShift = shift
         isEditingShift = true
-        showModal = true
+        showEditModal = true
+    }
+    
+    func selectShiftForReview(_ shift: Shift) {
+        selectedShift = shift
+        showReviewModal = true
+        getOffers() { [weak self] offers, error in
+            DispatchQueue.main.async {
+                if let offers = offers {
+                    self?.shiftOffers = offers
+                } else {
+                    self?.error = ErrorAlert(title: "Error loading offer(s)", message: "No valid offers found.")
+                    self?.showAlert = true
+                    print("Erreur lors du chargement des offres: \(error?.localizedDescription ?? "")")
+                }
+            }
+        }
     }
     
     private func stopListeningToOfferedShifts() {
@@ -113,7 +132,8 @@ class OfferShiftViewModel: ObservableObject {
     func deleteShift(_ shift: Shift) {
         guard let shiftId = shift.id else {
             print("No shiftId, cannot delete shift.")
-            self.showError(message: "Error deleting shift. No shift ID")
+            self.error = ErrorAlert(title: "Error deleting shift", message: "No shift ID")
+            self.showAlert = true
             return
         }
         
@@ -130,7 +150,8 @@ class OfferShiftViewModel: ObservableObject {
             
             if let error = error {
                 print("Error calling deleteShift function: \(error)")
-                self.showError(message: "Error deleting shift. Please try again.")
+                self.error = ErrorAlert(title: "Error deleting shift", message: "Please try again.")
+                self.showAlert = true
                 self.offeredShifts.insert(removedShift, at: index)
             } else {
                 print("Shift successfully deleted")
@@ -138,9 +159,43 @@ class OfferShiftViewModel: ObservableObject {
         }
     }
     
-    private func showError(message: String) {
-        self.showAlert = true
-        self.error = message
+    func getOffers(completion: @escaping ([Offer]?, Error?) -> Void) {
+        guard let offerIds = selectedShift.offersRef, !offerIds.isEmpty else {
+            completion(nil, nil) // Pas d'offres à charger
+            return
+        }
+
+        let offersRef = Firestore.firestore().collection("offers")
+        var offers: [Offer] = []
+        let dispatchGroup = DispatchGroup()
+
+        for offerId in offerIds {
+            dispatchGroup.enter()
+            offersRef.document(offerId).getDocument { (document, error) in
+                defer {
+                    dispatchGroup.leave()
+                }
+
+                if let error = error {
+                    print("Erreur lors du chargement de l'offre \(offerId): \(error)")
+                    return
+                }
+
+                if let document = document, document.exists, let offer = try? document.data(as: Offer.self) {
+                    offers.append(offer)
+                } else {
+                    print("Aucune offre valide trouvée pour l'ID \(offerId)")
+                }
+            }
+        }
+
+        dispatchGroup.notify(queue: .main) {
+            if offers.isEmpty {
+                completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Aucune offre trouvée"]))
+            } else {
+                completion(offers, nil)
+            }
+        }
     }
     
     func refreshShifts() async {
@@ -200,6 +255,5 @@ class OfferShiftViewModel: ObservableObject {
             }
         }
     }
-
 }
 

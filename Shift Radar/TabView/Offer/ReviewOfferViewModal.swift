@@ -6,76 +6,34 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ReviewPickupModalView: View {
-    @Binding var shift: Shift
-    var actionCancel: (() -> Void)?
+    @Environment(\.dismiss) var dismiss
+    var shift: Shift
+    @Binding var offers: [Offer]
+    
+    init(shift: Shift, offers: Binding<[Offer]>) {
+        self.shift = shift
+        self._offers = offers
+        setupAppearance()
+    }
     
     var body: some View {
         NavigationView {
             VStack {
-                HStack(spacing: 5) {
-                    Text("Alexandre Lafayette")
-                        .fontWeight(.bold)
-                    Text("will work for you on:")
-                }
-                .padding(.bottom, 10)
-                .foregroundStyle(.accent)
-                
-                Text("\(shift.start, formatter: dateFormatter)")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                Text(shift.location)
-                    .fontWeight(.semibold)
-                Text("\(shift.start, formatter: timeFormatter) - \(shift.end, formatter: timeFormatter)")
-                    .foregroundStyle(.secondary)
-                    .fontWeight(.semibold)
-                
-                if shift.compensation.type != .give {
-                    Image(systemName: "arrow.up.arrow.down")
-                        .font(.title2)
-                        .foregroundStyle(.accent)
-                        .fontWeight(.semibold)
-                        .padding(.vertical, 10)
-                }
-                
-                if shift.compensation.type == .trade {
-                    Group {
-                        HStack(spacing: 4) {
-                            Text("If you work for ") +
-                            Text("Alexandre").fontWeight(.bold)
-                        }
-                        Text(" on one of these dates:")
-                            .padding(.bottom, 10)
-                    }
-                    .foregroundStyle(.accent)
-                    
-                    ScrollView {
-                        if let availabilities = shift.compensation.availabilities {
-                            ForEach(availabilities, id: \.self) { availability in
-                                Text("\(availability.date, formatter: dateFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
-                                    .font(.headline)
-                                    .foregroundStyle(.secondary)
-                            }
+                if offers.count != 0 {
+                    TabView {
+                        ForEach(offers) { offer in
+                            OfferView(offer: offer, shift: shift)
                         }
                     }
-                    .frame(maxHeight: 50)
-                    
-                } else if shift.compensation.type == .sell {
-                    Text("If you pay him:")
-                        .foregroundStyle(.accent)
-                        .padding(.bottom, 5)
-                    Text("\(Int(shift.compensation.amount ?? 0))$")
-                        .fontWeight(.bold)
-                        .font(.title)
-                        .fontDesign(.rounded)
-                    HStack(spacing: 3) {
-                        Text("Transfered via")
-                        Text("interac")
-                            .italic()
-                    }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .tabViewStyle(.page(indexDisplayMode: .automatic))
+                    .padding(.top, 10)
+                } else {
+                    Spacer()
+                    ProgressView()
+                        .scaleEffect(1.5)
                 }
                 
                 Spacer()
@@ -91,7 +49,7 @@ struct ReviewPickupModalView: View {
                             .padding(.horizontal, 30)
                             .background {
                                 RoundedRectangle(cornerRadius: 15)
-                                    .foregroundStyle(.red)
+                                    .foregroundStyle(offers.count == 0 ? .gray : .red)
                             }
                     }
                     Button {
@@ -104,10 +62,11 @@ struct ReviewPickupModalView: View {
                             .padding(.horizontal, 30)
                             .background {
                                 RoundedRectangle(cornerRadius: 15)
-                                    .foregroundStyle(.green)
+                                    .foregroundStyle(offers.count == 0 ? .gray : .green)
                             }
                     }
                 }
+                .disabled(offers.count == 0)
             }
             .navigationTitle(
                 Text("OFFER DETAILS")
@@ -116,9 +75,7 @@ struct ReviewPickupModalView: View {
             .toolbar {
                 ToolbarItem {
                     Button {
-                        if let actionCancel = actionCancel {
-                            actionCancel()
-                        }
+                        dismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title2)
@@ -126,7 +83,86 @@ struct ReviewPickupModalView: View {
                     .tint(.secondary.opacity(0.5))
                 }
             }
-            .padding()
+        }
+    }
+    
+    func setupAppearance() {
+        UIPageControl.appearance().currentPageIndicatorTintColor = .accent
+        UIPageControl.appearance().pageIndicatorTintColor = UIColor.gray.withAlphaComponent(0.5)
+    }
+}
+
+struct OfferView: View {
+    var offer: Offer
+    var shift: Shift
+    
+    var body: some View {
+        VStack {
+            HStack(spacing: 5) {
+                Text("\(offer.firstName) \(offer.lastName)")
+                    .fontWeight(.bold)
+                Text("will work for you on:")
+            }
+            .padding(.bottom, 10)
+            .foregroundStyle(.accent)
+            
+            Text("\(shift.start, formatter: dateFormatter)")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            Text(shift.location)
+                .fontWeight(.semibold)
+            Text("\(shift.start, formatter: timeFormatter) - \(shift.end, formatter: timeFormatter)")
+                .foregroundStyle(.secondary)
+                .fontWeight(.semibold)
+            
+            if shift.compensation.type != .give {
+                Image(systemName: "arrow.up.arrow.down")
+                    .font(.title2)
+                    .foregroundStyle(.accent)
+                    .fontWeight(.semibold)
+                    .padding(.vertical, 10)
+            }
+            
+            if shift.compensation.type == .trade {
+                Group {
+                    HStack(spacing: 4) {
+                        Text("If you work for ") +
+                        Text(offer.firstName).fontWeight(.bold)
+                    }
+                    Text(" on one of these dates:")
+                        .padding(.bottom, 10)
+                }
+                .foregroundStyle(.accent)
+                
+                ScrollView {
+                    if let availabilities = shift.compensation.availabilities {
+                        ForEach(availabilities, id: \.self) { availability in
+                            Text("\(availability.date, formatter: dateFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .frame(maxHeight: 50)
+                
+            } else if shift.compensation.type == .sell {
+                Text("If you pay him/her:")
+                    .foregroundStyle(.accent)
+                    .padding(.bottom, 5)
+                Text("\(Int(shift.compensation.amount ?? 0))$")
+                    .fontWeight(.bold)
+                    .font(.title)
+                    .fontDesign(.rounded)
+                HStack(spacing: 3) {
+                    Text("Transfered via")
+                    Text("interac")
+                        .italic()
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+            
+            Spacer()
         }
     }
 }
@@ -137,17 +173,19 @@ struct ReviewPickupModalView_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
-        @State private var shift = Shift()
+        private var shift = Shift()
+        @State private var offers: [Offer] = [Offer(firstName: "Justin", lastName: "Lefrançois", shiftId: "efvwasv"), Offer(firstName: "Camilo", lastName: "Rossi", shiftId: "sdfvsva")]
+        
+        init() {
+            self.shift.compensation.type = .sell
+        }
         
         var body: some View {
             Text("Bruv")
                 .sheet(isPresented: .constant(true), content: {
-                    ReviewPickupModalView(shift: $shift)
+                    ReviewPickupModalView(shift: shift, offers: $offers)
                         .presentationDetents([.medium])
                 })
-                .onAppear {
-                    shift.compensation.type = .sell
-                }
         }
     }
 }

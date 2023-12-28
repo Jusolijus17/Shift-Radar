@@ -182,13 +182,15 @@ struct SwipeToConfirmButton: View {
     @State private var dragOffset: CGSize = .zero
     @State private var isEnough = false
     @State private var showLoading = false
+    @Binding var resetState: Bool
     var alternateText: String?
     
     private var actionSuccess: (() -> Void)?
     
     let trackSize = CGSize.trackSize
     
-    init(alternateText: String? = nil) {
+    init(alternateText: String? = nil, resetState: Binding<Bool> = .constant(false)) {
+        self._resetState = resetState
         self.alternateText = alternateText
     }
     
@@ -228,6 +230,20 @@ struct SwipeToConfirmButton: View {
                     .onChanged({ value in self.handleDragChanged(value) })
                     .onEnded({ _ in self.handleDragEnded() })
             )
+        }
+        .onChange(of: resetState) { _, newValue in
+            if newValue {
+                reset()
+                resetState = false
+            }
+        }
+    }
+    
+    func reset() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            dragOffset = .zero
+            thumbSize = CGSize.inactiveThumbSize
+            showLoading = false
         }
     }
     
@@ -281,6 +297,12 @@ extension SwipeToConfirmButton {
         var this = self
         this.actionSuccess = action
         return this
+    }
+    
+    func resetState(_ reset: Binding<Bool>) -> Self {
+        var button = self
+        button._resetState = reset
+        return button
     }
 }
 
