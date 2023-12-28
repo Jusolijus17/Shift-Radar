@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseAuth
 
 class UserData: ObservableObject, Codable {
     @Published var firstName: String = ""
@@ -18,6 +19,8 @@ class UserData: ObservableObject, Codable {
         case firstName, lastName, email, employeeNumber, profileImageUrl
     }
     
+    init() {}
+    
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
@@ -28,15 +31,15 @@ class UserData: ObservableObject, Codable {
         try container.encode(profileImageUrl, forKey: .profileImageUrl)
     }
     
-    init() {}
-    
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        firstName = try container.decode(String.self, forKey: .firstName)
-        lastName = try container.decode(String.self, forKey: .lastName)
-        email = try container.decode(String.self, forKey: .email)
-        employeeNumber = try container.decode(String.self, forKey: .employeeNumber)
-        profileImageUrl = try container.decode(String.self, forKey: .profileImageUrl)
+
+        // Utilisation de décodage conditionnel avec valeur par défaut
+        firstName = (try? container.decode(String.self, forKey: .firstName)) ?? "Unknown"
+        lastName = (try? container.decode(String.self, forKey: .lastName)) ?? "User"
+        email = (try? container.decode(String.self, forKey: .email)) ?? "Email not found"
+        employeeNumber = (try? container.decode(String.self, forKey: .employeeNumber)) ?? "Emp# not found"
+        profileImageUrl = try? container.decode(String.self, forKey: .profileImageUrl)
     }
 }
 

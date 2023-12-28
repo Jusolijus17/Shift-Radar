@@ -10,6 +10,9 @@ import SwiftUI
 struct PickupShiftView: View {
     @StateObject var viewModel = PickupShiftViewModel()
     
+    @State private var selectedShift: Shift?
+    @State private var selectedDetent: PresentationDetent = .medium
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -38,13 +41,27 @@ struct PickupShiftView: View {
                 .padding(.horizontal)
                 ScrollView {
                     VStack(spacing: 10) {
-                        ForEach($viewModel.offeredShifts, id: \.self) { $shift in
-                            ShiftView(hasOffer: .constant(false), shift: $shift)
+                        ForEach($viewModel.offeredShifts) { $shift in
+                            ShiftView(shift: $shift)
+                                .onTap {
+                                    if $shift.wrappedValue.compensation.type == .give {
+                                        selectedDetent = .fraction(0.35)
+                                    } else {
+                                        selectedDetent = .medium
+                                    }
+                                    selectedShift = $shift.wrappedValue
+                                }
                                 .padding(.horizontal)
                         }
                         Spacer()
                     }
                     .padding(.top, 15)
+                    .sheet(item: $selectedShift) { shift in
+                        PickupShiftModalView(shift: shift, actionCancel: {
+                            selectedShift = nil
+                        })
+                        .presentationDetents([.fraction(0.35), .medium], selection: $selectedDetent)
+                    }
                 }
             }
             .background(Color.background)
@@ -127,17 +144,6 @@ struct SearchView: View {
                 }
                 .frame(height: 40)
                 .padding(.horizontal)
-                
-                //                Button(action: {}) {
-                //                    Label("Select dates", systemImage: "calendar")
-                //                        .padding(.horizontal)
-//                        .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
-//                        .overlay(
-//                            RoundedRectangle(cornerRadius: 5)
-//                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-//                        )
-//                }
-//                .padding(.horizontal)
                 
                 HStack {
                     let icons = [

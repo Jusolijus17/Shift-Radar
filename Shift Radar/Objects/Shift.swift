@@ -7,11 +7,64 @@
 
 import Foundation
 import FirebaseFirestoreSwift
+import FirebaseAuth
 
-enum CompensationType: String, Codable {
-    case give
-    case sell
-    case trade
+struct Shift: Codable, Hashable, Identifiable {
+    @DocumentID var id: String?
+    var createdBy: String?
+    var offeredDate: Date?
+    var start: Date
+    var end: Date
+    var location: String
+    var compensation: Compensation
+    var offersRef: [String]?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, createdBy, offeredDate, start, end, location, compensation, offersRef
+    }
+    
+    init() {
+        let calendar = Calendar.current
+        let currentDate = Date()
+        if let startOfDay = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: currentDate) {
+            self.start = startOfDay
+            self.end = startOfDay
+        } else {
+            self.start = currentDate
+            self.end = currentDate
+        }
+        self.location = "UNKNOWN_LOCATION"
+        self.compensation = Compensation(type: .give)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(id, forKey: .id)
+        try container.encode(start, forKey: .start)
+        try container.encode(end, forKey: .end)
+        try container.encode(location, forKey: .location)
+        try container.encode(compensation, forKey: .compensation)
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        _id = try container.decode(DocumentID<String>.self, forKey: .id)
+        createdBy = try? container.decode(String.self, forKey: .createdBy)
+        offeredDate = try? container.decode(Date.self, forKey: .offeredDate)
+        start = try container.decode(Date.self, forKey: .start)
+        end = try container.decode(Date.self, forKey: .end)
+        location = try container.decode(String.self, forKey: .location)
+        compensation = try container.decode(Compensation.self, forKey: .compensation)
+        offersRef = try? container.decode([String].self, forKey: .offersRef)
+    }
+}
+
+enum CompensationType: String, Codable, Hashable, CaseIterable {
+    case give = "give"
+    case sell = "sell"
+    case trade = "trade"
 }
 
 struct Availability: Codable, Hashable {
@@ -20,70 +73,26 @@ struct Availability: Codable, Hashable {
     var endTime: Date
 }
 
-struct Shift: Codable, Hashable {
-    @DocumentID var id: String?
-    var offeredDate: Date
-    var start: Date
-    var end: Date
-    var location: String
-    var compensationType: CompensationType
-    var moneyCompensation: Double
-    var availabilities: [Availability]
-    
-    init() {
-        let calendar = Calendar.current
-        let currentDate = Date()
-        self.offeredDate = Date()
-        if let startOfDay = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: currentDate) {
-            self.start = startOfDay
-            self.end = startOfDay
-        } else {
-            self.start = currentDate
-            self.end = currentDate
-        }
-        self.location = ""
-        self.compensationType = .give
-        self.moneyCompensation = 0
-        self.availabilities = []
-    }
-}
+struct Compensation: Codable, Hashable {
+    var type: CompensationType
+    var amount: Double? // Utilisé uniquement pour .sell
+    var availabilities: [Availability]? // Utilisé uniquement pour .trade
 
-extension Shift {
-    static func newShift() -> Shift {
-        let calendar = Calendar.current
-        let currentDate = Date()
-        var newShift = Shift()
+    init(type: CompensationType, amount: Double? = nil, availabilities: [Availability]? = nil) {
+        self.type = type
+        self.amount = amount
+        self.availabilities = availabilities
         
-        if let startOfDay = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: currentDate) {
-            newShift.start = startOfDay
-            newShift.end = calendar.date(byAdding: .hour, value: 0, to: startOfDay) ?? startOfDay
+        switch self.type {
+        case .give:
+            return
+        case .sell:
+            self.amount = amount ?? 0
+            self.availabilities = nil
+        case .trade:
+            self.amount = nil
+            self.availabilities = availabilities ?? []
         }
-        
-        return newShift
-    }
-
-    func toDictionary() -> [String: Any]? {
-        var dict: [String: Any] = [:]
-        
-        // Convertir les propriétés simples
-        dict["offeredDate"] = offeredDate.timeIntervalSince1970
-        dict["start"] = start.timeIntervalSince1970
-        dict["end"] = end.timeIntervalSince1970
-        dict["location"] = location
-        dict["compensationType"] = compensationType.rawValue // Assurez-vous que `compensationType` est convertible en un format approprié
-        dict["moneyCompensation"] = moneyCompensation
-
-        // Convertir les 'availabilities'
-        let availabilitiesArray = availabilities.map { availability -> [String: Any] in
-            return [
-                "date": availability.date.timeIntervalSince1970,
-                "startTime": availability.startTime.timeIntervalSince1970,
-                "endTime": availability.endTime.timeIntervalSince1970
-            ]
-        }
-        dict["availabilities"] = availabilitiesArray
-
-        return dict
     }
 }
 

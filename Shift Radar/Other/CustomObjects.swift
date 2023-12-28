@@ -182,10 +182,17 @@ struct SwipeToConfirmButton: View {
     @State private var dragOffset: CGSize = .zero
     @State private var isEnough = false
     @State private var showLoading = false
+    @Binding var resetState: Bool
+    var alternateText: String?
     
     private var actionSuccess: (() -> Void)?
     
     let trackSize = CGSize.trackSize
+    
+    init(alternateText: String? = nil, resetState: Binding<Bool> = .constant(false)) {
+        self._resetState = resetState
+        self.alternateText = alternateText
+    }
     
     var body: some View {
         
@@ -194,8 +201,8 @@ struct SwipeToConfirmButton: View {
                 .frame(width: trackSize.width, height: trackSize.height)
                 .foregroundColor(Color.accent)
             
-            Text("Swipe to confirm")
-                .font(.caption)
+            Text(alternateText != nil ? alternateText! : "Swipe to confirm")
+                .font(.subheadline)
                 .foregroundStyle(.white)
                 .offset(x: 30, y: 0)
                 .opacity(Double(1 - (self.dragOffset.width*2)/self.trackSize.width))
@@ -223,6 +230,20 @@ struct SwipeToConfirmButton: View {
                     .onChanged({ value in self.handleDragChanged(value) })
                     .onEnded({ _ in self.handleDragEnded() })
             )
+        }
+        .onChange(of: resetState) { _, newValue in
+            if newValue {
+                reset()
+                resetState = false
+            }
+        }
+    }
+    
+    func reset() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            dragOffset = .zero
+            thumbSize = CGSize.inactiveThumbSize
+            showLoading = false
         }
     }
     
@@ -276,6 +297,12 @@ extension SwipeToConfirmButton {
         var this = self
         this.actionSuccess = action
         return this
+    }
+    
+    func resetState(_ reset: Binding<Bool>) -> Self {
+        var button = self
+        button._resetState = reset
+        return button
     }
 }
 

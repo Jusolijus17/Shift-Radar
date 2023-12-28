@@ -68,7 +68,7 @@ struct TabViewManager: View {
                         showSettings.toggle()
                     } label: {
                         Image(systemName: "line.horizontal.3")
-                            .font(.title2)
+                            .font(.title3)
                             .fontWeight(.semibold)
                             .frame(width: 35, height: 35)
                     }
@@ -115,11 +115,6 @@ struct ProfileImageView: View {
                 Image(systemName: "person.fill")
                     .font(.title3)
                     .fontWeight(.semibold)
-                    .padding(4)
-                    .overlay {
-                        Circle()
-                            .stroke(lineWidth: 2.0)
-                    }
             }
         }
     }

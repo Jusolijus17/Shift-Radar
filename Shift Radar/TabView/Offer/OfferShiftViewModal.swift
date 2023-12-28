@@ -14,6 +14,7 @@ struct OfferShiftModalView: View {
     @StateObject var model: OfferShiftModel
     
     @State private var success: Bool = false
+    @State private var showError: Bool = false
     
     init(shift: Shift, isEditing: Bool) {
         _model = StateObject(wrappedValue: OfferShiftModel(shift: shift, isEditing: isEditing))
@@ -53,6 +54,20 @@ struct OfferShiftModalView: View {
                             withAnimation {
                                 viewModel.confirmOffer = false
                             }
+                        }
+                        .onChange(of: model.shiftErrorType, { _, newValue in
+                            if newValue == .saving {
+                                self.showError = true
+                            }
+                        })
+                        .alert(isPresented: $showError) {
+                            Alert(
+                                title: Text("Error saving shift"),
+                                message: Text("Please try again."),
+                                dismissButton: .default(Text("Ok")) {
+                                    self.viewModel.confirmOffer = false
+                                    self.dismiss()
+                                })
                         }
                         .sensoryFeedback(.success, trigger: success)
                 }
@@ -126,17 +141,17 @@ struct ShiftDetailView: View {
                             .foregroundStyle(model.shiftErrorType == .location ? Color.red : Color.black)
                             .padding(.vertical, 5)
                         HStack {
-                            Text("Filter:")
+                            Text("Position:")
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.secondary)
-                            BoxSelector(options: model.filters, selectedOption: model.optionFilter)
+                            BoxSelector(options: model.filters.map { $0.displayName }, selectedOption: model.optionFilter)
                                 .onSelectionChanged { selection in
                                     model.applyOptionFilter(selection)
                                 }
                         }
                         .padding(.bottom, 10)
                         HStack {
-                            Text("Recently used:")
+                            Text("Location:")
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.secondary)
                             ScrollView(.horizontal) {
@@ -183,8 +198,15 @@ struct ShiftDetailView: View {
                     }
                     .sensoryFeedback(.success, trigger: vibrate)
                     .padding(.horizontal, 20)
-                    .onChange(of: model.shift.compensationType) { _, _ in
+                    .onChange(of: model.shift.compensation.type) { _, _ in
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            withAnimation {
+                                reader.scrollTo("bottom")
+                            }
+                        }
+                    }
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             withAnimation {
                                 reader.scrollTo("bottom")
                             }
@@ -241,6 +263,7 @@ struct ShiftDetailView: View {
 
 struct CompensationView: View {
     @EnvironmentObject var model: OfferShiftModel
+    @State private var sliderValue: Double = 0
     
     var body: some View {
         VStack {
@@ -250,7 +273,7 @@ struct CompensationView: View {
                         model.changeCompensationType(newValue: .give)
                     } label: {
                         Image(systemName: "gift")
-                            .foregroundStyle(model.shift.compensationType == .give ? .white : .black.opacity(0.5))
+                            .foregroundStyle(model.shift.compensation.type == .give ? .white : .black.opacity(0.5))
                             .font(.title2)
                             .padding()
                             .background {
@@ -258,7 +281,7 @@ struct CompensationView: View {
                             }
                         
                     }
-                    .foregroundStyle(model.shift.compensationType == .give ? Color.accent : Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(model.shift.compensation.type == .give ? Color.accent : Color(uiColor: .tertiaryLabel))
                     Text("Give")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                 }
@@ -268,7 +291,7 @@ struct CompensationView: View {
                         model.changeCompensationType(newValue: .sell)
                     } label: {
                         Image(systemName: "dollarsign")
-                            .foregroundStyle(model.shift.compensationType == .sell ? .white : .black.opacity(0.5))
+                            .foregroundStyle(model.shift.compensation.type == .sell ? .white : .black.opacity(0.5))
                             .font(.title2)
                             .padding()
                             .background {
@@ -276,7 +299,7 @@ struct CompensationView: View {
                             }
                         
                     }
-                    .foregroundStyle(model.shift.compensationType == .sell ? Color.accent : Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(model.shift.compensation.type == .sell ? Color.accent : Color(uiColor: .tertiaryLabel))
                     Text("Sell")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                 }
@@ -286,7 +309,7 @@ struct CompensationView: View {
                         model.changeCompensationType(newValue: .trade)
                     } label: {
                         Image(systemName: "arrow.triangle.2.circlepath")
-                            .foregroundStyle(model.shift.compensationType == .trade ? .white : .black.opacity(0.5))
+                            .foregroundStyle(model.shift.compensation.type == .trade ? .white : .black.opacity(0.5))
                             .font(.title2)
                             .padding()
                             .background {
@@ -294,21 +317,27 @@ struct CompensationView: View {
                             }
                         
                     }
-                    .foregroundStyle(model.shift.compensationType == .trade ? Color.accent : Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(model.shift.compensation.type == .trade ? Color.accent : Color(uiColor: .tertiaryLabel))
                     Text("Trade")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                 }
             }
-            .sensoryFeedback(.impact, trigger: model.shift.compensationType)
+            .sensoryFeedback(.impact, trigger: model.shift.compensation.type)
             
-            switch model.shift.compensationType {
+            switch model.shift.compensation.type {
             case .give:
                 EmptyView()
             case .sell:
                 HStack(alignment: .bottom) {
                     Text("0$")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    CustomSlider(value: $model.shift.moneyCompensation, range: 0...100, step: 5)
+                    CustomSlider(value: $sliderValue, range: 0...100, step: 5)
+                        .onChange(of: sliderValue, { _, newValue in
+                            model.shift.compensation.amount = newValue
+                        })
+                        .onAppear(perform: {
+                            self.sliderValue = model.shift.compensation.amount ?? 0
+                        })
                         .padding(.bottom, 10)
                     Text("100$")
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
@@ -354,7 +383,7 @@ struct AvailabilitiesView: View {
                     let newSlot = Availability(date: newAvailabilityDate,
                                                startTime: newAvailabilityStartTime,
                                                endTime: newAvailabilityEndTime)
-                    model.shift.availabilities.append(newSlot)
+                    model.shift.compensation.availabilities!.append(newSlot)
                 }) {
                     Image(systemName: "plus.circle.fill")
                         .font(.title2)
@@ -364,13 +393,15 @@ struct AvailabilitiesView: View {
             
             ScrollView {
                 VStack {
-                    ForEach(model.shift.availabilities.indices, id: \.self) { index in
-                        let availability = model.shift.availabilities[index]
-                        Text("Slot \(index + 1): \(availability.date, formatter: dateFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
-                            .font(.system(size: 12, design: .rounded))
-                            .foregroundStyle(.secondary)
+                    if let availabilities = model.shift.compensation.availabilities {
+                        ForEach(availabilities.indices, id: \.self) { index in
+                            let availability = availabilities[index]
+                            Text("Slot \(index + 1): \(availability.date, formatter: dateFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
+                                .font(.system(size: 12, design: .rounded))
+                                .foregroundStyle(.secondary)
+                        }
+                        .onDelete(perform: deleteAvailability)
                     }
-                    .onDelete(perform: deleteAvailability)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -378,7 +409,7 @@ struct AvailabilitiesView: View {
     }
     
     func deleteAvailability(at offsets: IndexSet) {
-        model.shift.availabilities.remove(atOffsets: offsets)
+        model.shift.compensation.availabilities!.remove(atOffsets: offsets)
     }
 }
 
@@ -415,7 +446,7 @@ struct ConfirmShiftView: View {
                     .padding(.vertical)
                     .foregroundStyle(.accent)
                 
-                switch shift.compensationType {
+                switch shift.compensation.type {
                 case .give:
                     Text("Simply giving.")
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
@@ -423,16 +454,18 @@ struct ConfirmShiftView: View {
                     Text("Selling for:")
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .padding(.bottom, 5)
-                    Text("\(Int(shift.moneyCompensation))$")
+                    Text("\(Int(shift.compensation.amount ?? 0))$")
                 case .trade:
                     Text("In exchange of one of these dates:")
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .padding(.bottom, 5)
                     ScrollView {
-                        ForEach(shift.availabilities, id: \.self) { availability in
-                            Text("\(availability.date, formatter: dateFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                        if let availabilities = shift.compensation.availabilities {
+                            ForEach(availabilities, id: \.self) { availability in
+                                Text("\(availability.date, formatter: dateFormatter) from \(availability.startTime, formatter: timeFormatter) to \(availability.endTime, formatter: timeFormatter)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                     .frame(maxHeight: 50)

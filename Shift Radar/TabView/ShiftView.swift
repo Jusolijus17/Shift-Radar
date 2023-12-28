@@ -76,12 +76,13 @@ import SwiftUI
 //}
 
 struct ShiftView: View {
-    @Binding var hasOffer: Bool
     @Binding var shift: Shift
     
     var onDelete: () -> Void = { }
     var onEdit: () -> Void = { }
-    var showsActions: Bool = false
+    var onTap: () -> Void = { }
+    var showsMoreActions: Bool = false
+    var showsOffers: Bool = false
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -119,8 +120,12 @@ struct ShiftView: View {
                         .font(.caption)
                     }
                 }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onTap()
+                }
                 
-                if showsActions {
+                if showsMoreActions {
                     Menu {
                         Button(role: .destructive) {
                             onDelete()
@@ -137,40 +142,44 @@ struct ShiftView: View {
                         Image(systemName: "ellipsis")
                             .rotationEffect(.degrees(90.0))
                             .tint(.black)
+                            .allowsTightening(false)
                             .padding(5)
                     }
                 }
                 
             }
             .padding([.vertical, .leading], 15)
-            .padding(.trailing, 5)
+            .padding(.trailing, showsMoreActions ? 5 : 15)
             .clipShape(RoundedRectangle(cornerRadius: 5))
             .background {
                 RoundedRectangle(cornerRadius: 20)
                     .fill(.white)
                     .stroke(Color.accentColor.opacity(0.5))
             }
-            if hasOffer {
-                HStack(spacing: 5) {
-                    Text("1 offer")
-                    Image(systemName: "chevron.right")
+            
+            if let offers = shift.offersRef {
+                if showsOffers && offers.count != 0 {
+                    HStack(spacing: 5) {
+                        Text("\(offers.count) offer\(offers.count > 1 ? "s" : "")")
+                        Image(systemName: "chevron.right")
+                    }
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 15)
+                    .padding(.vertical, 5)
+                    .background {
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(.red)
+                    }
+                    .offset(y: -15)
                 }
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundStyle(.white)
-                .padding(.horizontal, 15)
-                .padding(.vertical, 5)
-                .background {
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(.red)
-                }
-                .offset(y: -15)
             }
         }
     }
     
     private func getIcon() -> String {
-        switch shift.compensationType {
+        switch shift.compensation.type {
         case .give:
             return "gift"
         case .sell:
@@ -181,11 +190,11 @@ struct ShiftView: View {
     }
     
     private func exchangeType() -> String {
-        switch shift.compensationType {
+        switch shift.compensation.type {
         case .give:
             return "Giving"
         case .sell:
-            return "Selling for \(Int(shift.moneyCompensation))$"
+            return "Selling for \(Int(shift.compensation.amount ?? 0))$"
         case .trade:
             return "Trading"
         }
@@ -205,7 +214,7 @@ struct ShiftView: View {
 
     private func daysSinceOffer() -> Int {
         let calendar = Calendar.current
-        let startDate = calendar.startOfDay(for: shift.offeredDate)
+        let startDate = calendar.startOfDay(for: shift.offeredDate ?? Date())
         let endDate = calendar.startOfDay(for: Date())
         let components = calendar.dateComponents([.day], from: startDate, to: endDate)
         return components.day ?? 0
@@ -219,20 +228,30 @@ extension ShiftView {
         copy.onDelete = action
         return copy
     }
-    
     func onEdit(_ action: @escaping () -> Void) -> Self {
         var copy = self
         copy.onEdit = action
         return copy
     }
-    func showsMoreActions() -> Self {
+    func onTap(_ action: @escaping () -> Void) -> Self {
         var copy = self
-        copy.showsActions = true
+        copy.onTap = action
+        return copy
+    }
+    func showMoreActions() -> Self {
+        var copy = self
+        copy.showsMoreActions = true
+        return copy
+    }
+    func showOffers() -> Self {
+        var copy = self
+        copy.showsOffers = true
         return copy
     }
 }
 
 #Preview {
-    ShiftView(hasOffer: .constant(true), shift: .constant(Shift()))
-        .showsMoreActions()
+    ShiftView(shift: .constant(Shift()))
+        .showMoreActions()
+        .showOffers()
 }

@@ -74,6 +74,22 @@ extension View {
     }
 }
 
+extension Encodable {
+    func toDictionary() -> [String: Any]? {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .secondsSince1970
+        
+        do {
+            let data = try encoder.encode(self)
+            let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any]
+            return dictionary
+        } catch {
+            print("Error converting Shift to dictionary: \(error)")
+            return nil
+        }
+    }
+}
+
 struct SwiftUIWrapper<T: View>: UIViewControllerRepresentable {
     let content: () -> T
     func makeUIViewController(context: Context) -> UIHostingController<T> {
