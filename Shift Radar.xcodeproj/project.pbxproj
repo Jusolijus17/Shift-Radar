@@ -48,6 +48,8 @@
 		3D92F39F2AE8B58F0032DE1F /* StaffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F39E2AE8B58F0032DE1F /* StaffView.swift */; };
 		3D92F3A12AE8B7650032DE1F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3A02AE8B7650032DE1F /* Extensions.swift */; };
 		3D92F3A52AE9A8540032DE1F /* ShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3A42AE9A8540032DE1F /* ShiftView.swift */; };
+		3D9BE8062B3E36310028034B /* FilterSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9BE8052B3E36310028034B /* FilterSelector.swift */; };
+		3D9BE8092B3E390F0028034B /* PositionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9BE8082B3E390F0028034B /* PositionSelector.swift */; };
 		3DC8310A2B18283200ED085C /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC831092B18283200ED085C /* AppViewModel.swift */; };
 		3DC8310C2B18298400ED085C /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC8310B2B18298400ED085C /* UserData.swift */; };
 		3DD88D622AE87D9E0018291D /* Shift_RadarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD88D612AE87D9E0018291D /* Shift_RadarApp.swift */; };
@@ -83,6 +85,8 @@
 		3D92F39E2AE8B58F0032DE1F /* StaffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaffView.swift; sourceTree = "<group>"; };
 		3D92F3A02AE8B7650032DE1F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		3D92F3A42AE9A8540032DE1F /* ShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiftView.swift; sourceTree = "<group>"; };
+		3D9BE8052B3E36310028034B /* FilterSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSelector.swift; sourceTree = "<group>"; };
+		3D9BE8082B3E390F0028034B /* PositionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionSelector.swift; sourceTree = "<group>"; };
 		3DC831092B18283200ED085C /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		3DC8310B2B18298400ED085C /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		3DD88D5E2AE87D9E0018291D /* Shift Radar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shift Radar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -191,6 +195,15 @@
 			path = Login;
 			sourceTree = "<group>";
 		};
+		3D9BE8072B3E38EF0028034B /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				3D9BE8052B3E36310028034B /* FilterSelector.swift */,
+				3D9BE8082B3E390F0028034B /* PositionSelector.swift */,
+			);
+			path = Objects;
+			sourceTree = "<group>";
+		};
 		3DD88D552AE87D9E0018291D = {
 			isa = PBXGroup;
 			children = (
@@ -234,6 +247,7 @@
 		3DEF31362AF58BD5009F6737 /* Offer */ = {
 			isa = PBXGroup;
 			children = (
+				3D9BE8072B3E38EF0028034B /* Objects */,
 				3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */,
 				3D92F39A2AE8B4770032DE1F /* OfferShiftView.swift */,
 				3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */,
@@ -382,6 +396,7 @@
 				3D13CC822AF9C17E00E14CF4 /* OfferShiftViewModal.swift in Sources */,
 				3D12E3B42AFC5A2300C38AB2 /* Shift.swift in Sources */,
 				3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */,
+				3D9BE8062B3E36310028034B /* FilterSelector.swift in Sources */,
 				3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */,
 				3D92F3992AE8B4370032DE1F /* PickupShiftView.swift in Sources */,
 				3DD88D642AE87D9E0018291D /* LoginView.swift in Sources */,
@@ -396,6 +411,7 @@
 				3DDE1C772B377D4E005BBB6E /* ReviewOfferViewModal.swift in Sources */,
 				3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModel.swift in Sources */,
 				3DC8310C2B18298400ED085C /* UserData.swift in Sources */,
+				3D9BE8092B3E390F0028034B /* PositionSelector.swift in Sources */,
 				3D23BA162B071F6900E745A9 /* PickupShiftViewModel.swift in Sources */,
 				3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */,
 				3DD88D622AE87D9E0018291D /* Shift_RadarApp.swift in Sources */,

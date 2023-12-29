@@ -13,69 +13,22 @@ import FirebaseDatabase
 import FirebaseFunctions
 
 class OfferShiftModel: ObservableObject {
-    
-    enum PositionFilters: String {
-        case RAMP
-        case FLOATER
-        case BAGROOM = "BAG"
-        case OTHER
-        
-        var displayName: String {
-            switch self {
-            case .BAGROOM:
-                return "BAGROOM"
-            default:
-                return self.rawValue
-            }
-        }
-    }
-    
     @Published var confirmOffer: Bool = false
-    @Published var filters: [PositionFilters] = [.RAMP, .FLOATER, .BAGROOM, .OTHER]
     @Published var isSaving: Bool = false
     @Published var isEditing: Bool
-    
-    @Published var menuOptions: [String] = [] {
-        didSet {
-            if !menuOptions.isEmpty {
-                shift.location = menuOptions[0]
-            }
-        }
-    }
-    @Published var optionFilter: String = ""
     @Published var shift = Shift()
     @Published var shiftErrorType: ShiftErrorType?
     
-    var filteredMenuOptions: [String] {
-        if optionFilter == "OTHER" {
-            return menuOptions.filter { option in
-                filters.filter { $0 != .OTHER }.allSatisfy { !option.contains($0.rawValue) }
-            }
-        } else {
-            let filter = optionFilter == "BAGROOM" ? "BAG" : optionFilter
-            return menuOptions.filter { $0.contains(filter) || filter.isEmpty }
-        }
-    }
-    
-    private var lastOptionsUpdate: TimeInterval {
-        get { UserDefaults.standard.double(forKey: "lastOptionsUpdate") }
-        set { UserDefaults.standard.set(newValue, forKey: "lastOptionsUpdate") }
-    }
+    // Filters
+    @Published var positionFilters: [FilterOption] = []
+    @Published var selectedPositionFilter: FilterOption?
+    @Published var locationFilters: [FilterOption] = []
+    @Published var selectedLocationFilter: FilterOption?
     
     init(shift: Shift, isEditing: Bool = false) {
         self.shift = shift
         self.isEditing = isEditing
-        loadMenuOptionsIfNeeded()
-    }
-    
-    func applyOptionFilter(_ filter: String?) {
-        optionFilter = filter ?? ""
-        shift.location = filteredMenuOptions[0]
-    }
-    
-    // Mettez en cache les options dans UserDefaults
-    private func cacheMenuOptions(options: [String]) {
-        UserDefaults.standard.set(options, forKey: "cachedMenuOptions")
+        self.loadFilters()
     }
     
     func changeCompensationType(newValue: CompensationType) {
@@ -94,11 +47,6 @@ class OfferShiftModel: ObservableObject {
             shift.compensation.amount = nil
             shift.compensation.availabilities = shift.compensation.availabilities ?? []
         }
-    }
-    
-    // Obtenez les options mises en cache de UserDefaults
-    private func getCachedMenuOptions() -> [String] {
-        return UserDefaults.standard.stringArray(forKey: "cachedMenuOptions") ?? []
     }
     
     func hoursBetweenShiftTimes() -> Int {
@@ -151,6 +99,16 @@ class OfferShiftModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    private func loadFilters() {
+        self.positionFilters.append(FilterOption(displayName: "FLOATER", filterValues: ["FLOATER"]))
+        self.positionFilters.append(FilterOption(displayName: "RAMP", filterValues: ["RAMP"]))
+        self.positionFilters.append(FilterOption(displayName: "BAGROOM", filterValues: ["BAG"]))
+        
+        self.locationFilters.append(FilterOption(displayName: "DOMESTIC", filterValues: ["_D_", "_DOM"]))
+        self.locationFilters.append(FilterOption(displayName: "TRANSBORDER", filterValues: ["_TB_", "_TBR"]))
+        self.locationFilters.append(FilterOption(displayName: "INTERNATIONAL", filterValues: ["_IT_"]))
     }
     
     // MARK: - Firebase functions
@@ -222,37 +180,6 @@ class OfferShiftModel: ObservableObject {
         }
         shiftErrorType = nil
         return true
-    }
-    
-    // Vérifiez si une mise à jour est nécessaire avant de charger les options
-    func loadMenuOptionsIfNeeded() {
-        let ref = Database.database().reference(withPath: "dynamicData/locations/lastUpdated")
-        ref.observeSingleEvent(of: .value, with: { snapshot in
-            if let timestamp = snapshot.value as? TimeInterval, timestamp > self.lastOptionsUpdate {
-                self.loadMenuOptions()
-                self.lastOptionsUpdate = timestamp
-            } else {
-                self.menuOptions = self.getCachedMenuOptions().sorted()
-            }
-        })
-    }
-    
-    // Chargez les options de Firebase et mettez-les en cache
-    private func loadMenuOptions() {
-        let ref = Database.database().reference(withPath: "dynamicData/locations/options")
-        ref.observeSingleEvent(of: .value, with: { snapshot in
-            var newOptions: [String] = []
-            for child in snapshot.children {
-                if let snapshot = child as? DataSnapshot,
-                   let value = snapshot.value as? String {
-                    newOptions.append(value)
-                }
-            }
-            DispatchQueue.main.async {
-                self.menuOptions = newOptions.sorted()
-                self.cacheMenuOptions(options: newOptions)
-            }
-        })
     }
     
     // MARK: - Cloud Functions

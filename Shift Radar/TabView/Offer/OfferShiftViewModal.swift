@@ -144,10 +144,9 @@ struct ShiftDetailView: View {
                             Text("Position:")
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.secondary)
-                            BoxSelector(options: model.filters.map { $0.displayName }, selectedOption: model.optionFilter)
-                                .onSelectionChanged { selection in
-                                    model.applyOptionFilter(selection)
-                                }
+                            FilterSelector(filters: $model.positionFilters) { filter in
+                                model.selectedPositionFilter = filter
+                            }
                         }
                         .padding(.bottom, 10)
                         HStack {
@@ -155,7 +154,9 @@ struct ShiftDetailView: View {
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.secondary)
                             ScrollView(.horizontal) {
-                                BoxSelector(options: ["DOMESTIC", "TRANSBORDER", "INTERNATIONAL", "OTHER"])
+                                FilterSelector(filters: $model.locationFilters) { filter in
+                                    model.selectedLocationFilter = filter
+                                }
                             }
                             .scrollIndicators(.hidden)
                             .background(
@@ -174,18 +175,9 @@ struct ShiftDetailView: View {
                             .edgesIgnoringSafeArea(.horizontal)
                         }
                         .padding(.bottom, 10)
-                        Picker("", selection: $model.shift.location) {
-                            ForEach(model.filteredMenuOptions, id: \.self) {
-                                Text($0)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .frame(height: 50)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
-                        )
+                        
+                        PositionSelector(positionFilter: $model.selectedPositionFilter, locationFilter: $model.selectedLocationFilter, selection: $model.shift.location)
+                        
                         Text("COMPENSATION")
                             .font(.system(size: 15, weight: .semibold, design: .rounded))
                             .padding(.vertical, 5)
