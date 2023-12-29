@@ -195,13 +195,13 @@
 			path = Login;
 			sourceTree = "<group>";
 		};
-		3D9BE8072B3E38EF0028034B /* Objects */ = {
+		3D9BE8072B3E38EF0028034B /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
 				3D9BE8052B3E36310028034B /* FilterSelector.swift */,
 				3D9BE8082B3E390F0028034B /* PositionSelector.swift */,
 			);
-			path = Objects;
+			path = CustomViews;
 			sourceTree = "<group>";
 		};
 		3DD88D552AE87D9E0018291D = {
@@ -247,7 +247,7 @@
 		3DEF31362AF58BD5009F6737 /* Offer */ = {
 			isa = PBXGroup;
 			children = (
-				3D9BE8072B3E38EF0028034B /* Objects */,
+				3D9BE8072B3E38EF0028034B /* CustomViews */,
 				3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */,
 				3D92F39A2AE8B4770032DE1F /* OfferShiftView.swift */,
 				3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */,
