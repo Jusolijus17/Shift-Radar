@@ -7,49 +7,6 @@
 
 import SwiftUI
 
-struct BoxSelector: View {
-    let options: [String]
-    @State var selectedOption: String?
-    
-    var selectionChanged: (String?) -> Void = { _ in }
-    
-    var body: some View {
-        HStack {
-            ForEach(options, id: \.self) { option in
-                Text(option)
-                    .font(.system(size: 12, design: .rounded))
-                    .padding(5)
-                    .background {
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(selectedOption == option ? Color.accentColor : Color.clear)
-                            .strokeBorder(style: StrokeStyle(lineWidth: selectedOption == option ? 0 : 1, dash: [4, 4]))
-                    }
-                    .foregroundColor(selectedOption == option ? Color.white : .secondary)
-                    .onTapGesture {
-                        withAnimation {
-                            if selectedOption == option {
-                                selectedOption = nil
-                                selectionChanged(nil)
-                            } else {
-                                selectedOption = option
-                                selectionChanged(option)
-                            }
-                        }
-                    }
-                    .sensoryFeedback(.impact, trigger: selectedOption)
-            }
-        }
-    }
-}
-
-extension BoxSelector {
-    func onSelectionChanged(_ selection: @escaping (String?) -> Void) -> Self {
-        var copy = self
-        copy.selectionChanged = selection
-        return copy
-    }
-}
-
 struct CustomSecureField: View {
     @Binding var text: String
     var placeholder: String
