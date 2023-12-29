@@ -42,6 +42,7 @@ struct FilterSelector: View {
                             }
                         }
                     }
+                    .sensoryFeedback(.impact, trigger: $selectedFilter.wrappedValue)
             }
         }
     }

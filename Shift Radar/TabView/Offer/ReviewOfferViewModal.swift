@@ -109,7 +109,7 @@ struct OfferView: View {
             Text("\(shift.start, formatter: dateFormatter)")
                 .font(.callout)
                 .foregroundStyle(.secondary)
-            Text(shift.location)
+            Text(shift.location!)
                 .fontWeight(.semibold)
             Text("\(shift.start, formatter: timeFormatter) - \(shift.end, formatter: timeFormatter)")
                 .foregroundStyle(.secondary)

@@ -99,7 +99,7 @@ struct ShiftView: View {
                             .foregroundStyle(.secondary)
                     }
                     HStack {
-                        Text(shift.location)
+                        Text(shift.location!)
                             .fontWeight(.semibold)
                             .minimumScaleFactor(0.6)
                             .lineLimit(1)

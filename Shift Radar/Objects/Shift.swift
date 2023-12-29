@@ -15,7 +15,7 @@ struct Shift: Codable, Hashable, Identifiable {
     var offeredDate: Date?
     var start: Date
     var end: Date
-    var location: String
+    var location: String?
     var compensation: Compensation
     var offersRef: [String]?
     
@@ -33,7 +33,6 @@ struct Shift: Codable, Hashable, Identifiable {
             self.start = currentDate
             self.end = currentDate
         }
-        self.location = "UNKNOWN_LOCATION"
         self.compensation = Compensation(type: .give)
     }
     

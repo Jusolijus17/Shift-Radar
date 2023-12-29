@@ -127,14 +127,16 @@ struct TabViewManager_Previews: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State private var selectedTab: Int
+        @StateObject private var appModel = AppViewModel()
         
         init(selectedTab: Int) {
             self._selectedTab = State(initialValue: selectedTab)
+            appModel.userData = UserData()
         }
         
         var body: some View {
             TabViewManager(selectedTab: selectedTab)
-                .environmentObject(AppViewModel())
+                .environmentObject(appModel)
         }
     }
 }
