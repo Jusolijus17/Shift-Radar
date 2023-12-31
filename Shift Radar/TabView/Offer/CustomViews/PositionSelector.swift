@@ -88,7 +88,7 @@ class PositionSelectorModel: ObservableObject {
 struct PositionSelector: View {
     @Binding var positionFilter: FilterOption?
     @Binding var locationFilter: FilterOption?
-    @Binding var selection: String?
+    @Binding var selection: String
     
     @StateObject private var model = PositionSelectorModel()
     
@@ -101,10 +101,11 @@ struct PositionSelector: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
                     .onAppear {
-                        selection = nil
+                        selection = "NO_SELECTION"
                     }
             } else {
                 Picker("", selection: $selection) {
+                    Text("No selection").tag("NO_SELECTION")
                     ForEach(model.positions, id: \.self) {
                         Text($0)
                     }
@@ -116,7 +117,7 @@ struct PositionSelector: View {
                     RoundedRectangle(cornerRadius: 5)
                         .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
                 )
-                .onAppear {
+                .onChange(of: model.positions) {
                     selection = model.positions[0]
                 }
             }

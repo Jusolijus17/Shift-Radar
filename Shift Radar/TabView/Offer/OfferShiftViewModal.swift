@@ -425,7 +425,7 @@ struct ConfirmShiftView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
-                Text(shift.location!)
+                Text(shift.location)
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
                 
                 Text("\(shift.start, formatter: timeFormatter) - \(shift.end, formatter: timeFormatter)")

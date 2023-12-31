@@ -37,7 +37,7 @@ class PickupShiftModel: ObservableObject {
     func pickupShift(shiftId: String?, userData: UserData?, completion: @escaping (Result<String, Error>) -> Void) {
         guard let shiftId = shiftId, let userData = userData else {
             print("No shift id or userData found")
-            self.error = ErrorAlert(title: "Error accepting shift", message: "No shift id found")
+            self.error = ErrorAlert(title: "Error accepting shift", message: "Shift ID or user data not found")
             completion(.failure(NSError()))
             return
         }
