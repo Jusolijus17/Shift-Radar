@@ -50,6 +50,7 @@
 		3D92F3A52AE9A8540032DE1F /* ShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3A42AE9A8540032DE1F /* ShiftView.swift */; };
 		3D9BE8062B3E36310028034B /* FilterSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9BE8052B3E36310028034B /* FilterSelector.swift */; };
 		3D9BE8092B3E390F0028034B /* PositionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9BE8082B3E390F0028034B /* PositionSelector.swift */; };
+		3D9BE80D2B3F69F60028034B /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9BE80C2B3F69F60028034B /* SearchView.swift */; };
 		3DC8310A2B18283200ED085C /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC831092B18283200ED085C /* AppViewModel.swift */; };
 		3DC8310C2B18298400ED085C /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC8310B2B18298400ED085C /* UserData.swift */; };
 		3DD88D622AE87D9E0018291D /* Shift_RadarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD88D612AE87D9E0018291D /* Shift_RadarApp.swift */; };
@@ -87,6 +88,7 @@
 		3D92F3A42AE9A8540032DE1F /* ShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiftView.swift; sourceTree = "<group>"; };
 		3D9BE8052B3E36310028034B /* FilterSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSelector.swift; sourceTree = "<group>"; };
 		3D9BE8082B3E390F0028034B /* PositionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionSelector.swift; sourceTree = "<group>"; };
+		3D9BE80C2B3F69F60028034B /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		3DC831092B18283200ED085C /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		3DC8310B2B18298400ED085C /* UserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		3DD88D5E2AE87D9E0018291D /* Shift Radar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shift Radar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -177,6 +179,7 @@
 		3D13CC872AF9C2B500E14CF4 /* Pickup */ = {
 			isa = PBXGroup;
 			children = (
+				3D9BE80B2B3F69E40028034B /* CustomViews */,
 				3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */,
 				3D23BA152B071F6900E745A9 /* PickupShiftViewModel.swift */,
 				3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */,
@@ -200,6 +203,14 @@
 			children = (
 				3D9BE8052B3E36310028034B /* FilterSelector.swift */,
 				3D9BE8082B3E390F0028034B /* PositionSelector.swift */,
+			);
+			path = CustomViews;
+			sourceTree = "<group>";
+		};
+		3D9BE80B2B3F69E40028034B /* CustomViews */ = {
+			isa = PBXGroup;
+			children = (
+				3D9BE80C2B3F69F60028034B /* SearchView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -414,6 +425,7 @@
 				3D9BE8092B3E390F0028034B /* PositionSelector.swift in Sources */,
 				3D23BA162B071F6900E745A9 /* PickupShiftViewModel.swift in Sources */,
 				3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */,
+				3D9BE80D2B3F69F60028034B /* SearchView.swift in Sources */,
 				3DD88D622AE87D9E0018291D /* Shift_RadarApp.swift in Sources */,
 				3DEF31352AF58B50009F6737 /* OfferShiftViewModel.swift in Sources */,
 				3D92F3A52AE9A8540032DE1F /* ShiftView.swift in Sources */,

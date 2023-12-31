@@ -173,7 +173,7 @@ class OfferShiftModel: ObservableObject {
             print("Shift must be at least 1h.")
             return false
         }
-        guard shift.location != nil else {
+        guard shift.location != "NO_SELECTION" else {
             shiftErrorType = .location
             print("Please select your location.")
             return false

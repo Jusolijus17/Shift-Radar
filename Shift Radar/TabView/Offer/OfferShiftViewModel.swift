@@ -10,7 +10,6 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 import FirebaseFunctions
 import FirebaseAuth
-import Foundation
 
 class OfferShiftViewModel: ObservableObject {
     @Published var isLoadingShifts: Bool = false
