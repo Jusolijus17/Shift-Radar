@@ -16,6 +16,7 @@ class PickupShiftViewModel: ObservableObject {
     private var shiftsListener: ListenerRegistration?
     @Published var offeredShifts: [Shift] = []
     @Published var filteredShifts: [Shift] = []
+    @Published var isSearching: Bool = false
     
     init() {
         createAllShiftsObserver()
@@ -74,6 +75,7 @@ class PickupShiftViewModel: ObservableObject {
             self.clearSearch()
             return
         }
+        self.isSearching = true
         
         let db = Firestore.firestore()
         let shiftsRef = db.collection("shifts")
@@ -83,7 +85,10 @@ class PickupShiftViewModel: ObservableObject {
         
         let startOfDay = Calendar.current.startOfDay(for: startDate)
         
-        guard let userUid = Auth.auth().currentUser?.uid else { return }
+        guard let userUid = Auth.auth().currentUser?.uid else {
+            print("User not connected")
+            return
+        }
         
         shiftsRef.whereField("end", isLessThanOrEqualTo: Timestamp(date: dayAfterEndDate))
             .getDocuments { [weak self] querySnapshot, error in
@@ -111,6 +116,7 @@ class PickupShiftViewModel: ObservableObject {
     
     private func clearSearch() {
         self.filteredShifts = []
+        self.isSearching = false
     }
     
     private func stopListeningToOfferedShifts() {

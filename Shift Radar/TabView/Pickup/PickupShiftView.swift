@@ -42,7 +42,7 @@ struct PickupShiftView: View {
                 }
                 .padding(.horizontal)
                 
-                if !viewModel.offeredShifts.isEmpty || !viewModel.filteredShifts.isEmpty {
+                if (!viewModel.offeredShifts.isEmpty && !viewModel.isSearching) || (!viewModel.filteredShifts.isEmpty && viewModel.isSearching) {
                     ScrollView {
                         VStack(spacing: 10) {
                             ForEach(viewModel.filteredShifts.isEmpty ? $viewModel.offeredShifts : $viewModel.filteredShifts) { $shift in
@@ -71,12 +71,12 @@ struct PickupShiftView: View {
                     Spacer()
                     Image("desert")
                         .padding()
-                    Text("No shifts offered right now")
+                    Text(viewModel.isSearching ? "No search results" : "No shifts offered right now")
                         .font(.title3)
                         .fontWeight(.semibold)
                         .padding(.vertical, 5)
                         .foregroundStyle(Color.gray)
-                    Text("You can still search for past shifts")
+                    Text(viewModel.isSearching ? "Try searching for different dates" : "You can still search for past shifts")
                         .font(.caption)
                         .foregroundStyle(Color.gray)
                     Spacer()
@@ -88,8 +88,8 @@ struct PickupShiftView: View {
     
     private func getListTitle() -> String {
         let count = viewModel.filteredShifts.count
-        let resultString = count == 1 ? "result" : "results"
-        return "Available shifts" + (count > 0 ? " (\(count) \(resultString))" : "")
+        let resultString = count <= 1 ? "result" : "results"
+        return "Available shifts" + (viewModel.isSearching ? " (\(count) \(resultString))" : "")
     }
 }
 
