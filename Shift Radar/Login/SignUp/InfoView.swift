@@ -24,7 +24,7 @@ struct InfoView: View {
                     .background {
                         RoundedRectangle(cornerRadius: 10.0)
                             .fill(.white)
-                            .stroke(Color(hex: "#D7EAE7"), lineWidth: 1.5)
+                            .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
                     }
                 }
                 
@@ -53,7 +53,7 @@ struct InfoView: View {
                 .background {
                     RoundedRectangle(cornerRadius: 10.0)
                         .fill(.white)
-                        .stroke(Color(hex: "#D7EAE7"), lineWidth: 1.5)
+                        .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
                 }
             }
         }
@@ -79,7 +79,7 @@ struct PictureView: View {
             } else {
                 RoundedRectangle(cornerRadius: 14)
                     .fill(.white)
-                    .stroke(Color(hex: "#D7EAE7"), lineWidth: 1.5)
+                    .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
                     .frame(width: 140, height: 140)
                     .shadow(radius: 10)
                     .overlay {

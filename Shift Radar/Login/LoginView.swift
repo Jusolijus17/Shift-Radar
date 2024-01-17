@@ -27,7 +27,7 @@ struct LoginView: View {
                         .background {
                             RoundedRectangle(cornerRadius: 10.0)
                                 .fill(.white)
-                                .stroke(Color(hex: "#D7EAE7"), lineWidth: 1.5)
+                                .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
                         }
                     
                     CustomSecureField(text: $password, placeholder: "Password", systemName: "lock")
@@ -35,7 +35,7 @@ struct LoginView: View {
                         .background {
                             RoundedRectangle(cornerRadius: 10.0)
                                 .fill(.white)
-                                .stroke(Color(hex: "#D7EAE7"), lineWidth: 1.5)
+                                .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
                         }
                     
                     Button {
