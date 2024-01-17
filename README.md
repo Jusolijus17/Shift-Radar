@@ -12,8 +12,10 @@ Shift-Radar est une application iOS conçue pour les employés d'Air Canada, fac
 
 ## Aperçu
 
-<img src="https://github.com/Jusolijus17/Shift-Radar/assets/38826625/238f3921-6cde-4d7a-b3f2-6ec4c61c9c1f" width="300">
-<img src="https://github.com/Jusolijus17/Shift-Radar/assets/38826625/6042b882-9d82-455d-8833-e26d1642903a" width="300">
+<img src="https://github.com/Jusolijus17/Shift-Radar/assets/38826625/ae8d2153-2b9c-4c6f-916f-6eda8426205d" width="300">
+<img src="https://github.com/Jusolijus17/Shift-Radar/assets/38826625/b9236ad7-cc62-4909-b7c1-496423e013a9" width="300">
+<img src="https://github.com/Jusolijus17/Shift-Radar/assets/38826625/eca2ca7e-af36-4fbf-b214-570dfd57bebb" width="300">
+<img src="https://github.com/Jusolijus17/Shift-Radar/assets/38826625/4b420f1f-2f25-485d-98cc-43199bafa98f" width="300">
 
 ## Installation
 Bientôt disponible sur TestFlight pour tester la version bêta.
