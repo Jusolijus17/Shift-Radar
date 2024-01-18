@@ -21,78 +21,7 @@ struct SignUpView: View {
     @EnvironmentObject var loginManagerData: LoginManagerData
     
     var body: some View {
-        
-        ScrollView {
-            VStack {
-                viewModel.accountCreationState == .success ? Spacer() : nil
-                PictureView(showSheet: $showSheet, profilePicture: $viewModel.profilePicture)
-                    .padding(.top, viewModel.accountCreationState == .emailConfirmation ? 100 : 20)
-                
-                if viewModel.accountCreationState == .emailConfirmation || viewModel.accountCreationState == .success {
-                    Text(viewModel.labelText)
-                        .foregroundStyle(viewModel.accountCreationState == .success ? Color.white : Color.black)
-                        .font(.headline)
-                        .padding(.vertical, 22)
-                        .transition(.opacity)
-                }
-                if viewModel.accountCreationState == .basicInfo {
-                    Spacer()
-                    InfoView(password: $viewModel.password, confirmPassword: $viewModel.confirmPassword)
-                        .transition(.move(edge: .leading).combined(with: .opacity))
-                    Spacer()
-                }
-                
-                if viewModel.accountCreationState == .emailConfirmation {
-                    EmailConfirmView()
-                }
-                
-                if let error = viewModel.error {
-                    Text(error)
-                        .foregroundStyle(.red)
-                }
-                
-                Spacer()
-                
-                if viewModel.accountCreationState == .basicInfo && !viewModel.isLoading {
-                    Button("Already have an account? Login.") {
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                    .disabled(viewModel.isLoading)
-                }
-                
-                Button(action: {
-                    buttonTap()
-                }, label: {
-                    if viewModel.isLoading {
-                        ProgressView()
-                            .frame(width: 25, height: 25)
-                    } else {
-                        Text(viewModel.buttonText)
-                            .transition(.identity)
-                            .frame(maxWidth: .infinity)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .padding()
-                            .background {
-                                RoundedRectangle(cornerRadius: 25.0)
-                                    .fill(Color.accentColor)
-                            }
-                            .opacity(viewModel.isLoading ? 0.6 : 1)
-                            .padding(.horizontal)
-                    }
-                })
-                //.disabled(isLoading || accountCreationState == .emailConfirmation)
-                
-            }
-            .sheet(isPresented: $showSheet) {
-                ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
-                    .onDisappear(perform: {
-                        viewModel.profilePicture = image
-                    })
-            }
-            .environmentObject(viewModel.userData)
-        }
-        .background {
+        ZStack {
             GeometryReader { geo in
                 SemiRoundedRectangle(curveHeight: viewModel.accountCreationState == .success ? 0 : 30)
                     .fill(Color.accentColor2)
@@ -101,6 +30,77 @@ struct SignUpView: View {
             }
             .background(Color.background)
             .ignoresSafeArea()
+            
+            ScrollView {
+                VStack {
+                    viewModel.accountCreationState == .success ? Spacer() : nil
+                    PictureView(showSheet: $showSheet, profilePicture: $viewModel.profilePicture)
+                        .padding(.top, viewModel.accountCreationState == .emailConfirmation ? 100 : 20)
+                    
+                    if viewModel.accountCreationState == .emailConfirmation || viewModel.accountCreationState == .success {
+                        Text(viewModel.labelText)
+                            .foregroundStyle(viewModel.accountCreationState == .success ? Color.white : Color.black)
+                            .font(.headline)
+                            .padding(.vertical, 22)
+                            .transition(.opacity)
+                    }
+                    if viewModel.accountCreationState == .basicInfo {
+                        Spacer()
+                        InfoView(password: $viewModel.password, confirmPassword: $viewModel.confirmPassword)
+                            .transition(.move(edge: .leading).combined(with: .opacity))
+                        Spacer()
+                    }
+                    
+                    if viewModel.accountCreationState == .emailConfirmation {
+                        EmailConfirmView()
+                    }
+                    
+                    if let error = viewModel.error {
+                        Text(error)
+                            .foregroundStyle(.red)
+                    }
+                    
+                    Spacer()
+                    
+                    if viewModel.accountCreationState == .basicInfo && !viewModel.isLoading {
+                        Button("Already have an account? Login.") {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                        .disabled(viewModel.isLoading)
+                    }
+                    
+                    Button(action: {
+                        buttonTap()
+                    }, label: {
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .frame(width: 25, height: 25)
+                        } else {
+                            Text(viewModel.buttonText)
+                                .transition(.identity)
+                                .frame(maxWidth: .infinity)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                                .padding()
+                                .background {
+                                    RoundedRectangle(cornerRadius: 25.0)
+                                        .fill(Color.accentColor)
+                                }
+                                .opacity(viewModel.isLoading ? 0.6 : 1)
+                                .padding(.horizontal)
+                        }
+                    })
+                    //.disabled(isLoading || accountCreationState == .emailConfirmation)
+                    
+                }
+                .sheet(isPresented: $showSheet) {
+                    ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
+                        .onDisappear(perform: {
+                            viewModel.profilePicture = image
+                        })
+                }
+                .environmentObject(viewModel.userData)
+            }
         }
     }
     

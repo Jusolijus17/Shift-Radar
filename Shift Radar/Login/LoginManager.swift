@@ -24,7 +24,7 @@ struct LoginManager: View {
             if loginManagerData.isUserLoggedIn {
                 TabViewManager()
             } else {
-                LoginView()
+                SplashScreen()
                     .environmentObject(loginManagerData)
             }
         }
@@ -68,4 +68,5 @@ struct LoginManager: View {
 
 #Preview {
     LoginManager()
+        .environmentObject(AppViewModel())
 }
