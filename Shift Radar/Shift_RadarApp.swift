@@ -23,6 +23,11 @@ struct Shift_RadarApp: App {
     var body: some Scene {
         WindowGroup {
             LoginManager()
+                .onAppear {
+#if DEBUG
+                    UserDefaults.standard.set(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
+#endif
+                }
         }
         .environmentObject(appModel)
     }
