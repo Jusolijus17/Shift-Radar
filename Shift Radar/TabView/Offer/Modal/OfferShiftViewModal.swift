@@ -136,43 +136,19 @@ struct ShiftDetailView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
+                        
                         Text("LOCATION")
                             .font(.system(size: 15, weight: .semibold, design: .rounded))
                             .foregroundStyle(model.shiftErrorType == .location ? Color.red : Color.black)
                             .padding(.vertical, 5)
-                        HStack {
-                            Text("Position:")
-                                .font(.system(size: 10, weight: .semibold, design: .rounded))
-                                .foregroundStyle(.secondary)
-                            FilterSelector(filters: $model.positionFilters) { filter in
-                                model.selectedPositionFilter = filter
-                            }
+                        
+                        FilterSelector(filters: $model.positionFilters) { filter in
+                            model.selectedPositionFilter = filter
                         }
                         .padding(.bottom, 10)
-                        HStack {
-                            Text("Location:")
-                                .font(.system(size: 10, weight: .semibold, design: .rounded))
-                                .foregroundStyle(.secondary)
-                            ScrollView(.horizontal) {
-                                FilterSelector(filters: $model.locationFilters) { filter in
-                                    model.selectedLocationFilter = filter
-                                }
-                            }
-                            .scrollIndicators(.hidden)
-                            .background(
-                                GeometryReader { geometry in
-                                    HStack {
-                                        Spacer()
-                                        // Ombre à droite
-                                        LinearGradient(gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.1)]), startPoint: .leading, endPoint: .trailing)
-                                            .frame(width: 10)
-                                            .blur(radius: 3)
-                                    }
-                                    .frame(width: geometry.size.width, height: geometry.size.height)
-                                }
-                                    .clipped()
-                            )
-                            .edgesIgnoringSafeArea(.horizontal)
+                        
+                        FilterSelector(filters: $model.locationFilters) { filter in
+                            model.selectedLocationFilter = filter
                         }
                         .padding(.bottom, 10)
                         

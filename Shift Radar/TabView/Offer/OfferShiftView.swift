@@ -85,20 +85,20 @@ struct OfferShiftView: View {
                     ForEach($viewModel.offeredShifts) { $shift in
                         ShiftView(shift: $shift)
                             .showMoreActions()
-                            .showOffers()
                             .onDelete {
                                 viewModel.deleteShift(shift)
                             }
                             .onEdit {
                                 viewModel.selectShiftForEditing(shift)
                             }
-                            .onTap {
-                                if (shift.offersRef?.count ?? 0) != 0 {
-                                    viewModel.selectShiftForReview(shift)
-                                } else {
-                                    
-                                }
-                            }
+                        // TODO remove this
+//                            .onTap {
+//                                if (shift.offersRef?.count ?? 0) != 0 {
+//                                    viewModel.selectShiftForReview(shift)
+//                                } else {
+//                                    
+//                                }
+//                            }
                             .padding(.horizontal)
                             .alert(isPresented: $viewModel.showAlert, content: {
                                 Alert(
