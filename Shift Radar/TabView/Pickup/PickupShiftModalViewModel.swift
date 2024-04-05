@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFunctions
 
-class PickupShiftModel: ObservableObject {
+class PickupShiftModalViewModel: ObservableObject {
     @Published var error: ErrorAlert?
     
     func deleteShift(_ shift: Shift, completion: @escaping (Result<String?, Error>) -> Void) {

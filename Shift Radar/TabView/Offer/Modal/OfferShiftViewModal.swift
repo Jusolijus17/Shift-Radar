@@ -11,13 +11,13 @@ struct OfferShiftModalView: View {
     @EnvironmentObject var viewModel: OfferShiftViewModel
     @Environment(\.dismiss) var dismiss
     
-    @StateObject var model: OfferShiftModel
+    @StateObject var model: OfferShiftModalViewModel
     
     @State private var success: Bool = false
     @State private var showError: Bool = false
     
     init(shift: Shift, isEditing: Bool) {
-        _model = StateObject(wrappedValue: OfferShiftModel(shift: shift, isEditing: isEditing))
+        _model = StateObject(wrappedValue: OfferShiftModalViewModel(shift: shift, isEditing: isEditing))
     }
     
     var body: some View {
@@ -80,7 +80,7 @@ struct OfferShiftModalView: View {
 
 struct ShiftDetailView: View {
     @EnvironmentObject var viewModel: OfferShiftViewModel
-    @EnvironmentObject var model: OfferShiftModel
+    @EnvironmentObject var model: OfferShiftModalViewModel
     @Environment(\.dismiss) var dismiss
     
     @State private var vibrate: Bool = false
@@ -254,7 +254,7 @@ struct ShiftDetailView: View {
 }
 
 struct CompensationView: View {
-    @EnvironmentObject var model: OfferShiftModel
+    @EnvironmentObject var model: OfferShiftModalViewModel
     @State private var sliderValue: Double = 0
     
     var body: some View {
@@ -343,7 +343,7 @@ struct CompensationView: View {
 }
 
 struct AvailabilitiesView: View {
-    @EnvironmentObject var model: OfferShiftModel
+    @EnvironmentObject var model: OfferShiftModalViewModel
     @State private var newAvailabilityDate = Date()
     @State private var newAvailabilityStartTime = Date()
     @State private var newAvailabilityEndTime = Date()
