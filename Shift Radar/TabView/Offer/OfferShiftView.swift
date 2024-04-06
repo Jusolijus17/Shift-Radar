@@ -68,35 +68,50 @@ struct OfferShiftView: View {
             }
             .padding([.horizontal, .top])
             .frame(maxWidth: .infinity, alignment: .leading)
-            ScrollView {
-                VStack(spacing: 20) {
-                    ForEach($viewModel.offeredShifts) { $shift in
-                        ShiftView(shift: $shift)
-                            .showMoreActions()
-                            .onDelete {
-                                viewModel.deleteShift(shift)
-                            }
-                            .onEdit {
-                                viewModel.selectShiftForEditing(shift)
-                            }
-                            .padding(.horizontal)
-                            .alert(isPresented: $viewModel.showAlert, content: {
-                                Alert(
-                                    title: Text(self.viewModel.error?.title ?? "Error"),
-                                    message: Text(self.viewModel.error?.message ?? "Unknown error"),
-                                    dismissButton: .default(Text("OK")))
-                            })
+            
+            ZStack(alignment: .bottomTrailing) {
+                ScrollView {
+                    VStack(spacing: 20) {
+                        ForEach($viewModel.offeredShifts) { $shift in
+                            ShiftView(shift: $shift)
+                                .showMoreActions()
+                                .onDelete {
+                                    viewModel.deleteShift(shift)
+                                }
+                                .onEdit {
+                                    viewModel.selectShiftForEditing(shift)
+                                }
+                                .padding(.horizontal)
+                                .alert(isPresented: $viewModel.showAlert, content: {
+                                    Alert(
+                                        title: Text(self.viewModel.error?.title ?? "Error"),
+                                        message: Text(self.viewModel.error?.message ?? "Unknown error"),
+                                        dismissButton: .default(Text("OK")))
+                                })
+                        }
                     }
+                    .padding(.top, 15)
+                    .padding(1)
+                    
+                    Button {
+                        
+                    } label: {
+                        Text("Show past shifts")
+                            .underline()
+                    }
+                    .padding(.bottom)
+                    
                 }
-                .padding(.top, 15)
-                .padding(1)
+                .refreshable {
+                    await viewModel.refreshShifts()
+                }
                 
                 Button {
                     viewModel.showEditModal = true
                 } label: {
                     Label("Offer shift", systemImage: "plus")
                         .transition(.identity)
-                        .frame(maxWidth: .infinity)
+                        .frame(width: 150)
                         .fontWeight(.semibold)
                         .foregroundStyle(.white)
                         .padding()
@@ -104,21 +119,10 @@ struct OfferShiftView: View {
                             RoundedRectangle(cornerRadius: 18)
                                 .fill(Color.accentColor)
                         }
+                        .shadow(radius: 3)
                 }
                 .sensoryFeedback(.impact, trigger: viewModel.showEditModal)
-                .padding([.horizontal, .top])
-                
-                Button {
-                    
-                } label: {
-                    Text("Show past shifts")
-                        .underline()
-                }
-                .padding(.bottom)
-
-            }
-            .refreshable {
-                await viewModel.refreshShifts()
+                .padding([.horizontal, .bottom])
             }
         }
     }
