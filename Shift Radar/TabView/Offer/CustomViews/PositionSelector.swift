@@ -100,9 +100,6 @@ struct PositionSelector: View {
                     .foregroundColor(.gray)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
-                    .onAppear {
-                        selection = "NO_SELECTION"
-                    }
             } else {
                 Picker("", selection: $selection) {
                     Text("No selection").tag("NO_SELECTION")
