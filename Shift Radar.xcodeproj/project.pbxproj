@@ -56,6 +56,8 @@
 		3DDE1C7F2B3BF012005BBB6E /* ErrorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C7E2B3BF012005BBB6E /* ErrorAlert.swift */; };
 		3DE3235B2B5793B500126E29 /* SideBarStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3235A2B5793B500126E29 /* SideBarStack.swift */; };
 		3DE3235D2B589DC900126E29 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3235C2B589DC900126E29 /* SplashScreen.swift */; };
+		3DE487092BC11B0200B6324F /* ReviewPickupModalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE487082BC11B0200B6324F /* ReviewPickupModalViewModel.swift */; };
+		3DE4870C2BC11D9F00B6324F /* BrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE4870B2BC11D9F00B6324F /* BrowserView.swift */; };
 		3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEDAB4D2AECB45A00771E43 /* Shapes.swift */; };
 		3DEDAB502AECB67A00771E43 /* SuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */; };
 		3DEF31352AF58B50009F6737 /* OfferShiftViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */; };
@@ -98,6 +100,8 @@
 		3DDE1C7E2B3BF012005BBB6E /* ErrorAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorAlert.swift; sourceTree = "<group>"; };
 		3DE3235A2B5793B500126E29 /* SideBarStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarStack.swift; sourceTree = "<group>"; };
 		3DE3235C2B589DC900126E29 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
+		3DE487082BC11B0200B6324F /* ReviewPickupModalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPickupModalViewModel.swift; sourceTree = "<group>"; };
+		3DE4870B2BC11D9F00B6324F /* BrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserView.swift; sourceTree = "<group>"; };
 		3DEDAB4D2AECB45A00771E43 /* Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shapes.swift; sourceTree = "<group>"; };
 		3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessView.swift; sourceTree = "<group>"; };
 		3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferShiftViewModel.swift; sourceTree = "<group>"; };
@@ -176,6 +180,7 @@
 			isa = PBXGroup;
 			children = (
 				3D9BE80B2B3F69E40028034B /* CustomViews */,
+				3DE4870A2BC11D7200B6324F /* ReviewPickup */,
 				3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */,
 				3D23BA152B071F6900E745A9 /* PickupShiftViewModel.swift */,
 				3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */,
@@ -252,6 +257,16 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		3DE4870A2BC11D7200B6324F /* ReviewPickup */ = {
+			isa = PBXGroup;
+			children = (
+				3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */,
+				3DE487082BC11B0200B6324F /* ReviewPickupModalViewModel.swift */,
+				3DE4870B2BC11D9F00B6324F /* BrowserView.swift */,
+			);
+			path = ReviewPickup;
+			sourceTree = "<group>";
+		};
 		3DEF31362AF58BD5009F6737 /* Offer */ = {
 			isa = PBXGroup;
 			children = (
@@ -259,7 +274,6 @@
 				3D9BE8072B3E38EF0028034B /* CustomViews */,
 				3D92F39A2AE8B4770032DE1F /* OfferShiftView.swift */,
 				3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */,
-				3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */,
 			);
 			path = Offer;
 			sourceTree = "<group>";
@@ -396,9 +410,11 @@
 				3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */,
 				3D9BE8062B3E36310028034B /* FilterSelector.swift in Sources */,
 				3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */,
+				3DE4870C2BC11D9F00B6324F /* BrowserView.swift in Sources */,
 				3D92F3992AE8B4370032DE1F /* PickupShiftView.swift in Sources */,
 				3DD88D642AE87D9E0018291D /* LoginView.swift in Sources */,
 				3D92F39D2AE8B5350032DE1F /* RequestShiftView.swift in Sources */,
+				3DE487092BC11B0200B6324F /* ReviewPickupModalViewModel.swift in Sources */,
 				3DF600752AEADAA6008F6971 /* InfoView.swift in Sources */,
 				3DDE1C792B379C3C005BBB6E /* PickupShiftViewModal.swift in Sources */,
 				3D92F3A12AE8B7650032DE1F /* Extensions.swift in Sources */,

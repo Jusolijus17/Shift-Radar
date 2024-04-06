@@ -10,6 +10,7 @@ import UIKit
 
 struct ReviewPickupModalView: View {
     @Environment(\.dismiss) var dismiss
+    @StateObject var viewModel = ReviewPickupModalViewModel()
     var shift: Shift
     @Binding var offers: [Offer]
     
@@ -40,7 +41,7 @@ struct ReviewPickupModalView: View {
                 
                 HStack(spacing: 15) {
                     Button {
-                        
+                        viewModel.declineOffer()
                     } label: {
                         Label("Decline", systemImage: "xmark")
                             .fontWeight(.semibold)
@@ -53,7 +54,7 @@ struct ReviewPickupModalView: View {
                             }
                     }
                     Button {
-                        
+                        viewModel.acceptOffer()
                     } label: {
                         Label("Accept", systemImage: "checkmark")
                             .fontWeight(.semibold)
@@ -84,9 +85,13 @@ struct ReviewPickupModalView: View {
                 }
             }
         }
+        .sheet(isPresented: $viewModel.openBrowser) {
+            BrowserView(url: viewModel.browserURL)
+                .ignoresSafeArea()
+        }
     }
     
-    func setupAppearance() {
+    private func setupAppearance() {
         UIPageControl.appearance().currentPageIndicatorTintColor = .accent
         UIPageControl.appearance().pageIndicatorTintColor = UIColor.gray.withAlphaComponent(0.5)
     }
