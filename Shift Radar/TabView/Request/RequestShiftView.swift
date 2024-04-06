@@ -18,12 +18,30 @@ struct RequestShiftView: View {
                 } else if !viewModel.userShiftsWithOffers.isEmpty {
                     OffersListView()
                 } else {
-                    Text("You have no offers right now")
-                        .foregroundStyle(.secondary)
+                    ZStack {
+                        Text("You have no offers right now")
+                            .foregroundStyle(.secondary)
+                        ScrollView { }
+                            .refreshable {
+                                await viewModel.reloadDataAsync()
+                            }
+                    }
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
+            .sheet(isPresented: $viewModel.showReviewModal) {
+                ReviewPickupModalView(shift: viewModel.selectedShift, offers: $viewModel.shiftOffers)
+                    .presentationDetents([.medium])
+                    .alert(isPresented: $viewModel.showAlert, content: {
+                        Alert(
+                            title: Text(self.viewModel.error?.title ?? "Error"),
+                            message: Text(self.viewModel.error?.message ?? "Unknown error"),
+                            dismissButton: .default(Text("OK")) {
+                                viewModel.showReviewModal.toggle()
+                            })
+                    })
+            }
         }
         .environmentObject(viewModel)
     }
@@ -39,12 +57,9 @@ struct OffersListView: View {
                     ShiftView(shift: $shift)
                         .showOffers()
                         .onTap {
-                            // TODO
-//                            if (shift.offersRef?.count ?? 0) != 0 {
-//                                viewModel.selectShiftForReview(shift)
-//                            } else {
-//                                
-//                            }
+                            if (shift.offersRef?.count ?? 0) != 0 {
+                                viewModel.selectShiftForReview(shift)
+                            }
                         }
                         .padding(.top, 15)
                         .padding(.horizontal)

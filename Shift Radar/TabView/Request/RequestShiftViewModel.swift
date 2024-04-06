@@ -13,6 +13,13 @@ import FirebaseAuth
 class RequestShiftViewModel: ObservableObject {
     @Published var isLoadingShifts: Bool = false
     @Published var userShiftsWithOffers: [Shift] = []
+    
+    @Published var selectedShift: Shift = Shift()
+    @Published var showReviewModal: Bool = false
+    @Published var shiftOffers: [Offer] = []
+    
+    @Published var error: ErrorAlert?
+    @Published var showAlert: Bool = false
 
     init() {
         loadUserShiftsWithOffers()
@@ -91,6 +98,61 @@ class RequestShiftViewModel: ObservableObject {
                         continuation.resume()
                     }
                 }
+        }
+    }
+    
+    func selectShiftForReview(_ shift: Shift) {
+        selectedShift = shift
+        showReviewModal = true
+        getOffers() { [weak self] offers, error in
+            DispatchQueue.main.async {
+                if let offers = offers {
+                    self?.shiftOffers = offers
+                } else {
+                    self?.error = ErrorAlert(title: "Error loading offer(s)", message: "No valid offers found.")
+                    self?.showAlert = true
+                    print("Erreur lors du chargement des offres: \(error?.localizedDescription ?? "")")
+                }
+            }
+        }
+    }
+    
+    private func getOffers(completion: @escaping ([Offer]?, Error?) -> Void) {
+        guard let offerIds = selectedShift.offersRef, !offerIds.isEmpty else {
+            completion(nil, nil) // Pas d'offres à charger
+            return
+        }
+
+        let offersRef = Firestore.firestore().collection("offers")
+        var offers: [Offer] = []
+        let dispatchGroup = DispatchGroup()
+
+        for offerId in offerIds {
+            dispatchGroup.enter()
+            offersRef.document(offerId).getDocument { (document, error) in
+                defer {
+                    dispatchGroup.leave()
+                }
+
+                if let error = error {
+                    print("Erreur lors du chargement de l'offre \(offerId): \(error)")
+                    return
+                }
+
+                if let document = document, document.exists, let offer = try? document.data(as: Offer.self) {
+                    offers.append(offer)
+                } else {
+                    print("Aucune offre valide trouvée pour l'ID \(offerId)")
+                }
+            }
+        }
+
+        dispatchGroup.notify(queue: .main) {
+            if offers.isEmpty {
+                completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Aucune offre trouvée"]))
+            } else {
+                completion(offers, nil)
+            }
         }
     }
 
