@@ -416,7 +416,7 @@ struct ConfirmShiftView: View {
                 
                 switch shift.compensation.type {
                 case .give:
-                    Text("Simply giving.")
+                    Text("Giving.")
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
                 case .sell:
                     Text("Selling for:")

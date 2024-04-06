@@ -84,6 +84,8 @@ struct ShiftView: View {
     var showsMoreActions: Bool = false
     var showsOffers: Bool = false
     
+    @State var showActions: Bool = false
+    
     var body: some View {
         ZStack(alignment: .topTrailing) {
             HStack {
@@ -121,36 +123,17 @@ struct ShiftView: View {
                     }
                 }
                 .contentShape(Rectangle())
-                .onTapGesture {
-                    onTap()
-                }
-                
-                if showsMoreActions {
-                    Menu {
-                        Button(role: .destructive) {
-                            onDelete()
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                        Button {
-                            onEdit()
-                        } label: {
-                            Label("Edit", systemImage: "pencil")
-                        }
-                        .menuOrder(.priority)
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .rotationEffect(.degrees(90.0))
-                            .tint(.black)
-                            .allowsTightening(false)
-                            .padding(5)
-                    }
-                }
+                .blur(radius: showActions ? 3 : 0)
                 
             }
             .padding([.vertical, .leading], 15)
             .padding(.trailing, showsMoreActions ? 5 : 15)
             .clipShape(RoundedRectangle(cornerRadius: 5))
+            .overlay {
+                if showActions {
+                    blurOverlay
+                }
+            }
             .background {
                 RoundedRectangle(cornerRadius: 20)
                     .fill(.white)
@@ -176,6 +159,48 @@ struct ShiftView: View {
                 }
             }
         }
+        .onTapGesture {
+            if showsMoreActions {
+                withAnimation {
+                    showActions.toggle()
+                }
+            } else {
+                onTap()
+            }
+        }
+    }
+    
+    private var blurOverlay: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(.gray.opacity(0.4))
+            .overlay {
+                HStack(spacing: 50) {
+                    Button {
+                        onEdit()
+                    } label: {
+                        Image(systemName: "pencil")
+                            .font(.title2)
+                            .padding(10)
+                            .background {
+                                Color.blue
+                            }
+                            .foregroundStyle(.white)
+                            .clipShape(Circle())
+                    }
+                    Button {
+                        onDelete()
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.title3)
+                            .padding(10)
+                            .background {
+                                Color.red
+                            }
+                            .foregroundStyle(.white)
+                            .clipShape(Circle())
+                    }
+                }
+            }
     }
     
     private func getIcon() -> String {
