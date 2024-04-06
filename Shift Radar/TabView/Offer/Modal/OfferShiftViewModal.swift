@@ -11,13 +11,13 @@ struct OfferShiftModalView: View {
     @EnvironmentObject var viewModel: OfferShiftViewModel
     @Environment(\.dismiss) var dismiss
     
-    @StateObject var model: OfferShiftModel
+    @StateObject var model: OfferShiftModalViewModel
     
     @State private var success: Bool = false
     @State private var showError: Bool = false
     
     init(shift: Shift, isEditing: Bool) {
-        _model = StateObject(wrappedValue: OfferShiftModel(shift: shift, isEditing: isEditing))
+        _model = StateObject(wrappedValue: OfferShiftModalViewModel(shift: shift, isEditing: isEditing))
     }
     
     var body: some View {
@@ -80,7 +80,7 @@ struct OfferShiftModalView: View {
 
 struct ShiftDetailView: View {
     @EnvironmentObject var viewModel: OfferShiftViewModel
-    @EnvironmentObject var model: OfferShiftModel
+    @EnvironmentObject var model: OfferShiftModalViewModel
     @Environment(\.dismiss) var dismiss
     
     @State private var vibrate: Bool = false
@@ -136,43 +136,19 @@ struct ShiftDetailView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
+                        
                         Text("LOCATION")
                             .font(.system(size: 15, weight: .semibold, design: .rounded))
                             .foregroundStyle(model.shiftErrorType == .location ? Color.red : Color.black)
                             .padding(.vertical, 5)
-                        HStack {
-                            Text("Position:")
-                                .font(.system(size: 10, weight: .semibold, design: .rounded))
-                                .foregroundStyle(.secondary)
-                            FilterSelector(filters: $model.positionFilters) { filter in
-                                model.selectedPositionFilter = filter
-                            }
+                        
+                        FilterSelector(filters: $model.positionFilters) { filter in
+                            model.selectedPositionFilter = filter
                         }
                         .padding(.bottom, 10)
-                        HStack {
-                            Text("Location:")
-                                .font(.system(size: 10, weight: .semibold, design: .rounded))
-                                .foregroundStyle(.secondary)
-                            ScrollView(.horizontal) {
-                                FilterSelector(filters: $model.locationFilters) { filter in
-                                    model.selectedLocationFilter = filter
-                                }
-                            }
-                            .scrollIndicators(.hidden)
-                            .background(
-                                GeometryReader { geometry in
-                                    HStack {
-                                        Spacer()
-                                        // Ombre à droite
-                                        LinearGradient(gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.1)]), startPoint: .leading, endPoint: .trailing)
-                                            .frame(width: 10)
-                                            .blur(radius: 3)
-                                    }
-                                    .frame(width: geometry.size.width, height: geometry.size.height)
-                                }
-                                    .clipped()
-                            )
-                            .edgesIgnoringSafeArea(.horizontal)
+                        
+                        FilterSelector(filters: $model.locationFilters) { filter in
+                            model.selectedLocationFilter = filter
                         }
                         .padding(.bottom, 10)
                         
@@ -254,7 +230,7 @@ struct ShiftDetailView: View {
 }
 
 struct CompensationView: View {
-    @EnvironmentObject var model: OfferShiftModel
+    @EnvironmentObject var model: OfferShiftModalViewModel
     @State private var sliderValue: Double = 0
     
     var body: some View {
@@ -343,7 +319,7 @@ struct CompensationView: View {
 }
 
 struct AvailabilitiesView: View {
-    @EnvironmentObject var model: OfferShiftModel
+    @EnvironmentObject var model: OfferShiftModalViewModel
     @State private var newAvailabilityDate = Date()
     @State private var newAvailabilityStartTime = Date()
     @State private var newAvailabilityEndTime = Date()

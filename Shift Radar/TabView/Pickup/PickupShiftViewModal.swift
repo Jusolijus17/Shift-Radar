@@ -10,7 +10,7 @@ import SwiftUI
 struct PickupShiftModalView: View {
     @EnvironmentObject var appModel: AppViewModel
     @Environment(\.dismiss) var dismiss
-    var model = PickupShiftModel()
+    var model = PickupShiftModalViewModel()
     
     var shift: Shift
     var actionCancel: (() -> Void)?

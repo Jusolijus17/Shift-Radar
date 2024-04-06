@@ -12,7 +12,7 @@ import FirebaseFirestore
 import FirebaseDatabase
 import FirebaseFunctions
 
-class OfferShiftModel: ObservableObject {
+class OfferShiftModalViewModel: ObservableObject {
     @Published var confirmOffer: Bool = false
     @Published var isSaving: Bool = false
     @Published var isEditing: Bool

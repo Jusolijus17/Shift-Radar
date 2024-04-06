@@ -42,18 +42,6 @@ struct OfferShiftViewController: View {
                         }
                     }
             }
-            .sheet(isPresented: $viewModel.showReviewModal) {
-                ReviewPickupModalView(shift: viewModel.selectedShift, offers: $viewModel.shiftOffers)
-                    .presentationDetents([.medium])
-                    .alert(isPresented: $viewModel.showAlert, content: {
-                        Alert(
-                            title: Text(self.viewModel.error?.title ?? "Error"),
-                            message: Text(self.viewModel.error?.message ?? "Unknown error"),
-                            dismissButton: .default(Text("OK")) {
-                                viewModel.showReviewModal.toggle()
-                            })
-                    })
-            }
         }
         .environmentObject(viewModel)
     }
@@ -85,19 +73,11 @@ struct OfferShiftView: View {
                     ForEach($viewModel.offeredShifts) { $shift in
                         ShiftView(shift: $shift)
                             .showMoreActions()
-                            .showOffers()
                             .onDelete {
                                 viewModel.deleteShift(shift)
                             }
                             .onEdit {
                                 viewModel.selectShiftForEditing(shift)
-                            }
-                            .onTap {
-                                if (shift.offersRef?.count ?? 0) != 0 {
-                                    viewModel.selectShiftForReview(shift)
-                                } else {
-                                    
-                                }
                             }
                             .padding(.horizontal)
                             .alert(isPresented: $viewModel.showAlert, content: {

@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D091F932BBFA1E6001FC1C2 /* RequestShiftViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D091F922BBFA1E6001FC1C2 /* RequestShiftViewModel.swift */; };
 		3D12E3B42AFC5A2300C38AB2 /* Shift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D12E3B32AFC5A2300C38AB2 /* Shift.swift */; };
 		3D13CC822AF9C17E00E14CF4 /* OfferShiftViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D13CC812AF9C17E00E14CF4 /* OfferShiftViewModal.swift */; };
 		3D13CC842AF9C1CE00E14CF4 /* CustomObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D13CC832AF9C1CE00E14CF4 /* CustomObjects.swift */; };
-		3D23BA142B07105000E745A9 /* OfferShiftModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D23BA132B07105000E745A9 /* OfferShiftModel.swift */; };
+		3D23BA142B07105000E745A9 /* OfferShiftViewModalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D23BA132B07105000E745A9 /* OfferShiftViewModalModel.swift */; };
 		3D23BA162B071F6900E745A9 /* PickupShiftViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D23BA152B071F6900E745A9 /* PickupShiftViewModel.swift */; };
 		3D33AF232AE9D747003116A5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */; };
 		3D33AF262AE9DB3F003116A5 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 3D33AF252AE9DB3F003116A5 /* FirebaseAnalytics */; };
@@ -50,7 +51,7 @@
 		3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD88D6F2AE87E6E0018291D /* SignUpView.swift */; };
 		3DDE1C772B377D4E005BBB6E /* ReviewOfferViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */; };
 		3DDE1C792B379C3C005BBB6E /* PickupShiftViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */; };
-		3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModel.swift */; };
+		3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift */; };
 		3DDE1C7D2B3A770A005BBB6E /* Offer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C7C2B3A770A005BBB6E /* Offer.swift */; };
 		3DDE1C7F2B3BF012005BBB6E /* ErrorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C7E2B3BF012005BBB6E /* ErrorAlert.swift */; };
 		3DE3235B2B5793B500126E29 /* SideBarStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE3235A2B5793B500126E29 /* SideBarStack.swift */; };
@@ -64,10 +65,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3D091F922BBFA1E6001FC1C2 /* RequestShiftViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestShiftViewModel.swift; sourceTree = "<group>"; };
 		3D12E3B32AFC5A2300C38AB2 /* Shift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shift.swift; sourceTree = "<group>"; };
 		3D13CC812AF9C17E00E14CF4 /* OfferShiftViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferShiftViewModal.swift; sourceTree = "<group>"; };
 		3D13CC832AF9C1CE00E14CF4 /* CustomObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomObjects.swift; sourceTree = "<group>"; };
-		3D23BA132B07105000E745A9 /* OfferShiftModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferShiftModel.swift; sourceTree = "<group>"; };
+		3D23BA132B07105000E745A9 /* OfferShiftViewModalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferShiftViewModalModel.swift; sourceTree = "<group>"; };
 		3D23BA152B071F6900E745A9 /* PickupShiftViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupShiftViewModel.swift; sourceTree = "<group>"; };
 		3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3D92F3932AE8B2250032DE1F /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
@@ -91,7 +93,7 @@
 		3DD88D6F2AE87E6E0018291D /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewOfferViewModal.swift; sourceTree = "<group>"; };
 		3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupShiftViewModal.swift; sourceTree = "<group>"; };
-		3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupShiftModel.swift; sourceTree = "<group>"; };
+		3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupShiftModalViewModel.swift; sourceTree = "<group>"; };
 		3DDE1C7C2B3A770A005BBB6E /* Offer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Offer.swift; sourceTree = "<group>"; };
 		3DDE1C7E2B3BF012005BBB6E /* ErrorAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorAlert.swift; sourceTree = "<group>"; };
 		3DE3235A2B5793B500126E29 /* SideBarStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBarStack.swift; sourceTree = "<group>"; };
@@ -132,7 +134,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3D12E3B52AFC5A2700C38AB2 /* Objects */ = {
+		3D091F912BBF9AF6001FC1C2 /* Modal */ = {
+			isa = PBXGroup;
+			children = (
+				3D13CC812AF9C17E00E14CF4 /* OfferShiftViewModal.swift */,
+				3D23BA132B07105000E745A9 /* OfferShiftViewModalModel.swift */,
+			);
+			path = Modal;
+			sourceTree = "<group>";
+		};
+		3D12E3B52AFC5A2700C38AB2 /* DataModels */ = {
 			isa = PBXGroup;
 			children = (
 				3D12E3B32AFC5A2300C38AB2 /* Shift.swift */,
@@ -140,7 +151,7 @@
 				3DDE1C7C2B3A770A005BBB6E /* Offer.swift */,
 				3DDE1C7E2B3BF012005BBB6E /* ErrorAlert.swift */,
 			);
-			path = Objects;
+			path = DataModels;
 			sourceTree = "<group>";
 		};
 		3D13CC852AF9C25E00E14CF4 /* Other */ = {
@@ -156,6 +167,7 @@
 			isa = PBXGroup;
 			children = (
 				3D92F39C2AE8B5350032DE1F /* RequestShiftView.swift */,
+				3D091F922BBFA1E6001FC1C2 /* RequestShiftViewModel.swift */,
 			);
 			path = Request;
 			sourceTree = "<group>";
@@ -167,7 +179,7 @@
 				3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */,
 				3D23BA152B071F6900E745A9 /* PickupShiftViewModel.swift */,
 				3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */,
-				3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModel.swift */,
+				3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift */,
 			);
 			path = Pickup;
 			sourceTree = "<group>";
@@ -224,7 +236,7 @@
 				3D92F3952AE8B34E0032DE1F /* Login */,
 				3DD88D652AE87D9F0018291D /* Assets.xcassets */,
 				3DD88D672AE87D9F0018291D /* Preview Content */,
-				3D12E3B52AFC5A2700C38AB2 /* Objects */,
+				3D12E3B52AFC5A2700C38AB2 /* DataModels */,
 				3DEF31372AF58BE7009F6737 /* TabView */,
 				3D13CC852AF9C25E00E14CF4 /* Other */,
 				3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */,
@@ -243,12 +255,11 @@
 		3DEF31362AF58BD5009F6737 /* Offer */ = {
 			isa = PBXGroup;
 			children = (
+				3D091F912BBF9AF6001FC1C2 /* Modal */,
 				3D9BE8072B3E38EF0028034B /* CustomViews */,
-				3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */,
 				3D92F39A2AE8B4770032DE1F /* OfferShiftView.swift */,
 				3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */,
-				3D13CC812AF9C17E00E14CF4 /* OfferShiftViewModal.swift */,
-				3D23BA132B07105000E745A9 /* OfferShiftModel.swift */,
+				3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */,
 			);
 			path = Offer;
 			sourceTree = "<group>";
@@ -378,7 +389,7 @@
 				3DC8310A2B18283200ED085C /* AppViewModel.swift in Sources */,
 				3DEDAB502AECB67A00771E43 /* SuccessView.swift in Sources */,
 				3DFA29082AF497DC0082439D /* SignUpViewModel.swift in Sources */,
-				3D23BA142B07105000E745A9 /* OfferShiftModel.swift in Sources */,
+				3D23BA142B07105000E745A9 /* OfferShiftViewModalModel.swift in Sources */,
 				3D92F39F2AE8B58F0032DE1F /* StaffView.swift in Sources */,
 				3D13CC822AF9C17E00E14CF4 /* OfferShiftViewModal.swift in Sources */,
 				3D12E3B42AFC5A2300C38AB2 /* Shift.swift in Sources */,
@@ -393,10 +404,11 @@
 				3D92F3A12AE8B7650032DE1F /* Extensions.swift in Sources */,
 				3D13CC842AF9C1CE00E14CF4 /* CustomObjects.swift in Sources */,
 				3D92F3942AE8B2250032DE1F /* LoginManager.swift in Sources */,
+				3D091F932BBFA1E6001FC1C2 /* RequestShiftViewModel.swift in Sources */,
 				3DF600772AEADAB6008F6971 /* EmailConfirmView.swift in Sources */,
 				3D92F39B2AE8B4770032DE1F /* OfferShiftView.swift in Sources */,
 				3DDE1C772B377D4E005BBB6E /* ReviewOfferViewModal.swift in Sources */,
-				3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModel.swift in Sources */,
+				3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift in Sources */,
 				3DE3235B2B5793B500126E29 /* SideBarStack.swift in Sources */,
 				3DC8310C2B18298400ED085C /* UserData.swift in Sources */,
 				3DE3235D2B589DC900126E29 /* SplashScreen.swift in Sources */,
