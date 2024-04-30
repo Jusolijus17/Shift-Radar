@@ -31,6 +31,8 @@
 		3D33AF462AE9DB3F003116A5 /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 3D33AF452AE9DB3F003116A5 /* FirebaseFunctionsCombine-Community */; };
 		3D33AF582AE9DB3F003116A5 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 3D33AF572AE9DB3F003116A5 /* FirebaseStorage */; };
 		3D33AF5A2AE9DB3F003116A5 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 3D33AF592AE9DB3F003116A5 /* FirebaseStorageCombine-Community */; };
+		3D58976D2BDB3A00002E5217 /* Compensation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D58976C2BDB3A00002E5217 /* Compensation.swift */; };
+		3D5897722BDB3B2C002E5217 /* OfferResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D5897712BDB3B2C002E5217 /* OfferResponse.swift */; };
 		3D92F3942AE8B2250032DE1F /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3932AE8B2250032DE1F /* LoginManager.swift */; };
 		3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3962AE8B3600032DE1F /* TabViewManager.swift */; };
 		3D92F3992AE8B4370032DE1F /* PickupShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */; };
@@ -38,7 +40,7 @@
 		3D92F39D2AE8B5350032DE1F /* RequestShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F39C2AE8B5350032DE1F /* RequestShiftView.swift */; };
 		3D92F39F2AE8B58F0032DE1F /* StaffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F39E2AE8B58F0032DE1F /* StaffView.swift */; };
 		3D92F3A12AE8B7650032DE1F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3A02AE8B7650032DE1F /* Extensions.swift */; };
-		3D92F3A52AE9A8540032DE1F /* ShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3A42AE9A8540032DE1F /* ShiftView.swift */; };
+		3D92F3A52AE9A8540032DE1F /* ShiftCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3A42AE9A8540032DE1F /* ShiftCell.swift */; };
 		3D9BE8062B3E36310028034B /* FilterSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9BE8052B3E36310028034B /* FilterSelector.swift */; };
 		3D9BE8092B3E390F0028034B /* PositionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9BE8082B3E390F0028034B /* PositionSelector.swift */; };
 		3D9BE80D2B3F69F60028034B /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9BE80C2B3F69F60028034B /* SearchView.swift */; };
@@ -74,6 +76,8 @@
 		3D23BA132B07105000E745A9 /* OfferShiftViewModalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferShiftViewModalModel.swift; sourceTree = "<group>"; };
 		3D23BA152B071F6900E745A9 /* PickupShiftViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupShiftViewModel.swift; sourceTree = "<group>"; };
 		3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		3D58976C2BDB3A00002E5217 /* Compensation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compensation.swift; sourceTree = "<group>"; };
+		3D5897712BDB3B2C002E5217 /* OfferResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferResponse.swift; sourceTree = "<group>"; };
 		3D92F3932AE8B2250032DE1F /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
 		3D92F3962AE8B3600032DE1F /* TabViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewManager.swift; sourceTree = "<group>"; };
 		3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupShiftView.swift; sourceTree = "<group>"; };
@@ -81,7 +85,7 @@
 		3D92F39C2AE8B5350032DE1F /* RequestShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestShiftView.swift; sourceTree = "<group>"; };
 		3D92F39E2AE8B58F0032DE1F /* StaffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaffView.swift; sourceTree = "<group>"; };
 		3D92F3A02AE8B7650032DE1F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		3D92F3A42AE9A8540032DE1F /* ShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiftView.swift; sourceTree = "<group>"; };
+		3D92F3A42AE9A8540032DE1F /* ShiftCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiftCell.swift; sourceTree = "<group>"; };
 		3D9BE8052B3E36310028034B /* FilterSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterSelector.swift; sourceTree = "<group>"; };
 		3D9BE8082B3E390F0028034B /* PositionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionSelector.swift; sourceTree = "<group>"; };
 		3D9BE80C2B3F69F60028034B /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
@@ -147,15 +151,17 @@
 			path = Modal;
 			sourceTree = "<group>";
 		};
-		3D12E3B52AFC5A2700C38AB2 /* DataModels */ = {
+		3D12E3B52AFC5A2700C38AB2 /* Structures */ = {
 			isa = PBXGroup;
 			children = (
 				3D12E3B32AFC5A2300C38AB2 /* Shift.swift */,
 				3DC8310B2B18298400ED085C /* UserData.swift */,
 				3DDE1C7C2B3A770A005BBB6E /* Offer.swift */,
 				3DDE1C7E2B3BF012005BBB6E /* ErrorAlert.swift */,
+				3D58976C2BDB3A00002E5217 /* Compensation.swift */,
+				3D5897712BDB3B2C002E5217 /* OfferResponse.swift */,
 			);
-			path = DataModels;
+			path = Structures;
 			sourceTree = "<group>";
 		};
 		3D13CC852AF9C25E00E14CF4 /* Other */ = {
@@ -167,16 +173,16 @@
 			path = Other;
 			sourceTree = "<group>";
 		};
-		3D13CC862AF9C2AD00E14CF4 /* Request */ = {
+		3D13CC862AF9C2AD00E14CF4 /* Requests */ = {
 			isa = PBXGroup;
 			children = (
 				3D92F39C2AE8B5350032DE1F /* RequestShiftView.swift */,
 				3D091F922BBFA1E6001FC1C2 /* RequestShiftViewModel.swift */,
 			);
-			path = Request;
+			path = Requests;
 			sourceTree = "<group>";
 		};
-		3D13CC872AF9C2B500E14CF4 /* Pickup */ = {
+		3D13CC872AF9C2B500E14CF4 /* Offers */ = {
 			isa = PBXGroup;
 			children = (
 				3D9BE80B2B3F69E40028034B /* CustomViews */,
@@ -186,7 +192,43 @@
 				3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */,
 				3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift */,
 			);
-			path = Pickup;
+			path = Offers;
+			sourceTree = "<group>";
+		};
+		3D58976E2BDB3AA1002E5217 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3D92F3952AE8B34E0032DE1F /* Login */,
+				3DEF31372AF58BE7009F6737 /* TabView */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		3D58976F2BDB3ABF002E5217 /* Ressources */ = {
+			isa = PBXGroup;
+			children = (
+				3DD88D672AE87D9F0018291D /* Preview Content */,
+				3DD88D652AE87D9F0018291D /* Assets.xcassets */,
+				3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */,
+			);
+			path = Ressources;
+			sourceTree = "<group>";
+		};
+		3D5897702BDB3AD0002E5217 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				3DD88D612AE87D9E0018291D /* Shift_RadarApp.swift */,
+				3DC831092B18283200ED085C /* AppViewModel.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		3D7F63C52BDB38FC0025A7B8 /* Staff */ = {
+			isa = PBXGroup;
+			children = (
+				3D92F39E2AE8B58F0032DE1F /* StaffView.swift */,
+			);
+			path = Staff;
 			sourceTree = "<group>";
 		};
 		3D92F3952AE8B34E0032DE1F /* Login */ = {
@@ -236,15 +278,11 @@
 		3DD88D602AE87D9E0018291D /* Shift Radar */ = {
 			isa = PBXGroup;
 			children = (
-				3DD88D612AE87D9E0018291D /* Shift_RadarApp.swift */,
-				3DC831092B18283200ED085C /* AppViewModel.swift */,
-				3D92F3952AE8B34E0032DE1F /* Login */,
-				3DD88D652AE87D9F0018291D /* Assets.xcassets */,
-				3DD88D672AE87D9F0018291D /* Preview Content */,
-				3D12E3B52AFC5A2700C38AB2 /* DataModels */,
-				3DEF31372AF58BE7009F6737 /* TabView */,
+				3D5897702BDB3AD0002E5217 /* App */,
+				3D58976F2BDB3ABF002E5217 /* Ressources */,
+				3D12E3B52AFC5A2700C38AB2 /* Structures */,
+				3D58976E2BDB3AA1002E5217 /* Views */,
 				3D13CC852AF9C25E00E14CF4 /* Other */,
-				3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */,
 			);
 			path = "Shift Radar";
 			sourceTree = "<group>";
@@ -267,7 +305,7 @@
 			path = ReviewPickup;
 			sourceTree = "<group>";
 		};
-		3DEF31362AF58BD5009F6737 /* Offer */ = {
+		3DEF31362AF58BD5009F6737 /* MyShifts */ = {
 			isa = PBXGroup;
 			children = (
 				3D091F912BBF9AF6001FC1C2 /* Modal */,
@@ -275,19 +313,19 @@
 				3D92F39A2AE8B4770032DE1F /* OfferShiftView.swift */,
 				3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */,
 			);
-			path = Offer;
+			path = MyShifts;
 			sourceTree = "<group>";
 		};
 		3DEF31372AF58BE7009F6737 /* TabView */ = {
 			isa = PBXGroup;
 			children = (
 				3D92F3962AE8B3600032DE1F /* TabViewManager.swift */,
-				3D92F3A42AE9A8540032DE1F /* ShiftView.swift */,
-				3D13CC872AF9C2B500E14CF4 /* Pickup */,
-				3DEF31362AF58BD5009F6737 /* Offer */,
-				3D13CC862AF9C2AD00E14CF4 /* Request */,
-				3D92F39E2AE8B58F0032DE1F /* StaffView.swift */,
+				3D13CC872AF9C2B500E14CF4 /* Offers */,
+				3DEF31362AF58BD5009F6737 /* MyShifts */,
+				3D13CC862AF9C2AD00E14CF4 /* Requests */,
+				3D7F63C52BDB38FC0025A7B8 /* Staff */,
 				3DE3235A2B5793B500126E29 /* SideBarStack.swift */,
+				3D92F3A42AE9A8540032DE1F /* ShiftCell.swift */,
 			);
 			path = TabView;
 			sourceTree = "<group>";
@@ -416,6 +454,7 @@
 				3D92F39D2AE8B5350032DE1F /* RequestShiftView.swift in Sources */,
 				3DE487092BC11B0200B6324F /* ReviewPickupModalViewModel.swift in Sources */,
 				3DF600752AEADAA6008F6971 /* InfoView.swift in Sources */,
+				3D5897722BDB3B2C002E5217 /* OfferResponse.swift in Sources */,
 				3DDE1C792B379C3C005BBB6E /* PickupShiftViewModal.swift in Sources */,
 				3D92F3A12AE8B7650032DE1F /* Extensions.swift in Sources */,
 				3D13CC842AF9C1CE00E14CF4 /* CustomObjects.swift in Sources */,
@@ -425,6 +464,7 @@
 				3D92F39B2AE8B4770032DE1F /* OfferShiftView.swift in Sources */,
 				3DDE1C772B377D4E005BBB6E /* ReviewOfferViewModal.swift in Sources */,
 				3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift in Sources */,
+				3D58976D2BDB3A00002E5217 /* Compensation.swift in Sources */,
 				3DE3235B2B5793B500126E29 /* SideBarStack.swift in Sources */,
 				3DC8310C2B18298400ED085C /* UserData.swift in Sources */,
 				3DE3235D2B589DC900126E29 /* SplashScreen.swift in Sources */,
@@ -434,7 +474,7 @@
 				3D9BE80D2B3F69F60028034B /* SearchView.swift in Sources */,
 				3DD88D622AE87D9E0018291D /* Shift_RadarApp.swift in Sources */,
 				3DEF31352AF58B50009F6737 /* OfferShiftViewModel.swift in Sources */,
-				3D92F3A52AE9A8540032DE1F /* ShiftView.swift in Sources */,
+				3D92F3A52AE9A8540032DE1F /* ShiftCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -567,7 +607,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Shift Radar/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Shift Radar/Ressources/Preview Content\"";
 				DEVELOPMENT_TEAM = 56PC8WXY7Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -600,7 +640,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Shift Radar/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Shift Radar/Ressources/Preview Content\"";
 				DEVELOPMENT_TEAM = 56PC8WXY7Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;

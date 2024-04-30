@@ -54,7 +54,7 @@ struct OffersListView: View {
         ScrollView {
             VStack(spacing: 20) {
                 ForEach($viewModel.userShiftsWithOffers) { $shift in
-                    ShiftView(shift: $shift)
+                    ShiftCell(shift: $shift)
                         .showOffers()
                         .onTap {
                             if (shift.offersRef?.count ?? 0) != 0 {

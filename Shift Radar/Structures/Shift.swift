@@ -61,41 +61,6 @@ struct Shift: Codable, Hashable, Identifiable {
     }
 }
 
-enum CompensationType: String, Codable, Hashable, CaseIterable {
-    case give = "give"
-    case sell = "sell"
-    case trade = "trade"
-}
-
-struct Availability: Codable, Hashable {
-    var date: Date
-    var startTime: Date
-    var endTime: Date
-}
-
-struct Compensation: Codable, Hashable {
-    var type: CompensationType
-    var amount: Double? // Utilisé uniquement pour .sell
-    var availabilities: [Availability]? // Utilisé uniquement pour .trade
-
-    init(type: CompensationType, amount: Double? = nil, availabilities: [Availability]? = nil) {
-        self.type = type
-        self.amount = amount
-        self.availabilities = availabilities
-        
-        switch self.type {
-        case .give:
-            return
-        case .sell:
-            self.amount = amount ?? 0
-            self.availabilities = nil
-        case .trade:
-            self.amount = nil
-            self.availabilities = availabilities ?? []
-        }
-    }
-}
-
 enum ShiftErrorType {
     case date
     case duration

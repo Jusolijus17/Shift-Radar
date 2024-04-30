@@ -73,7 +73,7 @@ struct OfferShiftView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         ForEach($viewModel.offeredShifts) { $shift in
-                            ShiftView(shift: $shift)
+                            ShiftCell(shift: $shift)
                                 .showMoreActions()
                                 .onDelete {
                                     viewModel.deleteShift(shift)

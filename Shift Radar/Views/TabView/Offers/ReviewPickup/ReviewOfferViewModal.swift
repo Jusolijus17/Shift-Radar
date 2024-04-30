@@ -104,7 +104,7 @@ struct OfferView: View {
     var body: some View {
         VStack {
             HStack(spacing: 5) {
-                Text("\(offer.firstName) \(offer.lastName)")
+                Text("\(offer.id)")
                     .fontWeight(.bold)
                 Text("will work for you on:")
             }
@@ -132,7 +132,7 @@ struct OfferView: View {
                 Group {
                     HStack(spacing: 4) {
                         Text("If you work for ") +
-                        Text(offer.firstName).fontWeight(.bold)
+                        Text(offer.id ?? "").fontWeight(.bold)
                     }
                     Text(" on one of these dates:")
                         .padding(.bottom, 10)
@@ -179,7 +179,7 @@ struct ReviewPickupModalView_Previews: PreviewProvider {
     
     struct PreviewWrapper: View {
         private var shift = Shift()
-        @State private var offers: [Offer] = [Offer(firstName: "Justin", lastName: "Lefrançois", shiftId: "efvwasv"), Offer(firstName: "Camilo", lastName: "Rossi", shiftId: "sdfvsva")]
+        @State private var offers: [Offer] = [Offer(shiftId: "efvwasv"), Offer(shiftId: "sdfvsva")]
         
         init() {
             self.shift.compensation.type = .sell
