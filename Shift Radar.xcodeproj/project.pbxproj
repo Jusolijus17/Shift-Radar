@@ -33,6 +33,7 @@
 		3D33AF5A2AE9DB3F003116A5 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 3D33AF592AE9DB3F003116A5 /* FirebaseStorageCombine-Community */; };
 		3D58976D2BDB3A00002E5217 /* Compensation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D58976C2BDB3A00002E5217 /* Compensation.swift */; };
 		3D5897722BDB3B2C002E5217 /* OfferResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D5897712BDB3B2C002E5217 /* OfferResponse.swift */; };
+		3D5897732BE307D7002E5217 /* ReviewOfferViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */; };
 		3D92F3942AE8B2250032DE1F /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3932AE8B2250032DE1F /* LoginManager.swift */; };
 		3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3962AE8B3600032DE1F /* TabViewManager.swift */; };
 		3D92F3992AE8B4370032DE1F /* PickupShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */; };
@@ -51,7 +52,6 @@
 		3DD88D662AE87D9F0018291D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DD88D652AE87D9F0018291D /* Assets.xcassets */; };
 		3DD88D692AE87D9F0018291D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DD88D682AE87D9F0018291D /* Preview Assets.xcassets */; };
 		3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD88D6F2AE87E6E0018291D /* SignUpView.swift */; };
-		3DDE1C772B377D4E005BBB6E /* ReviewOfferViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */; };
 		3DDE1C792B379C3C005BBB6E /* PickupShiftViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */; };
 		3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C7A2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift */; };
 		3DDE1C7D2B3A770A005BBB6E /* Offer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C7C2B3A770A005BBB6E /* Offer.swift */; };
@@ -176,6 +176,7 @@
 		3D13CC862AF9C2AD00E14CF4 /* Requests */ = {
 			isa = PBXGroup;
 			children = (
+				3DE4870A2BC11D7200B6324F /* ReviewPickup */,
 				3D92F39C2AE8B5350032DE1F /* RequestShiftView.swift */,
 				3D091F922BBFA1E6001FC1C2 /* RequestShiftViewModel.swift */,
 			);
@@ -186,7 +187,6 @@
 			isa = PBXGroup;
 			children = (
 				3D9BE80B2B3F69E40028034B /* CustomViews */,
-				3DE4870A2BC11D7200B6324F /* ReviewPickup */,
 				3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */,
 				3D23BA152B071F6900E745A9 /* PickupShiftViewModel.swift */,
 				3DDE1C782B379C3C005BBB6E /* PickupShiftViewModal.swift */,
@@ -462,7 +462,6 @@
 				3D091F932BBFA1E6001FC1C2 /* RequestShiftViewModel.swift in Sources */,
 				3DF600772AEADAB6008F6971 /* EmailConfirmView.swift in Sources */,
 				3D92F39B2AE8B4770032DE1F /* OfferShiftView.swift in Sources */,
-				3DDE1C772B377D4E005BBB6E /* ReviewOfferViewModal.swift in Sources */,
 				3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift in Sources */,
 				3D58976D2BDB3A00002E5217 /* Compensation.swift in Sources */,
 				3DE3235B2B5793B500126E29 /* SideBarStack.swift in Sources */,
@@ -473,6 +472,7 @@
 				3DD88D702AE87E6E0018291D /* SignUpView.swift in Sources */,
 				3D9BE80D2B3F69F60028034B /* SearchView.swift in Sources */,
 				3DD88D622AE87D9E0018291D /* Shift_RadarApp.swift in Sources */,
+				3D5897732BE307D7002E5217 /* ReviewOfferViewModal.swift in Sources */,
 				3DEF31352AF58B50009F6737 /* OfferShiftViewModel.swift in Sources */,
 				3D92F3A52AE9A8540032DE1F /* ShiftCell.swift in Sources */,
 			);

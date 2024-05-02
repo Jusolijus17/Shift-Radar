@@ -17,10 +17,11 @@ struct Shift: Codable, Hashable, Identifiable {
     var end: Date
     var location: String
     var compensation: Compensation
+    var status: ShiftStatus?
     var offersRef: [String]?
     
     enum CodingKeys: String, CodingKey {
-        case id, createdBy, offeredDate, start, end, location, compensation, offersRef
+        case id, createdBy, offeredDate, start, end, location, compensation, status, offersRef
     }
     
     init() {
@@ -58,6 +59,7 @@ struct Shift: Codable, Hashable, Identifiable {
         location = try container.decode(String.self, forKey: .location)
         compensation = try container.decode(Compensation.self, forKey: .compensation)
         offersRef = try? container.decode([String].self, forKey: .offersRef)
+        status = try? container.decode(ShiftStatus.self, forKey: .status)
     }
 }
 
@@ -67,4 +69,10 @@ enum ShiftErrorType {
     case location
     case availabilities
     case saving
+}
+
+enum ShiftStatus: Codable {
+    case available
+    case accepted
+    case past
 }

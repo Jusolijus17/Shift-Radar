@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RequestShiftView: View {
     @StateObject private var viewModel = RequestShiftViewModel()
+    @State var detentHeight: CGFloat = 0
     
     var body: some View {
         NavigationView {
@@ -32,7 +33,13 @@ struct RequestShiftView: View {
             .background(Color.background)
             .sheet(isPresented: $viewModel.showReviewModal) {
                 ReviewPickupModalView(shift: viewModel.selectedShift, offers: $viewModel.shiftOffers)
-                    .presentationDetents([.medium])
+                    .readHeight()
+                    .onPreferenceChange(HeightPreferenceKey.self, perform: { height in
+                        if let height {
+                            self.detentHeight = height
+                        }
+                    })
+                    .presentationDetents([.height(self.detentHeight)])
                     .alert(isPresented: $viewModel.showAlert, content: {
                         Alert(
                             title: Text(self.viewModel.error?.title ?? "Error"),
@@ -41,6 +48,9 @@ struct RequestShiftView: View {
                                 viewModel.showReviewModal.toggle()
                             })
                     })
+                    .onDisappear {
+                        self.detentHeight = 0
+                    }
             }
         }
         .environmentObject(viewModel)
@@ -52,7 +62,7 @@ struct OffersListView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 10) {
                 ForEach($viewModel.userShiftsWithOffers) { $shift in
                     ShiftCell(shift: $shift)
                         .showOffers()
