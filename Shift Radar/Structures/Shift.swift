@@ -19,9 +19,10 @@ struct Shift: Codable, Hashable, Identifiable {
     var compensation: Compensation
     var status: ShiftStatus?
     var offersRef: [String]?
+    var pendingOffers: Int
     
     enum CodingKeys: String, CodingKey {
-        case id, createdBy, offeredDate, start, end, location, compensation, status, offersRef
+        case id, createdBy, offeredDate, start, end, location, compensation, status, offersRef, pendingOffers
     }
     
     init() {
@@ -36,6 +37,7 @@ struct Shift: Codable, Hashable, Identifiable {
         }
         self.location = "NO_SELECTION"
         self.compensation = Compensation(type: .give)
+        self.pendingOffers = 0
     }
     
     func encode(to encoder: Encoder) throws {
@@ -60,6 +62,7 @@ struct Shift: Codable, Hashable, Identifiable {
         compensation = try container.decode(Compensation.self, forKey: .compensation)
         offersRef = try? container.decode([String].self, forKey: .offersRef)
         status = try? container.decode(ShiftStatus.self, forKey: .status)
+        pendingOffers = try container.decodeIfPresent(Int.self, forKey: .pendingOffers) ?? offersRef?.count ?? 0
     }
 }
 

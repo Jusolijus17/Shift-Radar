@@ -7,8 +7,9 @@
 
 import SwiftUI
 
-struct RequestShiftView: View {
-    @StateObject private var viewModel = RequestShiftViewModel()
+struct RequestsView: View {
+    @StateObject private var viewModel = RequestsViewModel()
+    @State private var shouldReloadRequests: Bool = false
     @State var detentHeight: CGFloat = 0
     
     var body: some View {
@@ -17,7 +18,7 @@ struct RequestShiftView: View {
                 if viewModel.isLoadingShifts {
                     ProgressView()
                 } else if !viewModel.userShiftsWithOffers.isEmpty {
-                    OffersListView()
+                    RequestsListView()
                 } else {
                     ZStack {
                         Text("You have no offers right now")
@@ -32,7 +33,7 @@ struct RequestShiftView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
             .sheet(isPresented: $viewModel.showReviewModal) {
-                ReviewPickupModalView(shift: viewModel.selectedShift, offers: $viewModel.shiftOffers)
+                ReviewRequestModalView(shouldReloadRequests: $shouldReloadRequests, shift: viewModel.selectedShift, offers: $viewModel.shiftOffers)
                     .readHeight()
                     .onPreferenceChange(HeightPreferenceKey.self, perform: { height in
                         if let height {
@@ -50,15 +51,20 @@ struct RequestShiftView: View {
                     })
                     .onDisappear {
                         self.detentHeight = 0
+                        if shouldReloadRequests {
+                            viewModel.loadUserShiftsWithOffers()
+                            self.shouldReloadRequests = false
+                        }
                     }
             }
+            .sensoryFeedback(.impact, trigger: viewModel.showReviewModal)
         }
         .environmentObject(viewModel)
     }
 }
 
-struct OffersListView: View {
-    @EnvironmentObject var viewModel: RequestShiftViewModel
+struct RequestsListView: View {
+    @EnvironmentObject var viewModel: RequestsViewModel
     
     var body: some View {
         ScrollView {

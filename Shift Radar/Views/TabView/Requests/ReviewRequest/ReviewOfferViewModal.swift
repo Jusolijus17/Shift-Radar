@@ -8,13 +8,19 @@
 import SwiftUI
 import UIKit
 
-struct ReviewPickupModalView: View {
+struct ReviewRequestModalView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject var viewModel = ReviewPickupModalViewModel()
+    @StateObject var viewModel: ReviewRequestModalViewModel
     @State private var selectedOffer = 0
     
     @State var shift: Shift
     @Binding var offers: [Offer]
+    
+    init(shouldReloadRequests: Binding<Bool>, shift: Shift, offers: Binding<[Offer]>) {
+        self.shift = shift
+        _offers = offers
+        _viewModel = StateObject(wrappedValue: ReviewRequestModalViewModel(shouldReloadRequests: shouldReloadRequests))
+    }
     
     var body: some View {
         VStack {
@@ -39,10 +45,10 @@ struct ReviewPickupModalView: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
             
-            if offers.count != 0 && !viewModel.userDatas.isEmpty {
+            if viewModel.offers.count != 0 && !viewModel.userDatas.isEmpty {
                 HeightPreservingTabView(selection: $selectedOffer) {
-                    ForEach(offers.indices, id: \.self) { index in
-                        let offer = offers[index]
+                    ForEach(viewModel.offers.indices, id: \.self) { index in
+                        let offer = viewModel.offers[index]
                         if let userData = viewModel.userDatas[offer.from ?? ""] {
                             OfferView(shift: self.shift, offer: offer, userData: userData)
                                 .tag(index)
@@ -56,43 +62,79 @@ struct ReviewPickupModalView: View {
                     .frame(height: 100)
             }
             
-            HStack(spacing: 15) {
-                Button {
-                    print("Selected offer: ", offers[selectedOffer])
-                    viewModel.declineOffer(offer: offers[selectedOffer])
-                } label: {
-                    Label("Decline", systemImage: "xmark")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 30)
-                        .background {
-                            RoundedRectangle(cornerRadius: 15)
-                                .foregroundStyle(offers.count == 0 ? .gray : .red)
-                        }
+            if viewModel.offers.isEmpty || viewModel.offers[selectedOffer].status != .declined {
+                HStack(spacing: 15) {
+                    Button {
+                        print("Selected offer: ", viewModel.offers[selectedOffer])
+                        viewModel.declineOffer(at: selectedOffer)
+                    } label: {
+                        Label("Decline", systemImage: "xmark")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 30)
+                            .background {
+                                RoundedRectangle(cornerRadius: 15)
+                                    .foregroundStyle(viewModel.offers.count == 0 ? .gray : .red)
+                            }
+                            .overlay {
+                                if viewModel.declineLoading {
+                                    ProgressView()
+                                        .tint(.white)
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .background {
+                                            RoundedRectangle(cornerRadius: 15)
+                                                .foregroundStyle(.red)
+                                        }
+                                }
+                            }
+                    }
+                    Button {
+                        viewModel.acceptOffer(at: selectedOffer)
+                    } label: {
+                        Label("Accept", systemImage: "checkmark")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 30)
+                            .background {
+                                RoundedRectangle(cornerRadius: 15)
+                                    .foregroundStyle(viewModel.offers.count == 0 ? .gray : .green)
+                            }
+                            .overlay {
+                                if viewModel.acceptLoading {
+                                    ProgressView()
+                                        .tint(.white)
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .background {
+                                            RoundedRectangle(cornerRadius: 15)
+                                                .foregroundStyle(.green)
+                                        }
+                                }
+                            }
+                    }
                 }
-                Button {
-                    viewModel.acceptOffer(offer: offers[selectedOffer])
-                } label: {
-                    Label("Accept", systemImage: "checkmark")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 30)
-                        .background {
-                            RoundedRectangle(cornerRadius: 15)
-                                .foregroundStyle(offers.count == 0 ? .gray : .green)
-                        }
-                }
+                .disabled(viewModel.offers.count == 0 || viewModel.declineLoading || viewModel.acceptLoading)
+            } else {
+                Label("Declined", systemImage: "xmark")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 30)
+                    .background {
+                        RoundedRectangle(cornerRadius: 15)
+                            .foregroundStyle(.gray)
+                    }
             }
-            .disabled(offers.count == 0)
         }
         .onAppear {
             setupAppearance()
-            self.viewModel.loadUserDatas(offers: offers)
+            self.viewModel.offers = self.offers
+            self.viewModel.loadUserDatas()
         }
         .onChange(of: self.offers) {
-            self.viewModel.loadUserDatas(offers: offers)
+            self.viewModel.offers = self.offers
+            self.viewModel.loadUserDatas()
         }
         .sheet(isPresented: $viewModel.openBrowser) {
             BrowserView(url: viewModel.browserURL)
@@ -120,13 +162,14 @@ struct OfferView: View {
                 Text("will work for you on:")
             }
             .padding(.bottom, 10)
-            .foregroundStyle(.accent)
+            .foregroundStyle(offer.status == .declined ? Color.secondary : .accent)
             
             Text("\(shift.start, formatter: dateFormatter)")
                 .font(.callout)
                 .foregroundStyle(.secondary)
             Text(shift.location)
                 .fontWeight(.semibold)
+                .foregroundStyle(offer.status == .declined ? Color.secondary : .black)
             Text("\(shift.start, formatter: timeFormatter) - \(shift.end, formatter: timeFormatter)")
                 .foregroundStyle(.secondary)
                 .fontWeight(.semibold)
@@ -134,7 +177,7 @@ struct OfferView: View {
             if shift.compensation.type != .give {
                 Image(systemName: "arrow.up.arrow.down")
                     .font(.title2)
-                    .foregroundStyle(.accent)
+                    .foregroundStyle(offer.status == .declined ? Color.secondary : .accent)
                     .fontWeight(.semibold)
                     .padding(.vertical, 10)
             }
@@ -148,7 +191,7 @@ struct OfferView: View {
                     Text(" on one of these dates:")
                         .padding(.bottom, 10)
                 }
-                .foregroundStyle(.accent)
+                .foregroundStyle(offer.status == .declined ? Color.secondary : .accent)
                 
                 ScrollView {
                     if let availabilities = shift.compensation.availabilities {
@@ -163,12 +206,13 @@ struct OfferView: View {
                 
             } else if shift.compensation.type == .sell {
                 Text("If you pay him/her:")
-                    .foregroundStyle(.accent)
+                    .foregroundStyle(offer.status == .declined ? Color.secondary : .accent)
                     .padding(.bottom, 5)
                 Text("\(Int(shift.compensation.amount ?? 0))$")
                     .fontWeight(.bold)
                     .font(.title)
                     .fontDesign(.rounded)
+                    .foregroundStyle(offer.status == .declined ? Color.secondary : .black)
                 HStack(spacing: 3) {
                     Text("Transfered via")
                     Text("interac")
@@ -179,8 +223,10 @@ struct OfferView: View {
             }
         }
         .padding(.bottom, 40)
+        .disabled(offer.status == .declined)
     }
 }
+
 
 struct ReviewPickupModalView_Previews: PreviewProvider {
     static var previews: some View {
@@ -191,6 +237,7 @@ struct ReviewPickupModalView_Previews: PreviewProvider {
         private var shift = Shift()
         @State private var offers: [Offer]
         @State var detentHeight: CGFloat = 0
+        @State var shouldReload: Bool = false
         
         init() {
             var tempShift = Shift()
@@ -201,6 +248,7 @@ struct ReviewPickupModalView_Previews: PreviewProvider {
             
             var offer2 = Offer(shiftId: "sdfvsva")
             offer2.from = "FvdkgyDxm5X5akm9thNZOYLcW5E2"
+            offer2.status = .declined
             
             self.shift = tempShift
             self.offers = [offer1, offer2]
@@ -209,7 +257,7 @@ struct ReviewPickupModalView_Previews: PreviewProvider {
         var body: some View {
             Text("Bruv")
                 .sheet(isPresented: .constant(true)) {
-                    ReviewPickupModalView(shift: shift, offers: $offers)
+                    ReviewRequestModalView(shouldReloadRequests: $shouldReload, shift: shift, offers: $offers)
                         .readHeight()
                         .onPreferenceChange(HeightPreferenceKey.self, perform: { height in
                             if let height {
@@ -217,6 +265,11 @@ struct ReviewPickupModalView_Previews: PreviewProvider {
                             }
                         })
                         .presentationDetents([.height(self.detentHeight)])
+                }
+                .onDisappear {
+                    if shouldReload {
+                        print("Reloading data")
+                    }
                 }
         }
     }

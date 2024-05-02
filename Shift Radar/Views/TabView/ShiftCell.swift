@@ -58,8 +58,7 @@ struct ShiftCell: View {
                 .blur(radius: showActions ? 3 : 0)
                 
             }
-            .padding([.vertical, .leading], 15)
-            .padding(.trailing, showsMoreActions ? 5 : 15)
+            .padding(15)
             .clipShape(RoundedRectangle(cornerRadius: 5))
             .overlay {
                 if showActions {
@@ -72,23 +71,21 @@ struct ShiftCell: View {
                     .stroke(Color.accentColor.opacity(0.5))
             }
             
-            if let offers = shift.offersRef {
-                if showsOffers && offers.count != 0 {
-                    HStack(spacing: 5) {
-                        Text("\(offers.count) offer\(offers.count > 1 ? "s" : "")")
-                        Image(systemName: "chevron.right")
-                    }
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 15)
-                    .padding(.vertical, 5)
-                    .background {
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(.red)
-                    }
-                    .offset(y: -15)
+            if showsOffers && shift.pendingOffers > 0 {
+                HStack(spacing: 5) {
+                    Text("\(shift.pendingOffers) new offer\(shift.pendingOffers > 1 ? "s" : "")")
+                    Image(systemName: "chevron.right")
                 }
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 15)
+                .padding(.vertical, 5)
+                .background {
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(.red)
+                }
+                .offset(y: -15)
             }
         }
         .onTapGesture {

@@ -55,7 +55,7 @@ struct TabViewManager: View {
                             }
                             .tag(1)
                         
-                        RequestShiftView()
+                        RequestsView()
                             .tabItem {
                                 Image(systemName: "bell.fill")
                                 Text("Request")
