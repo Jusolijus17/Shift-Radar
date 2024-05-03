@@ -10,7 +10,7 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 import FirebaseAuth
 
-class RequestShiftViewModel: ObservableObject {
+class RequestsViewModel: ObservableObject {
     @Published var isLoadingShifts: Bool = false
     @Published var userShiftsWithOffers: [Shift] = []
     
@@ -104,6 +104,7 @@ class RequestShiftViewModel: ObservableObject {
     func selectShiftForReview(_ shift: Shift) {
         selectedShift = shift
         showReviewModal = true
+        self.shiftOffers = []
         getOffers() { [weak self] offers, error in
             DispatchQueue.main.async {
                 if let offers = offers {

@@ -46,8 +46,9 @@ struct PickupShiftView: View {
                     ScrollView {
                         VStack(spacing: 10) {
                             ForEach(viewModel.filteredShifts.isEmpty ? $viewModel.offeredShifts : $viewModel.filteredShifts) { $shift in
-                                ShiftView(shift: $shift)
+                                ShiftCell(shift: $shift)
                                     .onTap {
+                                        print("Selected shift : ", $shift.wrappedValue)
                                         if $shift.wrappedValue.compensation.type == .give {
                                             selectedDetent = .fraction(0.35)
                                         } else {
@@ -60,12 +61,12 @@ struct PickupShiftView: View {
                             Spacer()
                         }
                         .padding(.top, 15)
-                        .sheet(item: $selectedShift) { shift in
-                            PickupShiftModalView(shift: shift, actionCancel: {
-                                selectedShift = nil
-                            })
-                            .presentationDetents([.fraction(0.35), .medium], selection: $selectedDetent)
-                        }
+                    }
+                    .sheet(item: $selectedShift) { shift in
+                        PickupShiftModalView(shift: shift, actionCancel: {
+                            selectedShift = nil
+                        })
+                        .presentationDetents([.fraction(0.35), .medium], selection: $selectedDetent)
                     }
                 } else {
                     Spacer()

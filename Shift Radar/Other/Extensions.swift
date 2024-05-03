@@ -111,3 +111,68 @@ let timeFormatter: DateFormatter = {
     formatter.timeStyle = .short
     return formatter
 }()
+
+struct HeightPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat?
+
+    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
+        guard let nextValue = nextValue() else { return }
+        value = nextValue
+    }
+}
+
+private struct ReadHeightModifier: ViewModifier {
+    private var sizeView: some View {
+        GeometryReader { geometry in
+            Color.clear.preference(key: HeightPreferenceKey.self, value: geometry.size.height)
+        }
+    }
+
+    func body(content: Content) -> some View {
+        content.background(sizeView)
+    }
+}
+
+extension View {
+    func readHeight() -> some View {
+        self
+            .modifier(ReadHeightModifier())
+    }
+}
+
+/// A variant of `TabView` that sets an appropriate `minHeight` on its frame.
+struct HeightPreservingTabView<SelectionValue: Hashable, Content: View>: View {
+    var selection: Binding<SelectionValue>?
+    @ViewBuilder var content: () -> Content
+    
+    // `minHeight` needs to start as something non-zero or we won't measure the interior content height
+    @State private var minHeight: CGFloat = 1
+    
+    var body: some View {
+        TabView(selection: selection) {
+            content()
+                .background {
+                    GeometryReader { geometry in
+                        Color.clear.preference(
+                            key: TabViewMinHeightPreference.self,
+                            value: geometry.frame(in: .local).height
+                        )
+                    }
+                }
+        }
+        .frame(height: minHeight)
+        .onPreferenceChange(TabViewMinHeightPreference.self) { minHeight in
+            self.minHeight = minHeight
+        }
+    }
+}
+
+private struct TabViewMinHeightPreference: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
+

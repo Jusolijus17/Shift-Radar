@@ -17,10 +17,12 @@ struct Shift: Codable, Hashable, Identifiable {
     var end: Date
     var location: String
     var compensation: Compensation
+    var status: ShiftStatus?
     var offersRef: [String]?
+    var pendingOffers: Int
     
     enum CodingKeys: String, CodingKey {
-        case id, createdBy, offeredDate, start, end, location, compensation, offersRef
+        case id, createdBy, offeredDate, start, end, location, compensation, status, offersRef, pendingOffers
     }
     
     init() {
@@ -35,6 +37,7 @@ struct Shift: Codable, Hashable, Identifiable {
         }
         self.location = "NO_SELECTION"
         self.compensation = Compensation(type: .give)
+        self.pendingOffers = 0
     }
     
     func encode(to encoder: Encoder) throws {
@@ -58,41 +61,8 @@ struct Shift: Codable, Hashable, Identifiable {
         location = try container.decode(String.self, forKey: .location)
         compensation = try container.decode(Compensation.self, forKey: .compensation)
         offersRef = try? container.decode([String].self, forKey: .offersRef)
-    }
-}
-
-enum CompensationType: String, Codable, Hashable, CaseIterable {
-    case give = "give"
-    case sell = "sell"
-    case trade = "trade"
-}
-
-struct Availability: Codable, Hashable {
-    var date: Date
-    var startTime: Date
-    var endTime: Date
-}
-
-struct Compensation: Codable, Hashable {
-    var type: CompensationType
-    var amount: Double? // Utilisé uniquement pour .sell
-    var availabilities: [Availability]? // Utilisé uniquement pour .trade
-
-    init(type: CompensationType, amount: Double? = nil, availabilities: [Availability]? = nil) {
-        self.type = type
-        self.amount = amount
-        self.availabilities = availabilities
-        
-        switch self.type {
-        case .give:
-            return
-        case .sell:
-            self.amount = amount ?? 0
-            self.availabilities = nil
-        case .trade:
-            self.amount = nil
-            self.availabilities = availabilities ?? []
-        }
+        status = try? container.decode(ShiftStatus.self, forKey: .status)
+        pendingOffers = try container.decodeIfPresent(Int.self, forKey: .pendingOffers) ?? offersRef?.count ?? 0
     }
 }
 
@@ -102,4 +72,10 @@ enum ShiftErrorType {
     case location
     case availabilities
     case saving
+}
+
+enum ShiftStatus: Codable {
+    case available
+    case accepted
+    case past
 }

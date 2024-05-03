@@ -7,8 +7,10 @@
 
 import SwiftUI
 
-struct RequestShiftView: View {
-    @StateObject private var viewModel = RequestShiftViewModel()
+struct RequestsView: View {
+    @StateObject private var viewModel = RequestsViewModel()
+    @State private var shouldReloadRequests: Bool = false
+    @State var detentHeight: CGFloat = 0
     
     var body: some View {
         NavigationView {
@@ -16,7 +18,7 @@ struct RequestShiftView: View {
                 if viewModel.isLoadingShifts {
                     ProgressView()
                 } else if !viewModel.userShiftsWithOffers.isEmpty {
-                    OffersListView()
+                    RequestsListView()
                 } else {
                     ZStack {
                         Text("You have no offers right now")
@@ -31,8 +33,14 @@ struct RequestShiftView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.background)
             .sheet(isPresented: $viewModel.showReviewModal) {
-                ReviewPickupModalView(shift: viewModel.selectedShift, offers: $viewModel.shiftOffers)
-                    .presentationDetents([.medium])
+                ReviewRequestModalView(shouldReloadRequests: $shouldReloadRequests, shift: viewModel.selectedShift, offers: $viewModel.shiftOffers)
+                    .readHeight()
+                    .onPreferenceChange(HeightPreferenceKey.self, perform: { height in
+                        if let height {
+                            self.detentHeight = height
+                        }
+                    })
+                    .presentationDetents([.height(self.detentHeight)])
                     .alert(isPresented: $viewModel.showAlert, content: {
                         Alert(
                             title: Text(self.viewModel.error?.title ?? "Error"),
@@ -41,20 +49,28 @@ struct RequestShiftView: View {
                                 viewModel.showReviewModal.toggle()
                             })
                     })
+                    .onDisappear {
+                        self.detentHeight = 0
+                        if shouldReloadRequests {
+                            viewModel.loadUserShiftsWithOffers()
+                            self.shouldReloadRequests = false
+                        }
+                    }
             }
+            .sensoryFeedback(.impact, trigger: viewModel.showReviewModal)
         }
         .environmentObject(viewModel)
     }
 }
 
-struct OffersListView: View {
-    @EnvironmentObject var viewModel: RequestShiftViewModel
+struct RequestsListView: View {
+    @EnvironmentObject var viewModel: RequestsViewModel
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 10) {
                 ForEach($viewModel.userShiftsWithOffers) { $shift in
-                    ShiftView(shift: $shift)
+                    ShiftCell(shift: $shift)
                         .showOffers()
                         .onTap {
                             if (shift.offersRef?.count ?? 0) != 0 {

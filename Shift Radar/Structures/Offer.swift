@@ -12,24 +12,18 @@ struct Offer: Codable, Hashable, Identifiable {
     @DocumentID var id: String?
     var shiftId: String
     var from: String?
-    var firstName: String
-    var lastName: String
     var date: Date
     var status: OfferStatus
-    var responseType: ResponseType
     var compensation: Compensation?
     
     enum CodingKeys: String, CodingKey {
-        case id, shiftId, from, firstName, lastName, date, status, responseType, compensation
+        case id, shiftId, from, date, status, responseType, compensation
     }
     
-    init(firstName: String, lastName: String, shiftId: String, responseType: ResponseType = .deal, compensation: Compensation? = nil) {
-        self.firstName = firstName
-        self.lastName = lastName
+    init(shiftId: String, compensation: Compensation? = nil) {
         self.shiftId = shiftId
         self.date = Date()
         self.status = .pending
-        self.responseType = responseType
         self.compensation = compensation
     }
     
@@ -38,9 +32,6 @@ struct Offer: Codable, Hashable, Identifiable {
         
         try container.encode(id, forKey: .id)
         try container.encode(shiftId, forKey: .shiftId)
-        try container.encode(firstName, forKey: .firstName)
-        try container.encode(lastName, forKey: .lastName)
-        try container.encode(responseType, forKey: .responseType)
         try container.encode(compensation, forKey: .compensation)
     }
     
@@ -50,22 +41,15 @@ struct Offer: Codable, Hashable, Identifiable {
         _id = try container.decode(DocumentID<String>.self, forKey: .id)
         shiftId = try container.decode(String.self, forKey: .shiftId)
         from = try container.decode(String.self, forKey: .from)
-        firstName = try container.decode(String.self, forKey: .firstName)
-        lastName = try container.decode(String.self, forKey: .lastName)
         date = try container.decode(Date.self, forKey: .date)
         status = try container.decode(OfferStatus.self, forKey: .status)
-        responseType = try container.decode(ResponseType.self, forKey: .responseType)
         compensation = try? container.decode(Compensation.self, forKey: .compensation)
     }
 }
 
 enum OfferStatus: String, Codable, CaseIterable {
-    case pending = "pending"
-    case accepted = "accepted"
-    case declined = "declined"
-}
-
-enum ResponseType: String, Codable, Hashable, CaseIterable {
-    case deal = "deal"
-    case counterOffer = "counter-offer"
+    case pending
+    case accepted
+    case declined
+    case counterOffer
 }

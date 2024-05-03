@@ -42,7 +42,7 @@ class PickupShiftModalViewModel: ObservableObject {
             return
         }
         
-        let offer = Offer(firstName: userData.firstName, lastName: userData.lastName, shiftId: shiftId)
+        let offer = Offer(shiftId: shiftId)
         guard let offerDict = offer.toDictionary() else {
             print("Unable to encode offer")
             completion(.failure(NSError()))

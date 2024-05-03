@@ -71,9 +71,9 @@ struct OfferShiftView: View {
             
             ZStack(alignment: .bottomTrailing) {
                 ScrollView {
-                    VStack(spacing: 20) {
+                    VStack(spacing: 10) {
                         ForEach($viewModel.offeredShifts) { $shift in
-                            ShiftView(shift: $shift)
+                            ShiftCell(shift: $shift)
                                 .showMoreActions()
                                 .onDelete {
                                     viewModel.deleteShift(shift)
@@ -99,7 +99,7 @@ struct OfferShiftView: View {
                         Text("Show past shifts")
                             .underline()
                     }
-                    .padding(.bottom)
+                    .padding(.bottom, 80)
                     
                 }
                 .refreshable {
