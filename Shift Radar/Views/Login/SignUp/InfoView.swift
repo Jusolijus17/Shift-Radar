@@ -18,13 +18,9 @@ struct InfoView: View {
                 HStack {
                     Group {
                         CustomTextField(text: $userData.firstName, placeholder: "First", systemName: "person.fill")
+                            .outlined()
                         CustomTextField(text: $userData.lastName, placeholder: "Last", systemName: "person")
-                    }
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 10.0)
-                            .fill(.white)
-                            .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                            .outlined()
                     }
                 }
                 
@@ -37,15 +33,7 @@ struct InfoView: View {
                             .foregroundStyle(Color(hex: "#8B8E94"))
                             .padding(.trailing, 10)
                     }
-                    HStack {
-                        Label("AC", systemImage: "number")
-                            .foregroundStyle(.tertiary)
-                        Divider()
-                            .frame(maxHeight: 25)
-                            .padding(.horizontal, 5)
-                        TextField("Employee Number", text: $userData.employeeNumber)
-                            .keyboardType(.numberPad)
-                    }
+                    EmployeeNumberField(number: $userData.employeeNumber)
                     CustomSecureField(text: $password, placeholder: "Password", systemName: "lock")
                     CustomSecureField(text: $confirmPassword, placeholder: "Confirm Password", systemName: "lock.fill")
                 }

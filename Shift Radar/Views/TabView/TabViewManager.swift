@@ -12,6 +12,7 @@ import FirebaseAuth
 struct TabViewManager: View {
     @State var selectedTab = 0
     @State private var showSettings = false
+    @State private var showProfile = false
     
     @EnvironmentObject var appModel: AppViewModel
     
@@ -80,9 +81,13 @@ struct TabViewManager: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
-                            // show profile
+                            self.showProfile = true
                         } label: {
-                            ProfileImageView(userData: appModel.userData)
+                            ProfileImage(userData: appModel.userData, placeholder: {
+                                Image(systemName: "person.fill")
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
+                            })
                         }
                     }
                     ToolbarItem(placement: .topBarTrailing) {
@@ -94,13 +99,16 @@ struct TabViewManager: View {
                             Image(systemName: "line.horizontal.3")
                                 .font(.title3)
                                 .fontWeight(.semibold)
-                                .frame(width: 35, height: 35)
                         }
                     }
                 }
                 .toolbarBackground(.accent, for: .navigationBar)
                 .toolbarBackground(.visible, for: .navigationBar)
                 .toolbarColorScheme(.dark, for: .navigationBar)
+                .sheet(isPresented: $showProfile) {
+                    UserProfileView()
+                        .environmentObject(appModel.userData ?? UserData.dummyUser())
+                }
             }
         }
     }
@@ -111,28 +119,6 @@ struct TabViewManager: View {
             try firebaseAuth.signOut()
         } catch let signOutError as NSError {
             print("Error signing out: %@", signOutError)
-        }
-    }
-}
-
-struct ProfileImageView: View {
-    var userData: UserData?
-    
-    var body: some View {
-        Group {
-            if let urlString = userData?.profileImageUrl, let url = URL(string: urlString) {
-                AsyncImage(url: url) { image in
-                    image.resizable()
-                } placeholder: {
-                    ProgressView()
-                }
-                .frame(width: 35, height: 35)
-                .clipShape(Circle())
-            } else {
-                Image(systemName: "person.fill")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-            }
         }
     }
 }
@@ -148,7 +134,7 @@ struct TabViewManager_Previews: PreviewProvider {
         
         init(selectedTab: Int) {
             self._selectedTab = State(initialValue: selectedTab)
-            appModel.userData = UserData()
+            appModel.userData = UserData.dummyUser()
         }
         
         var body: some View {

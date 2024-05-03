@@ -27,6 +27,8 @@ struct LoginView: View {
                     
                     VStack(spacing: 18) {
                         CustomTextField(text: $email, placeholder: "Email", systemName: "envelope")
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
                             .padding()
                             .background {
                                 RoundedRectangle(cornerRadius: 10.0)

@@ -63,6 +63,50 @@ struct CustomTextField: View {
     }
 }
 
+struct Outlined: ViewModifier {
+    var color: Color = .accentColor.opacity(0.5)
+    var cornerRadius: CGFloat = 10.0
+    var lineWidth: CGFloat = 1
+
+    func body(content: Content) -> some View {
+        content
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(.white)
+                    .stroke(color, lineWidth: lineWidth)
+            }
+    }
+}
+
+extension CustomTextField {
+    func outlined(color: Color = .accentColor.opacity(0.5), cornerRadius: CGFloat = 10.0, lineWidth: CGFloat = 1) -> some View {
+        modifier(Outlined(color: color, cornerRadius: cornerRadius, lineWidth: lineWidth))
+    }
+}
+
+struct EmployeeNumberField: View {
+    @Binding var number: String
+    
+    var body: some View {
+        HStack {
+            Label("AC", systemImage: "number")
+                .foregroundStyle(.tertiary)
+            Divider()
+                .frame(maxHeight: 25)
+                .padding(.horizontal, 5)
+            TextField("Employee Number", text: $number)
+                .keyboardType(.numberPad)
+        }
+    }
+}
+
+extension EmployeeNumberField {
+    func outlined(color: Color = .accentColor.opacity(0.5), cornerRadius: CGFloat = 10.0, lineWidth: CGFloat = 1) -> some View {
+        modifier(Outlined(color: color, cornerRadius: cornerRadius, lineWidth: lineWidth))
+    }
+}
+
 struct PullToRefresh: View {
     
     var coordinateSpaceName: String
@@ -263,6 +307,59 @@ extension SwipeToConfirmButton {
     }
 }
 
-#Preview(body: {
-    SwipeToConfirmButton()
-})
+struct ProfileImage<Placeholder: View>: View {
+    var userData: UserData?
+    var placeholder: () -> Placeholder
+    
+    init(userData: UserData?, @ViewBuilder placeholder: @escaping () -> Placeholder) {
+        self.userData = userData
+        self.placeholder = placeholder
+    }
+    
+    var body: some View {
+        Group {
+            if let urlString = userData?.profileImageUrl, let url = URL(string: urlString) {
+                AsyncImage(url: url) { image in
+                    image.resizable()
+                } placeholder: {
+                    ProgressView()
+                }
+                .clipShape(Circle())
+            } else {
+                placeholder()
+            }
+        }
+    }
+}
+
+struct EditableProfileImage: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .overlay {
+                Image(systemName: "plus.circle.fill")
+                    .font(.title2)
+                    .foregroundStyle(.green)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            }
+    }
+}
+
+extension ProfileImage {
+    func editable() -> some View {
+        modifier(EditableProfileImage())
+    }
+}
+
+#Preview {
+    //SwipeToConfirmButton()
+//    CustomTextField(text: .constant(""), placeholder: "First name", systemName: "person.fill")
+//        .outlined()
+    ProfileImage(userData: nil) {
+        Image(systemName: "person.crop.circle.fill")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 100, height: 100)
+            .clipShape(Circle())
+    }
+    .editable()
+}
