@@ -13,7 +13,7 @@ import FirebaseStorage
 struct SignUpView: View {
     @StateObject private var viewModel = SignUpViewModel()
     
-    @State private var image = UIImage()
+    @State private var image: UIImage?
     @State private var showSheet = false
     
     @Environment(\.presentationMode) var presentationMode
@@ -98,6 +98,7 @@ struct SignUpView: View {
                         .onDisappear(perform: {
                             viewModel.profilePicture = image
                         })
+                        .ignoresSafeArea()
                 }
                 .environmentObject(viewModel.userData)
             }
@@ -121,7 +122,7 @@ struct SignUpView: View {
 struct ImagePicker: UIViewControllerRepresentable {
     @Environment(\.presentationMode) private var presentationMode
     var sourceType: UIImagePickerController.SourceType = .photoLibrary
-    @Binding var selectedImage: UIImage
+    @Binding var selectedImage: UIImage?
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {
         

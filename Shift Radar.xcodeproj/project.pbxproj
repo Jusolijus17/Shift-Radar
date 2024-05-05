@@ -37,6 +37,7 @@
 		3D895D712BE4705000EDF456 /* UserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D895D702BE4705000EDF456 /* UserProfileView.swift */; };
 		3D895D732BE4706100EDF456 /* UserProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D895D722BE4706100EDF456 /* UserProfileViewModel.swift */; };
 		3D895D762BE4894F00EDF456 /* EditUserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D895D752BE4894F00EDF456 /* EditUserProfileView.swift */; };
+		3D895D792BE57E3500EDF456 /* EditUserProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D895D782BE57E3500EDF456 /* EditUserProfileViewModel.swift */; };
 		3D92F3942AE8B2250032DE1F /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3932AE8B2250032DE1F /* LoginManager.swift */; };
 		3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3962AE8B3600032DE1F /* TabViewManager.swift */; };
 		3D92F3992AE8B4370032DE1F /* PickupShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */; };
@@ -84,6 +85,7 @@
 		3D895D702BE4705000EDF456 /* UserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileView.swift; sourceTree = "<group>"; };
 		3D895D722BE4706100EDF456 /* UserProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewModel.swift; sourceTree = "<group>"; };
 		3D895D752BE4894F00EDF456 /* EditUserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUserProfileView.swift; sourceTree = "<group>"; };
+		3D895D782BE57E3500EDF456 /* EditUserProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUserProfileViewModel.swift; sourceTree = "<group>"; };
 		3D92F3932AE8B2250032DE1F /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
 		3D92F3962AE8B3600032DE1F /* TabViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewManager.swift; sourceTree = "<group>"; };
 		3D92F3982AE8B4370032DE1F /* PickupShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupShiftView.swift; sourceTree = "<group>"; };
@@ -206,7 +208,7 @@
 			children = (
 				3D92F3952AE8B34E0032DE1F /* Login */,
 				3DEF31372AF58BE7009F6737 /* TabView */,
-				3D895D742BE4706900EDF456 /* UserProfile */,
+				3D895D742BE4706900EDF456 /* Profile */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -238,14 +240,31 @@
 			path = Staff;
 			sourceTree = "<group>";
 		};
-		3D895D742BE4706900EDF456 /* UserProfile */ = {
+		3D895D742BE4706900EDF456 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				3D895D772BE57E1B00EDF456 /* UserProfile */,
+				3D895D7A2BE57E3D00EDF456 /* EditUserProfile */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		3D895D772BE57E1B00EDF456 /* UserProfile */ = {
 			isa = PBXGroup;
 			children = (
 				3D895D702BE4705000EDF456 /* UserProfileView.swift */,
 				3D895D722BE4706100EDF456 /* UserProfileViewModel.swift */,
-				3D895D752BE4894F00EDF456 /* EditUserProfileView.swift */,
 			);
 			path = UserProfile;
+			sourceTree = "<group>";
+		};
+		3D895D7A2BE57E3D00EDF456 /* EditUserProfile */ = {
+			isa = PBXGroup;
+			children = (
+				3D895D752BE4894F00EDF456 /* EditUserProfileView.swift */,
+				3D895D782BE57E3500EDF456 /* EditUserProfileViewModel.swift */,
+			);
+			path = EditUserProfile;
 			sourceTree = "<group>";
 		};
 		3D92F3952AE8B34E0032DE1F /* Login */ = {
@@ -462,6 +481,7 @@
 				3D23BA142B07105000E745A9 /* OfferShiftViewModalModel.swift in Sources */,
 				3D92F39F2AE8B58F0032DE1F /* StaffView.swift in Sources */,
 				3D13CC822AF9C17E00E14CF4 /* OfferShiftViewModal.swift in Sources */,
+				3D895D792BE57E3500EDF456 /* EditUserProfileViewModel.swift in Sources */,
 				3D12E3B42AFC5A2300C38AB2 /* Shift.swift in Sources */,
 				3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */,
 				3D9BE8062B3E36310028034B /* FilterSelector.swift in Sources */,

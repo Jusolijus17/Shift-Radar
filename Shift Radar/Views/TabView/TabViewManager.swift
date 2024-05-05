@@ -83,10 +83,9 @@ struct TabViewManager: View {
                         Button {
                             self.showProfile = true
                         } label: {
-                            ProfileImage(userData: appModel.userData, placeholder: {
-                                Image(systemName: "person.fill")
+                            ProfileImage(image: .constant(nil), imageURL: appModel.userData?.profileImageUrl, width: 35, height: 35, placeholder: {
+                                Image(systemName: "person.crop.circle")
                                     .font(.title3)
-                                    .fontWeight(.semibold)
                             })
                         }
                     }

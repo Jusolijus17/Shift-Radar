@@ -16,11 +16,10 @@ struct UserProfileView: View {
             VStack {
                 VStack(alignment: .leading, spacing: 20) {
                     HStack {
-                        ProfileImage(userData: userData, placeholder: {
+                        ProfileImage(image: $userData.profileImage, width: 100, height: 100, placeholder: {
                             Image(systemName: "person.crop.circle.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 100, height: 100)
                                 .clipShape(Circle())
                         })
                         
@@ -92,7 +91,7 @@ struct UserProfileView: View {
             .navigationBarTitleDisplayMode(.inline)
             .background(Color.background)
             .navigationDestination(isPresented: $isEditing) {
-                EditUserProfileView()
+                EditUserProfileView(userData: userData, isEditing: $isEditing)
             }
         }
     }

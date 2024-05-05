@@ -53,12 +53,18 @@ struct CustomTextField: View {
     @Binding var text: String
     var placeholder: String
     var systemName: String
+    @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
         HStack {
             Image(systemName: systemName)
                 .foregroundColor(Color(hex: "#A3A3A3"))
             TextField(placeholder, text: $text)
+                .focused($isTextFieldFocused)
+        }
+        .contentShape(Rectangle()) // Assure que tout le HStack est touchable
+        .onTapGesture {
+            self.isTextFieldFocused = true
         }
     }
 }
@@ -71,11 +77,15 @@ struct Outlined: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding()
-            .background {
+            .background(
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(.white)
-                    .stroke(color, lineWidth: lineWidth)
-            }
+                    .fill(Color.white)
+                    .shadow(color: color.opacity(0.1), radius: 1, x: 0, y: 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .stroke(color, lineWidth: lineWidth)
+                    )
+            )
     }
 }
 
@@ -308,58 +318,108 @@ extension SwipeToConfirmButton {
 }
 
 struct ProfileImage<Placeholder: View>: View {
-    var userData: UserData?
+    var imageURL: URL?
     var placeholder: () -> Placeholder
-    
-    init(userData: UserData?, @ViewBuilder placeholder: @escaping () -> Placeholder) {
-        self.userData = userData
+    @Binding var selectedImage: UIImage?
+    var width: CGFloat
+    var height: CGFloat
+
+    init(image: Binding<UIImage?>, imageURL: String? = nil, width: CGFloat, height: CGFloat, @ViewBuilder placeholder: @escaping () -> Placeholder) {
+        self._selectedImage = image
         self.placeholder = placeholder
+        self.width = width
+        self.height = height
+        if let imageURL = imageURL {
+            self.imageURL = URL(string: imageURL)
+        }
     }
     
     var body: some View {
         Group {
-            if let urlString = userData?.profileImageUrl, let url = URL(string: urlString) {
-                AsyncImage(url: url) { image in
-                    image.resizable()
-                } placeholder: {
-                    ProgressView()
+            if let selectedImage {
+                Image(uiImage: selectedImage)
+                    .resizable()
+                    .scaledToFill()
+                    .overlay {
+                        Circle()
+                            .stroke(.red, lineWidth: 2)
+                    }
+                    .clipShape(Circle())
+                    .frame(width: width, height: height)
+                    .clipped()
+            } else if let imageURL {
+                AsyncImage(url: imageURL) { phase in
+                    switch phase {
+                    case .success(let loadedImage):
+                        loadedImage
+                            .resizable()
+                            .scaledToFill()
+                            .overlay {
+                                Circle()
+                                    .stroke(.accent, lineWidth: 2)
+                            }
+                            .clipShape(Circle())
+                            .frame(width: width, height: height)
+                    case .failure:
+                        placeholder()
+                    case .empty:
+                        placeholder()
+                    @unknown default:
+                        placeholder()
+                    }
                 }
-                .clipShape(Circle())
             } else {
                 placeholder()
             }
         }
     }
+
+    func editable() -> some View {
+        modifier(EditableProfileImage(selectedImage: $selectedImage))
+    }
 }
 
+
 struct EditableProfileImage: ViewModifier {
+    @Binding var selectedImage: UIImage?
+    @State private var isShowingImagePicker = false
+
     func body(content: Content) -> some View {
         content
             .overlay {
-                Image(systemName: "plus.circle.fill")
-                    .font(.title2)
-                    .foregroundStyle(.green)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                Button(action: {
+                    isShowingImagePicker = true
+                }) {
+                    Image(systemName: "pencil.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(.green)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                }
+                .sheet(isPresented: $isShowingImagePicker) {
+                    ImagePicker(sourceType: .photoLibrary, selectedImage: $selectedImage)
+                        .ignoresSafeArea()
+                }
             }
     }
 }
 
-extension ProfileImage {
-    func editable() -> some View {
-        modifier(EditableProfileImage())
+struct CustomObjects_Previews: PreviewProvider {
+    static var previews: some View {
+        PreviewWrapper()
     }
-}
-
-#Preview {
-    //SwipeToConfirmButton()
-//    CustomTextField(text: .constant(""), placeholder: "First name", systemName: "person.fill")
-//        .outlined()
-    ProfileImage(userData: nil) {
-        Image(systemName: "person.crop.circle.fill")
-            .resizable()
-            .scaledToFit()
-            .frame(width: 100, height: 100)
-            .clipShape(Circle())
+    
+    struct PreviewWrapper: View {
+        @State private var image: UIImage?
+        
+        var body: some View {
+            ProfileImage(image: $image, width: 100, height: 100) {
+                Image(systemName: "person.crop.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                    .clipShape(Circle())
+            }
+            .editable()
+        }
     }
-    .editable()
 }
