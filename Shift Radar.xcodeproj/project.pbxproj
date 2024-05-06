@@ -67,6 +67,8 @@
 		3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEDAB4D2AECB45A00771E43 /* Shapes.swift */; };
 		3DEDAB502AECB67A00771E43 /* SuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */; };
 		3DEF31352AF58B50009F6737 /* OfferShiftViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */; };
+		3DF1876B2BE84225002B3692 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF1876A2BE84225002B3692 /* CustomTextField.swift */; };
+		3DF1876D2BE843F3002B3692 /* ProfileImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF1876C2BE843F2002B3692 /* ProfileImage.swift */; };
 		3DF600752AEADAA6008F6971 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF600742AEADAA6008F6971 /* InfoView.swift */; };
 		3DF600772AEADAB6008F6971 /* EmailConfirmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */; };
 		3DFA29082AF497DC0082439D /* SignUpViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DFA29072AF497DC0082439D /* SignUpViewModel.swift */; };
@@ -117,6 +119,8 @@
 		3DEDAB4D2AECB45A00771E43 /* Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shapes.swift; sourceTree = "<group>"; };
 		3DEDAB4F2AECB67A00771E43 /* SuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessView.swift; sourceTree = "<group>"; };
 		3DEF31342AF58B50009F6737 /* OfferShiftViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferShiftViewModel.swift; sourceTree = "<group>"; };
+		3DF1876A2BE84225002B3692 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
+		3DF1876C2BE843F2002B3692 /* ProfileImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImage.swift; sourceTree = "<group>"; };
 		3DF600742AEADAA6008F6971 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		3DF600762AEADAB6008F6971 /* EmailConfirmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailConfirmView.swift; sourceTree = "<group>"; };
 		3DFA29072AF497DC0082439D /* SignUpViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewModel.swift; sourceTree = "<group>"; };
@@ -177,6 +181,8 @@
 			children = (
 				3D92F3A02AE8B7650032DE1F /* Extensions.swift */,
 				3D13CC832AF9C1CE00E14CF4 /* CustomObjects.swift */,
+				3DF1876A2BE84225002B3692 /* CustomTextField.swift */,
+				3DF1876C2BE843F2002B3692 /* ProfileImage.swift */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -484,6 +490,8 @@
 				3D895D792BE57E3500EDF456 /* EditUserProfileViewModel.swift in Sources */,
 				3D12E3B42AFC5A2300C38AB2 /* Shift.swift in Sources */,
 				3D92F3972AE8B3610032DE1F /* TabViewManager.swift in Sources */,
+				3DF1876B2BE84225002B3692 /* CustomTextField.swift in Sources */,
+				3DF1876D2BE843F3002B3692 /* ProfileImage.swift in Sources */,
 				3D9BE8062B3E36310028034B /* FilterSelector.swift in Sources */,
 				3DEDAB4E2AECB45A00771E43 /* Shapes.swift in Sources */,
 				3DE4870C2BC11D9F00B6324F /* BrowserView.swift in Sources */,

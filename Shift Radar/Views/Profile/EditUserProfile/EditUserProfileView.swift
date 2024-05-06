@@ -10,14 +10,17 @@ import SwiftUI
 struct EditUserProfileView: View {
     @StateObject private var viewModel: EditUserProfileViewModel
     @Binding var isEditing: Bool
+    @Binding var shouldReloadUserData: Bool
+    
     @State private var showImagePicker: Bool = false
     @State private var selectedImage: UIImage?
     @State private var showAlert: Bool = false
     @State private var alertMessage: String = ""
     @State private var alertTitle: String = ""
 
-    init(userData: UserData, isEditing: Binding<Bool>) {
+    init(userData: UserData, isEditing: Binding<Bool>, shouldReloadUserData: Binding<Bool>) {
         _isEditing = isEditing
+        _shouldReloadUserData = shouldReloadUserData
         _viewModel = StateObject(wrappedValue: EditUserProfileViewModel(userData: userData))
     }
     
@@ -29,6 +32,7 @@ struct EditUserProfileView: View {
                         Image(systemName: "person.crop.circle.fill")
                             .resizable()
                             .scaledToFit()
+                            .frame(width: 100, height: 100)
                             .clipShape(Circle())
                     })
                     .editable()
@@ -38,22 +42,21 @@ struct EditUserProfileView: View {
                     }
                     
                     HStack {
-                        CustomTextField(text: $viewModel.firstName, placeholder: "First name", systemName: "person.fill")
+                        CustomTextField(text: $viewModel.firstName, type: .firstName)
                             .outlined()
-                        CustomTextField(text: $viewModel.lastName, placeholder: "Last name", systemName: "person")
+                        CustomTextField(text: $viewModel.lastName, type: .lastName)
                             .outlined()
                     }
                     
-                    CustomTextField(text: $viewModel.email, placeholder: "Email", systemName: "envelope")
+                    CustomTextField(text: $viewModel.email, type: .email)
                         .outlined()
-                    
-                    EmployeeNumberField(number: $viewModel.employeeNumber)
+                    CustomTextField(text: $viewModel.employeeNumber, type: .employeeNumber)
                         .outlined()
-                    
-                    CustomTextField(text: $viewModel.phoneNumber, placeholder: "Add phone number", systemName: "phone")
+                    CustomTextField(text: $viewModel.phoneNumber, type: .phoneNumber)
                         .outlined()
                 }
                 .padding(.horizontal)
+                .disabled(viewModel.saveState == .saving)
             }
             
             Spacer()
@@ -70,6 +73,17 @@ struct EditUserProfileView: View {
                         .frame(maxWidth: .infinity)
                         .background(Color.blue)
                         .cornerRadius(10)
+                        .overlay {
+                            if viewModel.saveState == .saving {
+                                ProgressView()
+                                    .tint(.white)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .foregroundStyle(.blue)
+                                    }
+                            }
+                        }
                 }
                 
                 Button {
@@ -111,7 +125,7 @@ struct EditUserProfileView: View {
                 alertTitle = "Success"
                 alertMessage = "Profile updated successfully!"
                 showAlert = true
-                isEditing = false // Close editing view on success
+                shouldReloadUserData = true
             default:
                 break
             }
@@ -130,7 +144,7 @@ struct EditUserProfileView_Previews: PreviewProvider {
         
         var body: some View {
             NavigationView {
-                EditUserProfileView(userData: userData, isEditing: .constant(true))
+                EditUserProfileView(userData: userData, isEditing: .constant(true), shouldReloadUserData: .constant(false))
             }
         }
     }

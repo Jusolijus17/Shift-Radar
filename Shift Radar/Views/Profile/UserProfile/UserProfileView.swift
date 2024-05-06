@@ -8,90 +8,116 @@
 import SwiftUI
 
 struct UserProfileView: View {
-    @EnvironmentObject var userData: UserData
+    @EnvironmentObject var appModel: AppViewModel
     @State private var isEditing = false
+    @State private var shouldRelaodUserData = false
+    @State private var profileImage: UIImage?
     
     var body: some View {
         NavigationStack {
-            VStack {
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack {
-                        ProfileImage(image: $userData.profileImage, width: 100, height: 100, placeholder: {
-                            Image(systemName: "person.crop.circle.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .clipShape(Circle())
-                        })
+            if let userData = appModel.userData {
+                VStack {
+                    VStack(alignment: .leading, spacing: 20) {
+                        HStack {
+                            ProfileImage(
+                                image: $profileImage,
+                                width: 100,
+                                height: 100,
+                                placeholder: {
+                                    Image(systemName: "person.crop.circle.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 100, height: 100)
+                                        .clipShape(Circle())
+                                }
+                            )
+                            .onAppear {
+                                self.profileImage = userData.profileImage
+                            }
+                            .onChange(of: userData.profileImage) {
+                                self.profileImage = userData.profileImage
+                            }
+                            
+                            VStack(alignment: .leading) {
+                                Text("\(userData.firstName) \(userData.lastName)")
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                
+                                HStack(spacing: 0) {
+                                    Text("Employee #: ")
+                                    Text("\(userData.employeeNumber)")
+                                        .bold()
+                                }
+                                .foregroundStyle(.accent)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        
+                        Divider()
                         
                         VStack(alignment: .leading) {
-                            Text("\(userData.firstName) \(userData.lastName)")
-                                .font(.title)
-                                .fontWeight(.bold)
-                            
-                            HStack(spacing: 0) {
-                                Text("Employee #: ")
-                                Text("\(userData.employeeNumber)")
-                                    .bold()
-                            }
-                            .foregroundStyle(.accent)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    
-                    Divider()
-                    
-                    VStack(alignment: .leading) {
-                        ProfileDetailRow(label: "Email", value: userData.email)
-                            .padding(.bottom)
-                        if let phoneNumber = userData.phoneNumber {
-                            ProfileDetailRow(label: "Phone number", value: phoneNumber)
+                            ProfileDetailRow(label: "Email", value: userData.email)
                                 .padding(.bottom)
-                        }
-                        if let creationDate = userData.creationDate {
-                            ProfileDetailRow(label: "Account creation date", value: "\(creationDate.formatted(date: .long, time: .omitted))")
+                            if let phoneNumber = userData.phoneNumber, phoneNumber != "" {
+                                ProfileDetailRow(label: "Phone number", value: phoneNumber)
+                                    .padding(.bottom)
+                            }
+                            if let creationDate = userData.creationDate {
+                                ProfileDetailRow(label: "Account creation date", value: "\(creationDate.formatted(date: .long, time: .omitted))")
+                            }
                         }
                     }
-                }
-                .padding(.horizontal)
-                
-                Spacer()
-                
-                Button {
-                    isEditing = true
-                } label: {
-                    HStack {
-                        Text("Edit info")
-                        Image(systemName: "pencil")
-                    }
-                    .foregroundColor(.white)
-                    .padding()
-                    .bold()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .cornerRadius(10)
                     .padding(.horizontal)
-                }
-                
-                Button(action: {
-                    // Action to delete account
-                }) {
-                    Text("Delete account")
-                        .foregroundColor(.red)
-                        .bold()
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background {
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.red, lineWidth: 2)
+                    
+                    Spacer()
+                    
+                    Button {
+                        isEditing = true
+                    } label: {
+                        HStack {
+                            Text("Edit info")
+                            Image(systemName: "pencil")
                         }
+                        .foregroundColor(.white)
+                        .padding()
+                        .bold()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(10)
                         .padding(.horizontal)
+                    }
+                    
+                    Button(action: {
+                        // Action to delete account
+                    }) {
+                        Text("Delete account")
+                            .foregroundColor(.red)
+                            .bold()
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.red, lineWidth: 2)
+                            }
+                            .padding(.horizontal)
+                    }
                 }
-            }
-            .navigationTitle("Profile")
-            .navigationBarTitleDisplayMode(.inline)
-            .background(Color.background)
-            .navigationDestination(isPresented: $isEditing) {
-                EditUserProfileView(userData: userData, isEditing: $isEditing)
+                .navigationTitle("Profile")
+                .navigationBarTitleDisplayMode(.inline)
+                .background(Color.background)
+                .navigationDestination(isPresented: $isEditing) {
+                    EditUserProfileView(userData: userData, isEditing: $isEditing, shouldReloadUserData: $shouldRelaodUserData)
+                        .onDisappear {
+                            if shouldRelaodUserData {
+                                self.appModel.loadUserData()
+                            }
+                        }
+                }
+            } else {
+                Text("Error loading user profile")
+                    .foregroundStyle(.secondary)
+                    .navigationTitle("Profile")
+                    .navigationBarTitleDisplayMode(.inline)
             }
         }
     }
@@ -118,11 +144,15 @@ struct UserProfileView_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
-        @State private var userData = UserData.dummyUser()
+        @State private var appModel = AppViewModel()
+        
+        init() {
+            appModel.userData = UserData.dummyUser()
+        }
         
         var body: some View {
             UserProfileView()
-                .environmentObject(userData)
+                .environmentObject(appModel)
         }
     }
 }

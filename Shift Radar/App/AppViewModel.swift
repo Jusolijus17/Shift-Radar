@@ -48,6 +48,7 @@ class AppViewModel: ObservableObject {
         DispatchQueue.global(qos: .userInitiated).async {
             if let imageData = try? Data(contentsOf: url), let image = UIImage(data: imageData) {
                 DispatchQueue.main.async { [weak self] in
+                    self?.objectWillChange.send()
                     self?.userData?.profileImage = image
                 }
             }
