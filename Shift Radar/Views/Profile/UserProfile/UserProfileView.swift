@@ -110,6 +110,7 @@ struct UserProfileView: View {
                         .onDisappear {
                             if shouldRelaodUserData {
                                 self.appModel.loadUserData()
+                                self.shouldRelaodUserData = false
                             }
                         }
                 }

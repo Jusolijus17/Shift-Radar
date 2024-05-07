@@ -41,46 +41,44 @@ class EditUserProfileViewModel: ObservableObject {
     func saveInfo() {
         self.saveState = .saving
         
-        // Crée une instance de UserData avec les données actuelles
-        let updatedUserData = UserData(firstName: firstName, lastName: lastName, email: email, 
+        let updatedUserData = UserData(firstName: firstName, lastName: lastName, email: email,
                                        employeeNumber: employeeNumber, phoneNumber: phoneNumber)
         
-        // Vérification de l'UserData
         if let userDataError = updatedUserData.verifyInfo() {
             self.saveState = .failed(userDataError)
             return
         }
         
-        // Vérification spécifique du ViewModel
-        if let viewModelError = self.verifyInfo(updatedUserData) {
+        if let viewModelError = verifyInfo(updatedUserData) {
             self.saveState = .failed(viewModelError)
             return
         }
         
-        // Si une photo de profil existe, la téléverser, sinon passer directement à la sauvegarde Firestore
         if let image = profileImage, let userId = userId {
             let newImageData = image.jpegData(compressionQuality: 0.9)
             let oldImageData = originalImage?.jpegData(compressionQuality: 0.9)
             
             if newImageData != oldImageData {
-                print("Saving profile image")
                 uploadProfileImage(image, for: userId) { [weak self] success in
                     guard success else {
                         self?.saveState = .failed(.updateError)
                         return
                     }
-                    
-                    // Après le téléversement réussi de l'image, sauvegarder les autres données sur Firestore
                     self?.saveToFirestore(updatedData: updatedUserData)
                 }
             } else {
-                print("Not saving profile image")
-                // Pas d'image à téléverser, procéder directement à la sauvegarde sur Firestore
-                self.saveToFirestore(updatedData: updatedUserData)
+                saveToFirestore(updatedData: updatedUserData)
+            }
+        } else if originalImage != nil, let userId = userId {
+            deleteProfileImage(for: userId) { [weak self] success in
+                guard success else {
+                    self?.saveState = .failed(.updateError)
+                    return
+                }
+                self?.saveToFirestore(updatedData: updatedUserData)
             }
         } else {
-            // Pas d'image à téléverser, procéder directement à la sauvegarde sur Firestore
-            self.saveToFirestore(updatedData: updatedUserData)
+            saveToFirestore(updatedData: updatedUserData)
         }
     }
     
@@ -120,6 +118,24 @@ class EditUserProfileViewModel: ObservableObject {
             }
 
             completion(true)
+        }
+    }
+    
+    private func deleteProfileImage(for userId: String, completion: @escaping (Bool) -> Void) {
+        let storageRef = Storage.storage().reference().child("profilePictures/\(userId)/profile.jpg")
+        storageRef.delete { error in
+            if let error = error {
+                print("Error removing profile image: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.saveState = .failed(.updateError)
+                    completion(false)
+                }
+            } else {
+                print("Profile image successfully removed")
+                DispatchQueue.main.async {
+                    completion(true)
+                }
+            }
         }
     }
     

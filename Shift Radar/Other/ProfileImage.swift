@@ -72,23 +72,37 @@ struct ProfileImage<Placeholder: View>: View {
 
 struct EditableProfileImage: ViewModifier {
     @Binding var selectedImage: UIImage?
+    @State private var isShowingActionSheet = false
     @State private var isShowingImagePicker = false
 
     func body(content: Content) -> some View {
         content
             .overlay {
-                Button(action: {
-                    isShowingImagePicker = true
-                }) {
-                    Image(systemName: "pencil.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(.green)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                }
-                .sheet(isPresented: $isShowingImagePicker) {
-                    ImagePicker(sourceType: .photoLibrary, selectedImage: $selectedImage)
-                        .ignoresSafeArea()
-                }
+                Image(systemName: "pencil.circle.fill")
+                    .font(.title2)
+                    .foregroundStyle(.green)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            }
+            .onTapGesture {
+                isShowingActionSheet = true
+            }
+            .actionSheet(isPresented: $isShowingActionSheet) {
+                ActionSheet(
+                    title: Text("Edit profile picture"),
+                    buttons: [
+                        .default(Text("Change picture")) {
+                            isShowingImagePicker = true
+                        },
+                        .destructive(Text("Delete picture")) {
+                            selectedImage = nil
+                        },
+                        .cancel()
+                    ]
+                )
+            }
+            .sheet(isPresented: $isShowingImagePicker) {
+                ImagePicker(sourceType: .photoLibrary, selectedImage: $selectedImage)
+                    .ignoresSafeArea()
             }
     }
 }
