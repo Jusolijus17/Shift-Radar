@@ -106,7 +106,6 @@ struct TabViewManager: View {
                 .toolbarColorScheme(.dark, for: .navigationBar)
                 .sheet(isPresented: $showProfile) {
                     UserProfileView()
-                        .environmentObject(appModel.userData ?? UserData.dummyUser())
                 }
             }
         }
@@ -129,11 +128,11 @@ struct TabViewManager_Previews: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State private var selectedTab: Int
-        @StateObject private var appModel = AppViewModel()
+        @ObservedObject private var appModel = AppViewModel()
         
         init(selectedTab: Int) {
             self._selectedTab = State(initialValue: selectedTab)
-            appModel.userData = UserData.dummyUser()
+            appModel.loadUserData()
         }
         
         var body: some View {

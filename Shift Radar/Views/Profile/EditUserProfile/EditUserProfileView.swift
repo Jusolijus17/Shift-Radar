@@ -48,8 +48,6 @@ struct EditUserProfileView: View {
                             .outlined()
                     }
                     
-                    CustomTextField(text: $viewModel.email, type: .email)
-                        .outlined()
                     CustomTextField(text: $viewModel.employeeNumber, type: .employeeNumber)
                         .outlined()
                     CustomTextField(text: $viewModel.phoneNumber, type: .phoneNumber)
@@ -103,7 +101,11 @@ struct EditUserProfileView: View {
             .padding(.horizontal)
         }
         .alert(isPresented: $showAlert) {
-            Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("OK"), action: {
+                if viewModel.saveState == .saved {
+                    self.isEditing = false
+                }
+            }))
         }
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(sourceType: .photoLibrary, selectedImage: $selectedImage)
@@ -130,6 +132,13 @@ struct EditUserProfileView: View {
                 break
             }
         }
+        .onTapGesture {
+            self.hideKeyboard()
+        }
+    }
+    
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 

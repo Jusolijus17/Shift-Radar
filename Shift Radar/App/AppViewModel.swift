@@ -45,14 +45,19 @@ class AppViewModel: ObservableObject {
     }
 
     func loadImage(from url: URL) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            if let imageData = try? Data(contentsOf: url), let image = UIImage(data: imageData) {
-                DispatchQueue.main.async { [weak self] in
-                    self?.objectWillChange.send()
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let data = data, error == nil else {
+                print("Failed to load image data: \(String(describing: error))")
+                return
+            }
+            if let image = UIImage(data: data) {
+                DispatchQueue.main.async {
                     self?.userData?.profileImage = image
+                    self?.objectWillChange.send()
                 }
             }
         }
+        task.resume()
     }
 }
 

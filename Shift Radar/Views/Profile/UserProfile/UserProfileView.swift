@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct UserProfileView: View {
+    @Environment(\.dismiss) var dismiss
     @EnvironmentObject var appModel: AppViewModel
-    @State private var isEditing = false
-    @State private var shouldRelaodUserData = false
-    @State private var profileImage: UIImage?
+    @ObservedObject private var viewModel = UserProfileViewModel()
     
     var body: some View {
         NavigationStack {
@@ -20,7 +19,7 @@ struct UserProfileView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         HStack {
                             ProfileImage(
-                                image: $profileImage,
+                                image: $viewModel.profileImage,
                                 width: 100,
                                 height: 100,
                                 placeholder: {
@@ -31,11 +30,12 @@ struct UserProfileView: View {
                                         .clipShape(Circle())
                                 }
                             )
+                            .expandable()
                             .onAppear {
-                                self.profileImage = userData.profileImage
+                                viewModel.profileImage = userData.profileImage
                             }
                             .onChange(of: userData.profileImage) {
-                                self.profileImage = userData.profileImage
+                                viewModel.profileImage = userData.profileImage
                             }
                             
                             VStack(alignment: .leading) {
@@ -72,7 +72,7 @@ struct UserProfileView: View {
                     Spacer()
                     
                     Button {
-                        isEditing = true
+                        viewModel.isEditing = true
                     } label: {
                         HStack {
                             Text("Edit info")
@@ -87,9 +87,9 @@ struct UserProfileView: View {
                         .padding(.horizontal)
                     }
                     
-                    Button(action: {
-                        // Action to delete account
-                    }) {
+                    Button {
+                        viewModel.showingDeleteAlert = true
+                    } label: {
                         Text("Delete account")
                             .foregroundColor(.red)
                             .bold()
@@ -105,20 +105,58 @@ struct UserProfileView: View {
                 .navigationTitle("Profile")
                 .navigationBarTitleDisplayMode(.inline)
                 .background(Color.background)
-                .navigationDestination(isPresented: $isEditing) {
-                    EditUserProfileView(userData: userData, isEditing: $isEditing, shouldReloadUserData: $shouldRelaodUserData)
+                .navigationDestination(isPresented: $viewModel.isEditing) {
+                    EditUserProfileView(userData: userData, isEditing: $viewModel.isEditing, shouldReloadUserData: $viewModel.shouldRelaodUserData)
                         .onDisappear {
-                            if shouldRelaodUserData {
+                            if viewModel.shouldRelaodUserData {
                                 self.appModel.loadUserData()
-                                self.shouldRelaodUserData = false
+                                viewModel.shouldRelaodUserData = false
                             }
                         }
                 }
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Text("Close")
+                        }
+                    }
+                }
+                .alert("Confirm Account Deletion", isPresented: $viewModel.showingDeleteAlert, actions: {
+                    Button("Delete", role: .destructive) {
+                        viewModel.deleteAccount()
+                    }
+                    Button("Cancel", role: .cancel) {}
+                }, message: {
+                    Text("Are you sure you want to permanently delete your account?")
+                })
+                .overlay {
+                    if viewModel.isDeletingAccount {
+                        ZStack {
+                            Color.black.opacity(0.5)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .ignoresSafeArea()
+                            ProgressView()
+                                .scaleEffect(1.5)
+                        }
+                    }
+                }
+                .disabled(viewModel.isDeletingAccount)
             } else {
                 Text("Error loading user profile")
                     .foregroundStyle(.secondary)
                     .navigationTitle("Profile")
                     .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button {
+                                dismiss()
+                            } label: {
+                                Text("Close")
+                            }
+                        }
+                    }
             }
         }
     }

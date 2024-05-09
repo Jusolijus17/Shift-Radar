@@ -78,6 +78,7 @@ struct LoginView: View {
     }
     
     func login() {
+        let email = self.email + "@aircanada.ca"
         Auth.auth().signIn(withEmail: email, password: password) { (authResult, error) in
             if let error = error {
                 self.error = error.localizedDescription

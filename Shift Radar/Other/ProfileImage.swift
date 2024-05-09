@@ -67,6 +67,10 @@ struct ProfileImage<Placeholder: View>: View {
     func editable() -> some View {
         modifier(EditableProfileImage(selectedImage: $selectedImage))
     }
+
+    func expandable() -> some View {
+        modifier(ExpandableImageModifier(image: selectedImage))
+    }
 }
 
 
@@ -103,6 +107,33 @@ struct EditableProfileImage: ViewModifier {
             .sheet(isPresented: $isShowingImagePicker) {
                 ImagePicker(sourceType: .photoLibrary, selectedImage: $selectedImage)
                     .ignoresSafeArea()
+            }
+    }
+}
+
+struct ExpandableImageModifier: ViewModifier {
+    @State var isShowingFullImage = false
+    var image: UIImage?
+
+    func body(content: Content) -> some View {
+        content
+            .onTapGesture {
+                self.isShowingFullImage = true
+            }
+            .fullScreenCover(isPresented: $isShowingFullImage) {
+                ZStack {
+                    Color.black
+                        .ignoresSafeArea()
+                    if let image = image {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .edgesIgnoringSafeArea(.all)
+                    }
+                }
+                .onTapGesture {
+                    self.isShowingFullImage = false
+                }
             }
     }
 }

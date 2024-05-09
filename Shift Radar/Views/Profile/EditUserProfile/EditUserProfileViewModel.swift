@@ -9,13 +9,15 @@ import Foundation
 import UIKit
 import FirebaseStorage
 import FirebaseFirestore
+import FirebaseFunctions
+import FirebaseAuth
 
 class EditUserProfileViewModel: ObservableObject {
     private var userId: String?
     @Published var profileImage: UIImage?
     @Published var firstName: String
     @Published var lastName: String
-    @Published var email: String
+    private var email: String
     @Published var employeeNumber: String
     @Published var phoneNumber: String
     
@@ -26,19 +28,19 @@ class EditUserProfileViewModel: ObservableObject {
         self.userId = userData.id
         self.firstName = userData.firstName
         self.lastName = userData.lastName
-        if let firstPart = userData.email.split(separator: "@").first {
-            self.email = String(firstPart)
-        } else {
-            self.email = userData.email
-        }
+        self.email = userData.email
         self.employeeNumber = userData.employeeNumber
+        self.phoneNumber = userData.phoneNumber ?? ""
         self.profileImage = userData.profileImage
         self.originalImage = userData.profileImage
-        self.phoneNumber = userData.phoneNumber ?? ""
     }
-
+    
     
     func saveInfo() {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("User ID not found")
+            return
+        }
         self.saveState = .saving
         
         let updatedUserData = UserData(firstName: firstName, lastName: lastName, email: email,
@@ -54,7 +56,7 @@ class EditUserProfileViewModel: ObservableObject {
             return
         }
         
-        if let image = profileImage, let userId = userId {
+        if let image = profileImage {
             let newImageData = image.jpegData(compressionQuality: 0.9)
             let oldImageData = originalImage?.jpegData(compressionQuality: 0.9)
             
@@ -69,7 +71,7 @@ class EditUserProfileViewModel: ObservableObject {
             } else {
                 saveToFirestore(updatedData: updatedUserData)
             }
-        } else if originalImage != nil, let userId = userId {
+        } else if originalImage != nil {
             deleteProfileImage(for: userId) { [weak self] success in
                 guard success else {
                     self?.saveState = .failed(.updateError)
@@ -83,12 +85,6 @@ class EditUserProfileViewModel: ObservableObject {
     }
     
     private func verifyInfo(_ updatedUserData: UserData) -> ErrorType? {
-        if updatedUserData.email.contains("@aircanada.ca") {
-            return ErrorType.invalidEmail
-        } else {
-            updatedUserData.email += "@aircanada.ca"
-        }
-        
         if let phoneNumber = updatedUserData.phoneNumber, phoneNumber != "" {
             let phoneRegex = "^\\d{3}-\\d{3}-\\d{4}$"
             let phoneTest = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
@@ -122,19 +118,23 @@ class EditUserProfileViewModel: ObservableObject {
     }
     
     private func deleteProfileImage(for userId: String, completion: @escaping (Bool) -> Void) {
-        let storageRef = Storage.storage().reference().child("profilePictures/\(userId)/profile.jpg")
-        storageRef.delete { error in
-            if let error = error {
-                print("Error removing profile image: \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    self.saveState = .failed(.updateError)
-                    completion(false)
+        let functions = Functions.functions()
+        
+        functions.httpsCallable("deleteProfilePicture").call() { result, error in
+            if let error = error as NSError? {
+                if error.domain == FunctionsErrorDomain {
+                    let code = FunctionsErrorCode(rawValue: error.code) ?? FunctionsErrorCode.unknown
+                    let message = error.localizedDescription
+                    let details = error.userInfo[FunctionsErrorDetailsKey] ?? "No details available"
+                    print("Error code: \(code); message: \(message); details: \(details)")
                 }
-            } else {
-                print("Profile image successfully removed")
-                DispatchQueue.main.async {
-                    completion(true)
-                }
+                // Handle the error here
+                print("Error calling cloud function: \(error.localizedDescription)")
+                completion(false)
+            } else if let resultData = result?.data as? [String: Any] {
+                // Handle the result here if your function returns data
+                print("Function result: \(resultData)")
+                completion(true)
             }
         }
     }
