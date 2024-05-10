@@ -12,6 +12,7 @@ import FirebaseAuth
 struct TabViewManager: View {
     @State var selectedTab = 0
     @State private var showSettings = false
+    @State private var showProfile = false
     
     @EnvironmentObject var appModel: AppViewModel
     
@@ -80,9 +81,12 @@ struct TabViewManager: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
-                            // show profile
+                            self.showProfile = true
                         } label: {
-                            ProfileImageView(userData: appModel.userData)
+                            ProfileImage(image: .constant(nil), imageURL: appModel.userData?.profileImageUrl, width: 35, height: 35, placeholder: {
+                                Image(systemName: "person.crop.circle")
+                                    .font(.title3)
+                            })
                         }
                     }
                     ToolbarItem(placement: .topBarTrailing) {
@@ -94,13 +98,15 @@ struct TabViewManager: View {
                             Image(systemName: "line.horizontal.3")
                                 .font(.title3)
                                 .fontWeight(.semibold)
-                                .frame(width: 35, height: 35)
                         }
                     }
                 }
                 .toolbarBackground(.accent, for: .navigationBar)
                 .toolbarBackground(.visible, for: .navigationBar)
                 .toolbarColorScheme(.dark, for: .navigationBar)
+                .sheet(isPresented: $showProfile) {
+                    UserProfileView()
+                }
             }
         }
     }
@@ -115,28 +121,6 @@ struct TabViewManager: View {
     }
 }
 
-struct ProfileImageView: View {
-    var userData: UserData?
-    
-    var body: some View {
-        Group {
-            if let urlString = userData?.profileImageUrl, let url = URL(string: urlString) {
-                AsyncImage(url: url) { image in
-                    image.resizable()
-                } placeholder: {
-                    ProgressView()
-                }
-                .frame(width: 35, height: 35)
-                .clipShape(Circle())
-            } else {
-                Image(systemName: "person.fill")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-            }
-        }
-    }
-}
-
 struct TabViewManager_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWrapper(selectedTab: 0)
@@ -144,11 +128,11 @@ struct TabViewManager_Previews: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State private var selectedTab: Int
-        @StateObject private var appModel = AppViewModel()
+        @ObservedObject private var appModel = AppViewModel()
         
         init(selectedTab: Int) {
             self._selectedTab = State(initialValue: selectedTab)
-            appModel.userData = UserData()
+            appModel.loadUserData()
         }
         
         var body: some View {

@@ -7,20 +7,6 @@
 
 import SwiftUI
 
-struct CustomSecureField: View {
-    @Binding var text: String
-    var placeholder: String
-    var systemName: String
-
-    var body: some View {
-        HStack {
-            Image(systemName: systemName)
-                .foregroundColor(.gray)
-            SecureField(placeholder, text: $text)
-        }
-    }
-}
-
 struct CustomSlider: View {
     @Binding var value: Double
     var range: ClosedRange<Double>
@@ -46,20 +32,6 @@ struct CustomSlider: View {
         let sliderRange = range.upperBound - range.lowerBound
         let sliderStep = CGFloat((value - range.lowerBound) / sliderRange)
         return sliderStep * (sliderWidth - 35) // 35 is the approximate width of the Text view
-    }
-}
-
-struct CustomTextField: View {
-    @Binding var text: String
-    var placeholder: String
-    var systemName: String
-
-    var body: some View {
-        HStack {
-            Image(systemName: systemName)
-                .foregroundColor(Color(hex: "#A3A3A3"))
-            TextField(placeholder, text: $text)
-        }
     }
 }
 
@@ -263,6 +235,15 @@ extension SwipeToConfirmButton {
     }
 }
 
-#Preview(body: {
-    SwipeToConfirmButton()
-})
+struct CustomObjects_Previews: PreviewProvider {
+    static var previews: some View {
+        PreviewWrapper()
+    }
+    
+    struct PreviewWrapper: View {
+        
+        var body: some View {
+            SwipeToConfirmButton()
+        }
+    }
+}

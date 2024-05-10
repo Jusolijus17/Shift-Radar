@@ -17,44 +17,21 @@ struct InfoView: View {
             VStack(spacing: 18) {
                 HStack {
                     Group {
-                        CustomTextField(text: $userData.firstName, placeholder: "First", systemName: "person.fill")
-                        CustomTextField(text: $userData.lastName, placeholder: "Last", systemName: "person")
-                    }
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 10.0)
-                            .fill(.white)
-                            .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
+                        CustomTextField(text: $userData.firstName, type: .firstName)
+                            .outlined()
+                        CustomTextField(text: $userData.lastName, type: .lastName)
+                            .outlined()
                     }
                 }
                 
-                Group {
-                    HStack {
-                        CustomTextField(text: $userData.email, placeholder: "Email", systemName: "envelope")
-                            .autocorrectionDisabled()
-                            .textInputAutocapitalization(.never)
-                        Text("@aircanada.ca")
-                            .foregroundStyle(Color(hex: "#8B8E94"))
-                            .padding(.trailing, 10)
-                    }
-                    HStack {
-                        Label("AC", systemImage: "number")
-                            .foregroundStyle(.tertiary)
-                        Divider()
-                            .frame(maxHeight: 25)
-                            .padding(.horizontal, 5)
-                        TextField("Employee Number", text: $userData.employeeNumber)
-                            .keyboardType(.numberPad)
-                    }
-                    CustomSecureField(text: $password, placeholder: "Password", systemName: "lock")
-                    CustomSecureField(text: $confirmPassword, placeholder: "Confirm Password", systemName: "lock.fill")
-                }
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 10.0)
-                        .fill(.white)
-                        .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
-                }
+                CustomTextField(text: $userData.email, type: .email)
+                    .outlined()
+                CustomTextField(text: $userData.employeeNumber, type: .employeeNumber)
+                    .outlined()
+                CustomTextField(text: $password, type: .password)
+                    .outlined()
+                CustomTextField(text: $confirmPassword, type: .confirmPassword)
+                    .outlined()
             }
         }
         .padding()

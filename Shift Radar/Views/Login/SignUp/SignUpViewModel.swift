@@ -13,7 +13,7 @@ import FirebaseFunctions
 class SignUpViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var confirmPassword: String = ""
-    @Published var userData = UserData()
+    @Published var userData = UserData.newUser()
     @Published var isLoading: Bool = false
     @Published var error: String?
     @Published var accountCreationState = AccountCreationState.basicInfo

@@ -26,21 +26,11 @@ struct LoginView: View {
                     Spacer()
                     
                     VStack(spacing: 18) {
-                        CustomTextField(text: $email, placeholder: "Email", systemName: "envelope")
-                            .padding()
-                            .background {
-                                RoundedRectangle(cornerRadius: 10.0)
-                                    .fill(.white)
-                                    .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
-                            }
+                        CustomTextField(text: $email, type: .email)
+                            .outlined()
                         
-                        CustomSecureField(text: $password, placeholder: "Password", systemName: "lock")
-                            .padding()
-                            .background {
-                                RoundedRectangle(cornerRadius: 10.0)
-                                    .fill(.white)
-                                    .stroke(Color.accentColor.opacity(0.5), lineWidth: 1)
-                            }
+                        CustomTextField(text: $password, type: .password)
+                            .outlined()
                         
                         Button {
                             
@@ -88,6 +78,7 @@ struct LoginView: View {
     }
     
     func login() {
+        let email = self.email + "@aircanada.ca"
         Auth.auth().signIn(withEmail: email, password: password) { (authResult, error) in
             if let error = error {
                 self.error = error.localizedDescription
