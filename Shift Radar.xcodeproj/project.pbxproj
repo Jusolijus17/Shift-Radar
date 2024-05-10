@@ -33,6 +33,8 @@
 		3D58976D2BDB3A00002E5217 /* Compensation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D58976C2BDB3A00002E5217 /* Compensation.swift */; };
 		3D5897722BDB3B2C002E5217 /* OfferResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D5897712BDB3B2C002E5217 /* OfferResponse.swift */; };
 		3D5897732BE307D7002E5217 /* ReviewOfferViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE1C762B377D4E005BBB6E /* ReviewOfferViewModal.swift */; };
+		3D5D5D4A2BEDB2AB001F1EDC /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D5D5D492BEDB2AB001F1EDC /* UserCell.swift */; };
+		3D5D5D4C2BEDB954001F1EDC /* StaffViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D5D5D4B2BEDB954001F1EDC /* StaffViewModel.swift */; };
 		3D895D712BE4705000EDF456 /* UserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D895D702BE4705000EDF456 /* UserProfileView.swift */; };
 		3D895D732BE4706100EDF456 /* UserProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D895D722BE4706100EDF456 /* UserProfileViewModel.swift */; };
 		3D895D762BE4894F00EDF456 /* EditUserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D895D752BE4894F00EDF456 /* EditUserProfileView.swift */; };
@@ -83,6 +85,8 @@
 		3D33AF222AE9D747003116A5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3D58976C2BDB3A00002E5217 /* Compensation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compensation.swift; sourceTree = "<group>"; };
 		3D5897712BDB3B2C002E5217 /* OfferResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferResponse.swift; sourceTree = "<group>"; };
+		3D5D5D492BEDB2AB001F1EDC /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
+		3D5D5D4B2BEDB954001F1EDC /* StaffViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaffViewModel.swift; sourceTree = "<group>"; };
 		3D895D702BE4705000EDF456 /* UserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileView.swift; sourceTree = "<group>"; };
 		3D895D722BE4706100EDF456 /* UserProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewModel.swift; sourceTree = "<group>"; };
 		3D895D752BE4894F00EDF456 /* EditUserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUserProfileView.swift; sourceTree = "<group>"; };
@@ -177,10 +181,12 @@
 		3D13CC852AF9C25E00E14CF4 /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				3D92F3A42AE9A8540032DE1F /* ShiftCell.swift */,
 				3D92F3A02AE8B7650032DE1F /* Extensions.swift */,
 				3D13CC832AF9C1CE00E14CF4 /* CustomObjects.swift */,
 				3DF1876A2BE84225002B3692 /* CustomTextField.swift */,
 				3DF1876C2BE843F2002B3692 /* ProfileImage.swift */,
+				3D5D5D492BEDB2AB001F1EDC /* UserCell.swift */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -240,6 +246,7 @@
 			isa = PBXGroup;
 			children = (
 				3D92F39E2AE8B58F0032DE1F /* StaffView.swift */,
+				3D5D5D4B2BEDB954001F1EDC /* StaffViewModel.swift */,
 			);
 			path = Staff;
 			sourceTree = "<group>";
@@ -365,7 +372,6 @@
 				3D13CC862AF9C2AD00E14CF4 /* Requests */,
 				3D7F63C52BDB38FC0025A7B8 /* Staff */,
 				3DE3235A2B5793B500126E29 /* SideBarStack.swift */,
-				3D92F3A42AE9A8540032DE1F /* ShiftCell.swift */,
 			);
 			path = TabView;
 			sourceTree = "<group>";
@@ -476,6 +482,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D895D762BE4894F00EDF456 /* EditUserProfileView.swift in Sources */,
+				3D5D5D4C2BEDB954001F1EDC /* StaffViewModel.swift in Sources */,
 				3DDE1C7F2B3BF012005BBB6E /* ErrorAlert.swift in Sources */,
 				3DDE1C7D2B3A770A005BBB6E /* Offer.swift in Sources */,
 				3DC8310A2B18283200ED085C /* AppViewModel.swift in Sources */,
@@ -509,6 +516,7 @@
 				3DDE1C7B2B3A6BF3005BBB6E /* PickupShiftModalViewModel.swift in Sources */,
 				3D58976D2BDB3A00002E5217 /* Compensation.swift in Sources */,
 				3DE3235B2B5793B500126E29 /* SideBarStack.swift in Sources */,
+				3D5D5D4A2BEDB2AB001F1EDC /* UserCell.swift in Sources */,
 				3DC8310C2B18298400ED085C /* UserData.swift in Sources */,
 				3DE3235D2B589DC900126E29 /* SplashScreen.swift in Sources */,
 				3D9BE8092B3E390F0028034B /* PositionSelector.swift in Sources */,

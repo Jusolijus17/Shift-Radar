@@ -85,7 +85,7 @@ struct PickupShiftModalView: View {
                 if shift.createdBy != appModel.uid {
                     SwipeToConfirmButton(alternateText: "Swipe to accept")
                         .onSwipeSuccess {
-                            self.model.pickupShift(shiftId: shift.id, userData: appModel.userData) { result in
+                            self.model.pickupShift(shiftId: shift.id) { result in
                                 switch result {
                                 case .success( _):
                                     dismiss()
